@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 #use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\StudioUser;
 
 class StudioUserController extends Controller
 {
-  public function neworder()
+  public function newuser()
   {
-    return view ('pages.todo.neworder');
+    return view ('pages.todo.newuser');
   }
 
   public function store(Request $request)
@@ -38,8 +39,8 @@ class StudioUserController extends Controller
       'isactive' => 1, // Hardcoded value
       'profileimage' => $validatedData['profileimage'] ?? null,
   ]);
-
-  return redirect()->back()->with('success', 'User created successfully!');
+return "sucess";
+  //return redirect()->back()->with('success', 'User created successfully!');
   }
 }
 

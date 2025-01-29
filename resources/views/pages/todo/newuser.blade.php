@@ -4,7 +4,7 @@
 <div class='s-page-title'>Place New Order</div>
 <div style='background-color: lightgrey; width: 90%; border: 2px solid green; padding: 50px; margin: 20px;'>
 <!-- Multiple Radios -->
-<form class="form-horizontal" action="{{ route('studio-user.store') }}" method="POST">
+<form class="form-horizontal" action="{{ route('studioUser.store') }}" method="POST">
   @csrf
 <fieldset>
 
@@ -19,7 +19,7 @@
       <input type="radio" name="radios" id="radios-0" value="1" checked="checked">
       New
     </label>
-	</div> 
+	</div>
   <div class="radio">
     <label for="radios-1">
       <input type="radio" name="radios" id="radios-1" value="2">
@@ -31,19 +31,19 @@
 
 <!-- Text input-->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="name">Name</label>  
+  <label class="col-md-4 control-label" for="name">Name</label>
   <div class="col-md-4">
   <input id="name" name="username" type="text" placeholder="" class="form-control input-md" required="">
-    
+
   </div>
 </div>
 
 <!-- Text input-->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="phone">Phone</label>  
+  <label class="col-md-4 control-label" for="phone">Phone</label>
   <div class="col-md-4">
   <input id="phone" name="phone" type="text" placeholder="" class="form-control input-md" required="">
-    
+
   </div>
 </div>
 
@@ -61,10 +61,10 @@
 
 <!-- Text input-->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="email">Email</label>  
+  <label class="col-md-4 control-label" for="email">Email</label>
   <div class="col-md-4">
   <input id="email" name="email" type="text" placeholder="" class="form-control input-md">
-    
+
   </div>
 </div>
 
@@ -72,7 +72,7 @@
 <div class="form-group">
   <label class="col-md-4 control-label" for="register"></label>
   <div class="col-md-4">
-    <button id="register" name="register" class="btn btn-primary">Register</button>
+    <button id="register"  class="btn btn-primary">Register</button>
   </div>
 </div>
 

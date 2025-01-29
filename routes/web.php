@@ -8,5 +8,6 @@ use App\Http\Controllers\StudioUserController;
 //     return view('app.blade');
 // });
 Route::get('/',[HomeController::class,"index"])->name('home');
-Route::get('/neworder',[StudioUserController::class,"neworder"])->name('neworder');
-Route::post('/studio-user', [StudioUserController::class, 'store'])->name('studio-user.store');
+Route::get('/newuser',[StudioUserController::class,"newuser"])->name('newuser');
+#Route::post('/studiouser', [StudioUserController::class, 'store'])->name('studiouser.store');
+Route::post('/studiouser/store', [StudioUserController::class, 'store'])->name('studioUser.store');

@@ -4,7 +4,8 @@
 <div class='s-page-title'>Place New Order</div>
 <div style='background-color: lightgrey; width: 90%; border: 2px solid green; padding: 50px; margin: 20px;'>
 <!-- Multiple Radios -->
-<form class="form-horizontal">
+<form class="form-horizontal" action="{{ route('studio-user.store') }}" method="POST">
+  @csrf
 <fieldset>
 
 <!-- Form Name -->
@@ -32,7 +33,7 @@
 <div class="form-group">
   <label class="col-md-4 control-label" for="name">Name</label>  
   <div class="col-md-4">
-  <input id="name" name="name" type="text" placeholder="" class="form-control input-md" required="">
+  <input id="name" name="username" type="text" placeholder="" class="form-control input-md" required="">
     
   </div>
 </div>
@@ -50,7 +51,7 @@
 <div class="form-group">
   <label class="col-md-4 control-label" for="town">Town</label>
   <div class="col-md-4">
-    <select id="town" name="town" class="form-control">
+    <select id="town" name="address" class="form-control">
       <option value="1">Arangala</option>
       <option value="2">Hokandara</option>
       <option value="3">Malabe</option>

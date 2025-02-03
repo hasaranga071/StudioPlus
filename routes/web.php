@@ -9,9 +9,12 @@ use App\Http\Controllers\StudioUserController;
 //     return view('app.blade');
 // });
 #Route::get('/',[HomeController::class,"index"])->name('home');
- Route::get('/neworder',[StudioUserController::class,"neworder"])->name('neworder');
- Route::post('/studio-user', [StudioUserController::class, 'store'])->name('studio-user.store');
 
+
+ Route::middleware('auth')->group(function () {
+    Route::get('/neworder',[StudioUserController::class,"neworder"])->name('neworder');
+    Route::post('/studio-user', [StudioUserController::class, 'store'])->name('studio-user.store');
+});
 
 Route::get('/dashboard', function () {
     return view('dashboard');

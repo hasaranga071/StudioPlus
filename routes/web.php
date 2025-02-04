@@ -12,6 +12,7 @@ use App\Http\Controllers\NewOrderController;
     Route::get('/neworder',[NewOrderController::class,"neworder"])->name('neworder');
     Route::get('/neworder',[StudioUserController::class,"neworder"])->name('neworder');
     Route::post('/studio-user', [StudioUserController::class, 'store'])->name('studio-user.store');
+    Route::get('/orders',[NewOrderController::class,"orders"])->name('orders');
 });
 
 Route::get('/dashboard', function () {

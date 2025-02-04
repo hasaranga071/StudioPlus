@@ -66,17 +66,17 @@
             <div class="form-group" style="display:flex;gap: 50px">
                 <div class="col-md-4">
                     <label class="col-md-4 control-label" for="name">Name (*)</label>
-                    <input id="name" name="name" type="text" placeholder="" class="form-control input-md" required="">
+                    <input id="name" name="username" type="text" placeholder="" class="form-control input-md" required="">
                 </div>
                 <div class="col-md-4">
                     <label class="col-md-4 control-label" for="phone">Phone (*)</label>
-                    <input id="phone" name="phone" type="text" placeholder="" class="form-control input-md" required="">
+                    <input id="phone" name="phonenumber" type="text" placeholder="" class="form-control input-md" required="">
                 </div>
             </div>
             <div class="form-group" style="display:flex;gap: 50px">
                 <div class="col-md-4">
                     <label class="col-md-4 control-label" for="town">Town</label>
-                    <select id="town" name="town" class="form-control">
+                    <select id="town" name="address" class="form-control">
                         <option value="1">Arangala</option>
                         <option value="2">Hokandara</option>
                         <option value="3">Malabe</option>
@@ -91,6 +91,11 @@
             </div>
             </div>
         </div>
+    </fieldset>
+</form>
+        <form class="form-horizontal" action="{{ route('customers.store') }}" method="POST">
+            @csrf
+                <fieldset>
 
         <div id='olduser' style="display:none">
             <div class="form-group" style="display:flex;gap: 50px">

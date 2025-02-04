@@ -14,7 +14,7 @@ class StudioCustomerController extends Controller
             'username' => 'required|string|max:255',
             'phonenumber' => 'required|string|max:15',
             'address' => 'nullable|string|max:255',
-            'email' => 'nullable|email|unique:studio_customers,email',
+            'email' => 'nullable|email|unique:studiocustomers,email',
         ]);
 
         // Save the customer information

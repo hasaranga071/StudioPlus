@@ -9,7 +9,7 @@ class StudioCustomer extends Model
 {
     use HasFactory;
 
-    protected $table = 'StudioCustomers'; // Define table name if different from Laravel's convention
+    protected $table = 'studiocustomers'; // Define table name if different from Laravel's convention
 
     protected $primaryKey = 'customerkey'; // Custom primary key
 

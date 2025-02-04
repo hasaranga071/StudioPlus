@@ -5,6 +5,8 @@
 <div style='background-color: lightgrey; width: 90%; border: 2px solid green;padding-left:1%; margin-top: 1%; margin-right: 5%;margin-left: 5%;'>
 <!-- Multiple Radios -->
 <form class="form-horizontal" action="{{ route('customers.store') }}" method="POST">
+
+
     @csrf
         <fieldset>
 
@@ -67,10 +69,16 @@
                 <div class="col-md-4">
                     <label class="col-md-4 control-label" for="name">Name (*)</label>
                     <input id="name" name="username" type="text" placeholder="" class="form-control input-md" required="">
+                    @error('username')
+                    <div class="text-danger">{{ $message }}</div>
+                    @enderror
                 </div>
                 <div class="col-md-4">
                     <label class="col-md-4 control-label" for="phone">Phone (*)</label>
                     <input id="phone" name="phonenumber" type="text" placeholder="" class="form-control input-md" required="">
+                    @error('phonenumber')
+                    <div class="text-danger">{{ $message }}</div>
+                    @enderror
                 </div>
             </div>
             <div class="form-group" style="display:flex;gap: 50px">
@@ -88,27 +96,38 @@
             </div>
             <div class="col-md-4" style="padding-top: 30px;">
                 <button id="register" name="register" class="btn btn-primary">Register</button>
+                <div class="col-md-12" style="display: flex; justify-content: center; margin-top: 20px;">
+
+                    @if (session('success'))
+                        <div class="alert alert-success">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+                </div>
             </div>
+
+
             </div>
         </div>
     </fieldset>
 </form>
-        <form class="form-horizontal" action="{{ route('customers.store') }}" method="POST">
-            @csrf
-                <fieldset>
+<form class="form-horizontal" action="{{ route('customers.store') }}" method="POST">
+        @csrf
+            <fieldset>
 
         <div id='olduser' style="display:none">
             <div class="form-group" style="display:flex;gap: 50px">
                 <div class="col-md-4">
                         <label class="col-md-4 control-label" for="name">Name</label>
-                        <input id="name" name="name" type="text" placeholder="" class="form-control input-md" required="">
+                        <input id="name" name="username" type="text" placeholder="" class="form-control input-md" required="">
+
                     </div>
                     <div class="col-md-4">
                         <label class="col-md-4 control-label" for="phone">Phone</label>
-                        <input id="phone" name="phone" type="text" placeholder="" class="form-control input-md" required="">
+                        <input id="phone" name="phonenumber" type="text" placeholder="" class="form-control input-md" required="">
                     </div>
                     <div class="col-md-4" style="padding-top: 30px;">
-                        <button id="register" name="register" class="btn btn-primary">Search</button>
+                        <button id="register" name="search" class="btn btn-primary">Search</button>
                     </div>
             </div>
             <div id="olduser_search_result" style="width: 70%; height: 20px; border: 2px dotted green; padding: 50px; margin-left: 5px; margin-top: 5px;">

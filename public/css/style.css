@@ -766,6 +766,8 @@ width: 120px;
   background-size: cover;
   background-position: center;
   display: block;
+  text-align: center;
+  margin-top: -35px;
  
 }
 .container{

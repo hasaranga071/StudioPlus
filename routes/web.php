@@ -5,6 +5,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ToDoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudioUserController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NewOrderController;
+
+
 // Route::get('/', function () {
 //     return view('app.blade');
 // });
@@ -12,6 +16,8 @@ use App\Http\Controllers\StudioUserController;
 
 
  Route::middleware('auth')->group(function () {
+    Route::get('/',[HomeController::class,"index"])->name('home');
+    Route::get('/neworder',[NewOrderController::class,"neworder"])->name('neworder');
     Route::get('/neworder',[StudioUserController::class,"neworder"])->name('neworder');
     Route::post('/studio-user', [StudioUserController::class, 'store'])->name('studio-user.store');
 });

@@ -4,7 +4,7 @@
 <div class='s-page-title'>Place New Order</div>
 <div style='background-color: lightgrey; width: 90%; border: 2px solid green;padding-left:1%; margin-top: 1%; margin-right: 5%;margin-left: 5%;'>
 <!-- Multiple Radios -->
-<form class="form-horizontal" action="{{ route('studio-user.store') }}" method="POST">
+<form class="form-horizontal" action="{{ route('customers.store') }}" method="POST">
     @csrf
         <fieldset>
 
@@ -25,7 +25,7 @@
                         <input type="radio" name="client-radio" id="radios-1" value="2">
                         Existing
                     </label>
-                </div> 
+                </div>
                 <!-- <div class="radio">
                     <label for="radios-1">
                         <input type="radio" name="client-radio" id="radios-1" value="2">
@@ -38,12 +38,12 @@
         $(document).ready(function () {
             $('input[name="client-radio"]').click(function () {
                 const selectedValue = $(this).val();
-                if($(this).val()==1) 
+                if($(this).val()==1)
                 {
                     document.getElementById("newuser").style.display = "inline";
                     document.getElementById("olduser").style.display = "none";
                 }
-                else 
+                else
                 {
                     document.getElementById("olduser").style.display = "inline";
                     document.getElementById("newuser").style.display = "none";
@@ -83,8 +83,8 @@
                     </select>
                 </div>
                 <div class="col-md-4">
-                <label class="col-md-4 control-label" for="email">Email</label>  
-                <input id="email" name="email" type="text" placeholder="" class="form-control input-md"> 
+                <label class="col-md-4 control-label" for="email">Email</label>
+                <input id="email" name="email" type="text" placeholder="" class="form-control input-md">
             </div>
             <div class="col-md-4" style="padding-top: 30px;">
                 <button id="register" name="register" class="btn btn-primary">Register</button>
@@ -131,7 +131,7 @@
                         <option value="3">Media</option>
                         <option value="4">Frames</option>
                     </select>
-                </div> 
+                </div>
                 <div class="col-md-4">
                     <label class="col-md-4 control-label" for="phone">Order No.</label><br>
                     <span class="label label-primary">SS_20241006_005</span>
@@ -178,7 +178,7 @@
                 </div>
                 <div class="column2" style="background-color:#aaa;">
                     <h2>Order Summary</h2>
- 
+
                 </div>
             </div>
         </fieldset>

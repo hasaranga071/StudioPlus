@@ -7,6 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudioUserController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NewOrderController;
+use App\Http\Controllers\StudioCustomerController;
 
 
 // Route::get('/', function () {
@@ -18,8 +19,10 @@ use App\Http\Controllers\NewOrderController;
  Route::middleware('auth')->group(function () {
     Route::get('/',[HomeController::class,"index"])->name('home');
     Route::get('/neworder',[NewOrderController::class,"neworder"])->name('neworder');
-    Route::get('/neworder',[StudioUserController::class,"neworder"])->name('neworder');
-    Route::post('/studio-user', [StudioUserController::class, 'store'])->name('studio-user.store');
+    //Route::get('/neworder',[StudioUserController::class,"neworder"])->name('neworder');
+    //Route::post('/studio-user', [StudioUserController::class, 'store'])->name('studio-user.store');
+    Route::post('/customers', [StudioCustomerController::class, 'store'])->name('customers.store');
+
 });
 
 Route::get('/dashboard', function () {

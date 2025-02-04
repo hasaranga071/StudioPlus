@@ -11,4 +11,8 @@ class NewOrderController extends Controller
   {
     return view ('pages.todo.neworder');
   }
+  public function orders()
+  {
+    return view ('pages.todo.orders');
+  }
 }

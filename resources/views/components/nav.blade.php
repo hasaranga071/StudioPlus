@@ -7,12 +7,11 @@
 		</div>
 		
 	</ul>	
-	<div id='sname' class="navbar-brand">Sahasra Studio |	
-	</div>
+	<div id='sname' class="navbar-brand">MY STUDIO</div>
 	<div class="collapse navbar-collapse">
 		<ul class="custom-navbar-nav navbar-nav ">
 			<li _class="nav-item active"> <a class="navbar-link" href="index.html">Dashboard</</li>
-			<li><a class="navbar-link" href="shop.html">Orders</a></li>
+			<li><a class="navbar-link" href="/orders">Orders</a></li>
 			<li><a class="navbar-link" href="about.html">My Business</a></li>
 			<li><a class="navbar-link" href="services.html">Configurations</a></li>
 		</ul>
@@ -113,3 +112,25 @@
 	</div>
 </div>			
 </nav>
+<script>
+        $(document).ready(function () {
+        var userkey="{{ auth()->user()->id }}";
+            
+
+        axios.get('/studiodetails_of_user', {
+            params: {
+                UserKey: 1
+            }
+        })
+        .then(response => {
+            //console.log("xxxxxxxxxxxxxx=",response.data); // Handle the response data
+            //alert(response.data[0]['studioname'])
+            document.getElementById("sname").innerHTML=response.data[0]['studioname'];
+        })
+        .catch(error => {
+            console.error("There was an error!", error);
+        });
+    
+
+        });
+        </script>

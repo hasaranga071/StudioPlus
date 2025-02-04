@@ -7,6 +7,8 @@ use App\Http\Controllers\StudioUserController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NewOrderController;
 use App\Http\Controllers\StudioCustomerController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
  Route::middleware('auth')->group(function () {
     Route::get('/',[HomeController::class,"index"])->name('home');
@@ -16,7 +18,7 @@ use App\Http\Controllers\StudioCustomerController;
     //Route::get('/neworder',[StudioUserController::class,"neworder"])->name('neworder');
     //Route::post('/studio-user', [StudioUserController::class, 'store'])->name('studio-user.store');
     Route::post('/customers', [StudioCustomerController::class, 'store'])->name('customers.store');
-
+    //Route::post('/studiodetails_of_user', [StudioUserController::class, 'studiodetails_of_user'])->name('customers.store');
 });
 
 Route::get('/dashboard', function () {
@@ -30,3 +32,19 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+Route::get('/studiodetails_of_user', function (Request $request) {
+    $param = $request->query('param'); // Get parameter from request
+
+
+
+    $data = DB::table('studiousers')
+    ->join('studios', 'studiousers.studiokey', '=', 'studios.studiokey') // Joining 'orders' table
+    ->select('studios.studioname') // Selecting specific columns
+    ->when($param, function ($query, $param) { // Optional filter
+        return $query->where('studiousers.userkey', '=', "%{$param}%");
+    })
+    ->get();
+
+return response()->json($data);
+});

@@ -9,15 +9,7 @@ class StudioCustomerController extends Controller
 {
     public function store(Request $request)
     {
-        // Validate the form data
-        // $validated = $request->validate([
-        //     'username' => 'required|string|max:255',
-        //     'phonenumber' => 'required|string|max:15',
-        //     'address' => 'nullable|string|max:255',
-        //     'email' => 'nullable|email|unique:studiocustomers,email',
-        // ]);
-
-        $validated = $request->validate([
+        $validator = validator($request->all(), [
             'username' => 'required|string|max:255|unique:studiocustomers,username',
             'phonenumber' => 'required|string|max:15|unique:studiocustomers,phonenumber',
             'address' => 'nullable|string|max:255',
@@ -28,19 +20,62 @@ class StudioCustomerController extends Controller
             'email.unique' => 'The email address is already in use.',
         ]);
 
-        // Save the customer information
-        StudioCustomer::create([
-            'username' => $validated['username'],
-            'phonenumber' => $validated['phonenumber'],
-            'address' => $validated['address'] ?? '',
-            'email' => $validated['email'] ?? null,
-            'studiokey' => 1, // Replace with the appropriate studio key if applicable
-            'createdtime' => now(),
-        ]);
+        if ($validator->fails()) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'status' => false,
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
 
-        // Redirect or return response
-        return redirect()->back()->with('success', 'Customer registered successfully!');
+        try {
+            $customer = StudioCustomer::create([
+                'username' => $request->username,
+                'phonenumber' => $request->phonenumber,
+                'address' => $request->address ?? '',
+                'email' => $request->email ?? null,
+                'studiokey' => 1,
+                'createdtime' => now(),
+            ]);
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Customer registered successfully!',
+                    'customer' => $customer
+                ]);
+            }
+
+            return redirect()->back()->with('success', 'Customer registered successfully!');
+        } catch (\Exception $e) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Error registering customer'
+                ], 500);
+            }
+            return redirect()->back()->with('error', 'Error registering customer')->withInput();
+        }
     }
 
+    public function search(Request $request)
+    {
+        $query = StudioCustomer::query();
 
+        if ($request->username) {
+            $query->where('username', 'LIKE', '%' . $request->username . '%');
+        }
+        if ($request->phonenumber) {
+            $query->where('phonenumber', 'LIKE', '%' . $request->phonenumber . '%');
+        }
+
+        $customers = $query->get();
+
+        return response()->json([
+            'status' => true,
+            'customers' => $customers
+        ]);
+    }
 }

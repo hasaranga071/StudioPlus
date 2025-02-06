@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\StudioCustomer;
+use Illuminate\Support\Facades\Session;
+
 
 class StudioCustomerController extends Controller
 {
@@ -39,6 +41,11 @@ class StudioCustomerController extends Controller
                 'studiokey' => 1,
                 'createdtime' => now(),
             ]);
+
+           // Store customer details in the session with primary key
+    Session::put('customer_id', $customer->id);  // Store primary key
+    Session::put('customer_name', $customer->username);
+    Session::put('customer_key', 'CUST-' . $customer->id); // Example key format
 
             if ($request->ajax()) {
                 return response()->json([

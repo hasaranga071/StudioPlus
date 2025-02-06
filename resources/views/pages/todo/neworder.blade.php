@@ -96,7 +96,13 @@
             <div class="section_logo"><img width="30px" height="30px" src="{{ asset('images/order.png') }}"/></div>
             <div class="section_title">Order Information</div>
         </div>
-        <div class="form-group" style="display:flex;gap: 600px;padding-top: 15px;">
+
+
+
+        <div class="form-group" style="display:flex;gap:2%;padding-top: 15px;">
+
+
+
             <div class="col-md-4">
                 <label class="col-md-4 control-label" for="otype">Order Type (*)</label>
                 <select id="otype" name="otype" class="form-control">
@@ -106,6 +112,20 @@
                     <option value="4">Frames</option>
                 </select>
             </div>
+
+
+
+              <!-- Display Customer Name -->
+          @if(Session::has('customer_name'))
+
+          <div class="col-md-4">
+            <label class="col-md-4 control-label" for="phone">Customer Name</label><br>
+            <span class="label label-primary">{{ Session::get('customer_name') }}</span>
+        </div>
+         @endif
+
+
+
             <div class="col-md-4">
                 <label class="col-md-4 control-label" for="phone">Order No.</label><br>
                 <span class="label label-primary">SS_20241006_005</span>

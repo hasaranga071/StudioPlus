@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\DB;
     //Route::get('/neworder',[StudioUserController::class,"neworder"])->name('neworder');
     //Route::post('/studio-user', [StudioUserController::class, 'store'])->name('studio-user.store');
     Route::post('/customers', [StudioCustomerController::class, 'store'])->name('customers.store');
+    Route::post('/customers/search', [StudioCustomerController::class, 'search'])->name('customers.search');
     //Route::post('/studiodetails_of_user', [StudioUserController::class, 'studiodetails_of_user'])->name('customers.store');
 });
 

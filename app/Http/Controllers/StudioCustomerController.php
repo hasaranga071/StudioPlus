@@ -85,4 +85,23 @@ class StudioCustomerController extends Controller
             'customers' => $customers
         ]);
     }
+
+    public function getCustomerSession()
+    {
+        return response()->json([
+            'customer_name' => Session::get('customer_name'),
+            'customer_id' => Session::get('customer_id')
+        ]);
+    }
+
+    public function setCustomerSession(Request $request)
+        {
+            Session::put('customer_id', $request->customer_id);
+            Session::put('customer_name', $request->customer_name);
+            Session::put('customer_key', 'CUST-' . $request->customer_id); // Example format
+
+            return response()->json(['status' => 'success', 'message' => 'Customer session updated']);
+        }
+
+
 }

@@ -119,8 +119,8 @@
           @if(Session::has('customer_name'))
 
           <div class="col-md-4">
-            <label class="col-md-4 control-label" for="phone">Customer Name</label><br>
-            <span class="label label-primary">{{ Session::get('customer_name') }}</span>
+            <label class="col-md-4 control-label" >Customer Name</label><br>
+            <span id="customer-name"  class="label label-primary">{{ Session::get('customer_name') }}</span>
         </div>
          @endif
 
@@ -214,6 +214,7 @@ $(document).ready(function() {
                         .html(response.message)
                         .show();
                     $('#newCustomerForm')[0].reset();
+                    updateCustomerName();
 
                     setTimeout(function() {
                         $('#new-customer-message').fadeOut();
@@ -311,16 +312,46 @@ $(document).ready(function() {
 
     // Handle customer selection
     $(document).on('click', '.select-customer', function() {
-        const customerId = $(this).data('id');
-        const customerName = $(this).data('name');
-        // Store selected customer info for order processing
-        $('#selected-customer-id').val(customerId);
-        $('#selected-customer-name').text(customerName);
+    const customerId = $(this).data('id');
+    const customerName = $(this).data('name');
 
-        // You can add more functionality here, like enabling the order form
-        // or populating other fields with the selected customer's information
+    // Store selected customer info in the input fields
+    $('#selected-customer-id').val(customerId);
+    $('#selected-customer-name').text(customerName);
+
+    // Send AJAX request to store customer info in session
+    $.ajax({
+        url: "{{ url('/set-customer-session') }}",
+        type: "POST",
+        data: {
+            _token: "{{ csrf_token() }}",
+            customer_id: customerId,
+            customer_name: customerName
+        },
+        success: function(response) {
+            console.log(response.message);
+            updateCustomerName();
+        },
+        error: function(xhr) {
+            console.error("Error setting session:", xhr);
+        }
     });
 });
+});
+
+function updateCustomerName() {
+            $.ajax({
+                url: "{{ url('/get-customer-session') }}",
+                type: "GET",
+                success: function (response) {
+                    if (response.customer_name) {
+                        $("#customer-name").text(response.customer_name);
+                    } else {
+                        $("#customer-name").text("No customer selected");
+                    }
+                }
+            });
+        }
 </script>
 @endpush
 @endsection

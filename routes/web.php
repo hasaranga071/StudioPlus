@@ -23,6 +23,11 @@ Route::post('/get_cached_data', [CacheController::class, 'get_cached_data']);
     //Route::get('/neworder',[StudioUserController::class,"neworder"])->name('neworder');
     //Route::post('/studio-user', [StudioUserController::class, 'store'])->name('studio-user.store');
     Route::post('/customers', [StudioCustomerController::class, 'store'])->name('customers.store');
+    Route::post('/customers/search', [StudioCustomerController::class, 'search'])->name('customers.search');
+    Route::get('/get-customer-session', [StudioCustomerController::class, 'getCustomerSession']);
+    Route::post('/set-customer-session', [StudioCustomerController::class, 'setCustomerSession']);
+
+
     //Route::post('/studiodetails_of_user', [StudioUserController::class, 'studiodetails_of_user'])->name('customers.store');
 });
 

@@ -9,6 +9,11 @@ use App\Http\Controllers\NewOrderController;
 use App\Http\Controllers\StudioCustomerController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\CacheController;
+
+Route::post('/cache-data', [CacheController::class, 'store']);
+Route::post('/get_cached_data', [CacheController::class, 'get_cached_data']);
+
 
  Route::middleware('auth')->group(function () {
     Route::get('/',[HomeController::class,"index"])->name('home');
@@ -40,7 +45,7 @@ Route::get('/studiodetails_of_user', function (Request $request) {
 
     $data = DB::table('studiousers')
     ->join('studios', 'studiousers.studiokey', '=', 'studios.studiokey') // Joining 'orders' table
-    ->select('studios.studioname') // Selecting specific columns
+    ->select('studios.studioname','studios.studiokey') // Selecting specific columns
     ->when($param, function ($query, $param) { // Optional filter
         return $query->where('studiousers.userkey', '=', "%{$param}%");
     })

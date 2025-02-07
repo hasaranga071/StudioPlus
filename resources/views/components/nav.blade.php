@@ -1,14 +1,15 @@
 <nav class="custom-navbar navbar navbar navbar-expand-md navbar-dark bg-white" arial-label="Furni navigation bar">
 	<div class="container">
-	<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
-		<div class="image-container">
-			<img  width="100px" height="100px" src="/logo/S_1.PNG"/>
-			<div class="companybrand">STUDIO plus +<div>
-		</div>
-		
-	</ul>	
-	<div id='sname' class="navbar-brand">MY STUDIO</div>
-	<div class="collapse navbar-collapse">
+        <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5" >
+            <div class="image-container">
+                <img  id="slogo" width="100px" height="100px" src=""/>
+                <div class="companybrand">STUDIO plus +<div>
+            </div>
+        </ul>	
+        <div id='sname' class="navbar-brand">MY STUDIO</div>
+
+    
+	<div class="collapse navbar-collapse" style="margin-left: 180px;">
 		<ul class="custom-navbar-nav navbar-nav ">
 			<li _class="nav-item active"> <a class="navbar-link" href="index.html">Dashboard</</li>
 			<li><a class="navbar-link" href="/orders">Orders</a></li>
@@ -18,7 +19,7 @@
 		<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
 			<button class="btn-primary" style="border-radius:5px" type="button" onclick="window.open('/neworder')">NEW ORDER</button>
 		</ul>
-		<ul _class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
+		<ul _class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5" style="margin-right: auto !important">
 			<div class="logindetails_container">
                 <!--start login panel -->
                 <!-- <div>
@@ -113,24 +114,53 @@
 </div>			
 </nav>
 <script>
+    var sname,skey;
         $(document).ready(function () {
+            
         var userkey="{{ auth()->user()->id }}";
             
-
         axios.get('/studiodetails_of_user', {
             params: {
                 UserKey: 1
             }
         })
         .then(response => {
-            //console.log("xxxxxxxxxxxxxx=",response.data); // Handle the response data
-            //alert(response.data[0]['studioname'])
-            document.getElementById("sname").innerHTML=response.data[0]['studioname'];
+            var d=response.data[0];
+            sname=d['studioname']
+            skey=d['studiokey']
+            document.getElementById("sname").innerHTML=sname;
+            $('#slogo').attr('src','/logo/s_'+skey+'.png');
         })
         .catch(error => {
             console.error("There was an error!", error);
         });
     
-
+        //cache data
+        axios.post('/cache-data', {
+        key: 'studiokey', // Cache key
+        value: 1,          // Cache value
+        //minutes: 10                // Cache duration (optional)
+        })
+        .then(response => {
+            console.log('saved=',response.data.message);  // Output: 'Data cached successfully!'
+        })
+        .catch(error => {
+            console.error('Error caching data:', error);
         });
-        </script>
+
+       
+
+        axios.post('/get_cached_data', {
+        key: 'studiokey', // Cache key
+        value: skey,          // Cache value
+        //minutes: 10                // Cache duration (optional)
+        })
+        .then(response => {
+            console.log('loaded from cache :',response.data);  // Output: 'Data cached successfully!'
+        })
+        .catch(error => {
+            console.error('Error caching data:', error);
+        });
+
+    });
+    </script>

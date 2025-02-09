@@ -116,26 +116,26 @@
 
 
               <!-- Display Customer Name -->
-          @if(Session::has('customer_name'))
+          {{-- @if(Session::has('customer_name')) --}}
 
           <div class="col-md-4">
             <label class="col-md-4 control-label" >Customer Name</label><br>
-            <span id="customer-name"  class="label label-primary">{{ Session::get('customer_name') }}</span>
+            <span id="customer-name"  class="label label-primary">  {{ Session::get('customer_name') ?? 'Not set' }}</span>
         </div>
-         @endif
+         {{-- @endif --}}
 
 
 
             <div class="col-md-4">
                 <label class="col-md-4 control-label" for="phone">Order No.</label><br>
-                <span class="label label-primary">SS_20241006_005</span>
+                <span id="order-id" class="label label-primary">{{ Session::get('order_id') ?? 'Not set' }}</span>
             </div>
         </div>
         <div class="row">
-            <div class="column1" style="background-color:#bbb;">
+            <div class="column2" style="background-color:#bbb;">
                 <div class="col-md-4" id="Sittings">
                     <label class="col-md-4 control-label" for="item">Item (*)</label>
-                    <select id="item" name="item" class="form-control" style="width: 57%;">
+                    <select id="sittingitem" name="item" class="form-control" style="width: 57%;">
                         <option value="1">Passport</option>
                         <option value="2">NIC</option>
                         <option value="3">Stamp</option>
@@ -163,14 +163,31 @@
                 </div>
                 <div class="col-md-4">
                     <label class="col-md-4 control-label">Comments</label><br>
-                    <textarea id="comments" name="comments" rows="4" cols="70"></textarea>
+                    <textarea id="comments" name="comments" rows="4" cols="50"></textarea>
                 </div>
                 <div class="col-md-4" style="padding-top: 30px;">
-                    <button type="submit" class="btn btn-primary">Add</button>
+
+                    <button id="add-order" class="btn btn-primary">Add</button>
                 </div>
             </div>
-            <div class="column2" style="background-color:#aaa;">
+            <div class="column1" style="background-color:#aaa;">
                 <h2>Order Summary</h2>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Order Type</th>
+                            <th>H-Copies</th>
+                            <th>S-Copies</th>
+                            <th>Delivery Date</th>
+                            <th>Urgent</th>
+                            <th>Comments</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="order-summary">
+                        <!-- Orders will be dynamically added here -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </fieldset>
@@ -236,8 +253,52 @@ $(document).ready(function() {
                 }
             }
         });
+
 });
 
+$(document).on("click", "#add-order", function () {
+    console.log('Add function Triggerd..........')
+    event.preventDefault();
+            let orderType = $("#otype option:selected").text();
+            let hCopies = $("#hcopy").val();
+            let sCopies = $("#scopy").val();
+            let deliveryDate = $("#deldate").val();
+            let sittingitem = $("#sittingitem").val();
+            let urgent = $("#urgent").is(":checked") ? "Yes" : "No";
+            let comments = $("#comments").val();
+
+            // Validate input
+            if (!deliveryDate) {
+                alert("Please select a delivery date.");
+                return;
+            }
+
+            // Append order details to the summary table
+            let newRow = `
+                <tr>
+                    <td>${orderType}</td>
+                    <td>${hCopies}</td>
+                    <td>${sCopies}</td>
+                    <td>${deliveryDate}</td>
+                    <td>${urgent}</td>
+                    <td>${comments}</td>
+                    <td><button class="btn btn-danger btn-sm remove-order">✕</button></td>
+                </tr>
+            `;
+
+            $("#order-summary").append(newRow);
+
+            // Clear form fields after adding
+            // $("#h_copies").val(1);
+            // $("#s_copies").val(0);
+            // $("#delivery_date").val("");
+            // $("#urgent").prop("checked", false);
+            // $("#comments").val("");
+});
+ // Remove order from the summary table
+ $(document).on("click", ".remove-order", function () {
+            $(this).closest("tr").remove();
+        });
 
 
     // Existing Customer Search
@@ -346,12 +407,30 @@ function updateCustomerName() {
                 success: function (response) {
                     if (response.customer_name) {
                         $("#customer-name").text(response.customer_name);
+                        generateOrderId();
                     } else {
                         $("#customer-name").text("No customer selected");
                     }
                 }
             });
         }
+function generateOrderId() {
+    $.ajax({
+        url: "{{ url('/set-order-session') }}",
+        type: "POST",
+        data: {
+            _token: "{{ csrf_token() }}"
+        },
+        success: function(response) {
+            if (response.status === 'success') {
+                $("#order-id").text(response.order_id);
+            }
+        },
+        error: function(xhr) {
+            console.error("Error generating order ID:", xhr);
+        }
+    });
+}
 </script>
 @endpush
 @endsection

@@ -36,7 +36,7 @@ class StudioCustomerController extends Controller
             $customer = StudioCustomer::create([
                 'username' => $request->username,
                 'phonenumber' => $request->phonenumber,
-                'address' => $request->address ?? '',
+                'address' => $request->address_text ?? '',
                 'email' => $request->email ?? null,
                 'studiokey' => 1,
                 'createdtime' => now(),

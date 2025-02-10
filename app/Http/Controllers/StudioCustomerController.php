@@ -103,5 +103,20 @@ class StudioCustomerController extends Controller
             return response()->json(['status' => 'success', 'message' => 'Customer session updated']);
         }
 
+    public function setOrderSession(Request $request)
+        {
+            // Generate Order ID with timestamp
+            $orderId = 'ORD-' . now()->format('YmdHis'); // Example: ORD-20240206153045
+
+            // Store in session
+            Session::put('order_id', $orderId);
+
+            return response()->json([
+                'status' => 'success',
+                'order_id' => $orderId,
+                'message' => 'Order session updated'
+            ]);
+        }
+
 
 }

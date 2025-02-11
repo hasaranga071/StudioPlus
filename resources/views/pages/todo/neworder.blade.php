@@ -52,6 +52,7 @@
                             <option value="3">Malabe</option>
                         </select>
                         <span class="error-message text-danger" id="address-error"></span>
+                        <input type="hidden" name="address_text" id="address_text">
                     </div>
                     <div class="col-md-4">
                         <label class="col-md-4 control-label" for="email">Email</label>
@@ -163,7 +164,7 @@
                 </div>
                 <div class="col-md-4">
                     <label class="col-md-4 control-label">Comments</label><br>
-                    <textarea id="comments" name="comments" rows="4" cols="50"></textarea>
+                    <textarea id="comments" name="comments" rows="2" cols="50"></textarea>
                 </div>
                 <div class="col-md-4" style="padding-top: 30px;">
 
@@ -176,6 +177,7 @@
                     <thead>
                         <tr>
                             <th>Order Type</th>
+                            <th>Order Item</th>
                             <th>H-Copies</th>
                             <th>S-Copies</th>
                             <th>Delivery Date</th>
@@ -209,6 +211,7 @@ $(document).ready(function() {
     // Toggle sittings section based on order type
     $("#otype").change(function() {
         $("#Sittings").toggle($(this).val() == "1");
+        generateOrderId();
     });
 
     // New Customer Registration
@@ -217,7 +220,7 @@ $(document).ready(function() {
         e.preventDefault();
         $('.error-message').text('');
         $('#new-customer-message').hide();
-
+        $("#address_text").val($("#town option:selected").text());
         $.ajax({
             url: "{{ route('customers.store') }}",
             method: 'POST',
@@ -259,11 +262,17 @@ $(document).ready(function() {
 $(document).on("click", "#add-order", function () {
     console.log('Add function Triggerd..........')
     event.preventDefault();
+
+    var customername = $('#customer-name').text();
+    if (customername=='  Not set'){
+        alert('Please select a customer before adding an order.');
+        return;
+    }
             let orderType = $("#otype option:selected").text();
             let hCopies = $("#hcopy").val();
             let sCopies = $("#scopy").val();
             let deliveryDate = $("#deldate").val();
-            let sittingitem = $("#sittingitem").val();
+            let sittingitem =  $("#sittingitem option:selected").text();
             let urgent = $("#urgent").is(":checked") ? "Yes" : "No";
             let comments = $("#comments").val();
 
@@ -273,10 +282,15 @@ $(document).on("click", "#add-order", function () {
                 return;
             }
 
+            if(orderType !== 'Studio Sittings') {
+                sittingitem = '';
+            }
+
             // Append order details to the summary table
             let newRow = `
                 <tr>
                     <td>${orderType}</td>
+                    <td>${sittingitem}</td>
                     <td>${hCopies}</td>
                     <td>${sCopies}</td>
                     <td>${deliveryDate}</td>
@@ -419,11 +433,14 @@ function generateOrderId() {
         url: "{{ url('/set-order-session') }}",
         type: "POST",
         data: {
-            _token: "{{ csrf_token() }}"
+            _token: "{{ csrf_token() }}",
+            ordertype : $("#otype option:selected").text()
         },
         success: function(response) {
             if (response.status === 'success') {
-                $("#order-id").text(response.order_id);
+                let orderid = response.order_id;
+
+                $("#order-id").text(orderid);
             }
         },
         error: function(xhr) {
@@ -431,6 +448,8 @@ function generateOrderId() {
         }
     });
 }
+
+
 </script>
 @endpush
 @endsection

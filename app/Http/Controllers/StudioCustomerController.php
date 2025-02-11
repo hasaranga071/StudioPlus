@@ -36,7 +36,7 @@ class StudioCustomerController extends Controller
             $customer = StudioCustomer::create([
                 'username' => $request->username,
                 'phonenumber' => $request->phonenumber,
-                'address' => $request->address ?? '',
+                'address' => $request->address_text ?? '',
                 'email' => $request->email ?? null,
                 'studiokey' => 1,
                 'createdtime' => now(),
@@ -103,10 +103,27 @@ class StudioCustomerController extends Controller
             return response()->json(['status' => 'success', 'message' => 'Customer session updated']);
         }
 
-    public function setOrderSession(Request $request)
+        public function setOrderSession(Request $request)
         {
-            // Generate Order ID with timestamp
-            $orderId = 'ORD-' . now()->format('YmdHis'); // Example: ORD-20240206153045
+            // Validate order type parameter
+            $request->validate([
+                'ordertype' => 'required|string'
+            ]);
+
+            // Define order ID prefix based on order type
+            $prefixes = [
+                'Studio Sittings' => 'SS',
+                'Extra Copy' => 'EC',
+                'Media' => 'ME',
+                'Frames' => 'FR',
+                'Default' => 'ODR' // Default prefix
+            ];
+
+            // Get prefix based on order type or use default
+            $prefix = $prefixes[$request->ordertype] ?? $prefixes['Default'];
+
+            // Generate unique order ID with timestamp
+            $orderId = $prefix . '-' . now()->format('YmdHis');
 
             // Store in session
             Session::put('order_id', $orderId);

@@ -32,6 +32,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/customers/search', [StudioCustomerController::class, 'search'])->name('customers.search');
     Route::get('/get-customer-session', [StudioCustomerController::class, 'getCustomerSession']);
     Route::post('/set-customer-session', [StudioCustomerController::class, 'setCustomerSession']);
+    Route::post('/set-order-session', [StudioCustomerController::class, 'setOrderSession']);
+
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

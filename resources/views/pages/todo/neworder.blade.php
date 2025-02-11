@@ -211,6 +211,7 @@ $(document).ready(function() {
     // Toggle sittings section based on order type
     $("#otype").change(function() {
         $("#Sittings").toggle($(this).val() == "1");
+        generateOrderId();
     });
 
     // New Customer Registration
@@ -432,11 +433,14 @@ function generateOrderId() {
         url: "{{ url('/set-order-session') }}",
         type: "POST",
         data: {
-            _token: "{{ csrf_token() }}"
+            _token: "{{ csrf_token() }}",
+            ordertype : $("#otype option:selected").text()
         },
         success: function(response) {
             if (response.status === 'success') {
-                $("#order-id").text(response.order_id);
+                let orderid = response.order_id;
+
+                $("#order-id").text(orderid);
             }
         },
         error: function(xhr) {

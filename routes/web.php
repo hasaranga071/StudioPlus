@@ -68,3 +68,6 @@ Route::get('/studiodetails_of_user', function (Request $request) {
 
 // Include authentication routes
 require __DIR__ . '/auth.php';
+
+
+Route::post('/orders/search', [NewOrderController::class, 'search'])->name('orders.search');

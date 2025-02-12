@@ -15,4 +15,24 @@ class NewOrderController extends Controller
   {
     return view ('pages.todo.orders');
   }
+
+  public function search(Request $request)
+  {
+      $query = StudioOrder::query();
+
+      if ($request->otype) {
+        ->join('studios', 'studiousers.studiokey', '=', 'studios.studiokey') // Joining 'orders' table
+          $query->where('username', 'LIKE', '%' . $request->username . '%');
+      }
+      if ($request->phonenumber) {
+          $query->where('phonenumber', 'LIKE', '%' . $request->phonenumber . '%');
+      }
+
+      $customers = $query->get();
+
+      return response()->json([
+          'status' => true,
+          'customers' => $customers
+      ]);
+  }
 }

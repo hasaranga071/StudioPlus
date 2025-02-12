@@ -61,7 +61,7 @@
                             <th>Order Type</th>
                             <th>Date Time</th>
                             <th>Urgent</th>
-                            <th>Comments</th>
+                            <th>Created At</th>
                             <th>Total Cost (LKR)</th>
                             <th>Total Paid (LKR)</th>
                             <th>Comments</th>

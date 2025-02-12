@@ -18,7 +18,7 @@ class CreateStudioCustomersTable extends Migration
             $table->timestamp('createdtime')->useCurrent();
 
             // Add foreign key constraint
-            $table->foreign('studiokey')->references('studiokey')->on('studios')->onDelete('cascade');
+            //$table->foreign('studiokey')->references('studiokey')->on('studios')->onDelete('cascade');
         });
     }
 

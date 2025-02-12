@@ -15,13 +15,23 @@ Route::post('/cache-data', [CacheController::class, 'store']);
 Route::post('/get_cached_data', [CacheController::class, 'get_cached_data']);
 
 
- Route::middleware('auth')->group(function () {
-    Route::get('/',[HomeController::class,"index"])->name('home');
-    Route::get('/neworder',[NewOrderController::class,"neworder"])->name('neworder');
+Route::get('/users', function () {
+    return StudioUser::all(); // Correct reference
+});
+
+// Authenticated routes
+Route::middleware('auth')->group(function () {
+    // Home Page
+    Route::get('/', [HomeController::class, "index"])->name('home');
+
+    // Orders
+    Route::get('/neworder', [NewOrderController::class, "neworder"])->name('neworder');
+    Route::get('/orders', [NewOrderController::class, "orders"])->name('orders');
+
+    // Studio Users
     Route::post('/studio-user', [StudioUserController::class, 'store'])->name('studio-user.store');
-    Route::get('/orders',[NewOrderController::class,"orders"])->name('orders');
-    //Route::get('/neworder',[StudioUserController::class,"neworder"])->name('neworder');
-    //Route::post('/studio-user', [StudioUserController::class, 'store'])->name('studio-user.store');
+
+    // Studio Customers
     Route::post('/customers', [StudioCustomerController::class, 'store'])->name('customers.store');
     Route::post('/customers/search', [StudioCustomerController::class, 'search'])->name('customers.search');
     Route::get('/get-customer-session', [StudioCustomerController::class, 'getCustomerSession']);
@@ -29,27 +39,22 @@ Route::post('/get_cached_data', [CacheController::class, 'get_cached_data']);
     Route::post('/set-order-session', [StudioCustomerController::class, 'setOrderSession']);
 
 
-
-    //Route::post('/studiodetails_of_user', [StudioUserController::class, 'studiodetails_of_user'])->name('customers.store');
-});
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::middleware('auth')->group(function () {
+    // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+// Dashboard Route
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
+// Route to fetch Studio details of a user
 Route::get('/studiodetails_of_user', function (Request $request) {
-    $param = $request->query('param'); // Get parameter from request
+    $param = $request->query('param'); // Get the parameter from the query string
 
-
-
+    // Fetching data from studiousers and studios with a filter
     $data = DB::table('studiousers')
     ->join('studios', 'studiousers.studiokey', '=', 'studios.studiokey') // Joining 'orders' table
     ->select('studios.studioname','studios.studiokey') // Selecting specific columns
@@ -58,5 +63,8 @@ Route::get('/studiodetails_of_user', function (Request $request) {
     })
     ->get();
 
-return response()->json($data);
-});
+    return response()->json($data);
+})->name('studiodetails_of_user');
+
+// Include authentication routes
+require __DIR__ . '/auth.php';

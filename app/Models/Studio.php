@@ -22,12 +22,12 @@ class Studio extends Model
     protected $keyType = 'int';
 
     // Timestamps (created_at, updated_at)
-    public $timestamps = true;
+    public $timestamps = false;
 
     // Fillable attributes for mass assignment
     protected $fillable = [
         'studioname',
-        'userkey',
+        'owneruserkey',
         'description',
         'address',
         'location',
@@ -39,6 +39,6 @@ class Studio extends Model
     // Define relationships (e.g., Studio belongs to a User)
     public function user()
     {
-        return $this->belongsTo(StudioUser::class, 'userkey', 'userkey');
+        return $this->belongsTo(StudioUser::class, 'owneruserkey', 'userkey');
     }
 }

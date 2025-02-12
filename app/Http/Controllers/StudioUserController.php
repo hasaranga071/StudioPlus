@@ -2,7 +2,16 @@
 
 namespace App\Http\Controllers;
 
-#use App\Http\Controllers\Controller;
+use App\Http\Controllers\Controller;
+use App\Models\StudioUser;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules;
+use Illuminate\View\View;
+
 
 class StudioUserController extends Controller
 {
@@ -11,65 +20,35 @@ class StudioUserController extends Controller
     return view ('pages.todo.neworder');
   }
 
+  public function create(): View
+    {
+        return view('auth.register');
+    }
+
+
   public function store(Request $request)
   {
       // Validate the request
     $validatedData = $request->validate([
       'username' => 'required|string|max:255',
-      'usertypekey' => 'required|integer',
       'email' => 'required|string|email|max:255|unique:StudioUsers',
       'password' => 'required|string|min:6',
       'phonenumber' => 'required|string|max:255',
       'address' => 'nullable|string|max:255',
-      'profileimage' => 'nullable|string|max:255',
   ]);
 
   // Save the data with hardcoded values
-  $user = StudioUser::create([
-      'studiokey' => 1, // Hardcoded value
-      'username' => $validatedData['username'],
-      'usertypekey' => $validatedData['usertypekey'],
-      'email' => $validatedData['email'],
-      'password' => Hash::make($validatedData['password']),
-      'rolekey' => 1, // Hardcoded value
-      'phonenumber' => $validatedData['phonenumber'],
-      'address' => $validatedData['address'] ?? null,
-      'isactive' => 1, // Hardcoded value
-      'profileimage' => $validatedData['profileimage'] ?? null,
-  ]);
+  StudioUser::create([
+    //'studiokey' => session('studiokey'), // Set studiokey from session
+    'username' => $request->username,
+    'email' => $request->email,
+    'password' => Hash::make($request->password),
+    'phonenumber' => $request->phonenumber,
+    'address' => $request->address,
+    'isactive' => 1,
+]);
 
-  return redirect()->back()->with('success', 'User created successfully!');
-  }
-
-
-  public function studiodetails_of_user(Request $request)
-  {
-      // Validate the request
-    $validatedData = $request->validate([
-      'username' => 'required|string|max:255',
-      'usertypekey' => 'required|integer',
-      'email' => 'required|string|email|max:255|unique:StudioUsers',
-      'password' => 'required|string|min:6',
-      'phonenumber' => 'required|string|max:255',
-      'address' => 'nullable|string|max:255',
-      'profileimage' => 'nullable|string|max:255',
-  ]);
-
-  // Save the data with hardcoded values
-  $user = StudioUser::create([
-      'studiokey' => 1, // Hardcoded value
-      'username' => $validatedData['username'],
-      'usertypekey' => $validatedData['usertypekey'],
-      'email' => $validatedData['email'],
-      'password' => Hash::make($validatedData['password']),
-      'rolekey' => 1, // Hardcoded value
-      'phonenumber' => $validatedData['phonenumber'],
-      'address' => $validatedData['address'] ?? null,
-      'isactive' => 1, // Hardcoded value
-      'profileimage' => $validatedData['profileimage'] ?? null,
-  ]);
-
-  return redirect()->back()->with('success', 'User created successfully!');
+  return redirect()->route('login')->with('status', 'Registration successful. Please log in.');
   }
 }
 

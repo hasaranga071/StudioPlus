@@ -772,6 +772,7 @@ width: 120px;
 }
 .container{
   padding-left: 0px !important;
+  margin-left: initial;
 }
 .section_title{
   padding-top: 10px;

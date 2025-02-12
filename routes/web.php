@@ -9,7 +9,11 @@ use App\Http\Controllers\NewOrderController;
 use App\Http\Controllers\StudioCustomerController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\StudioUser;
+use App\Http\Controllers\CacheController;
+
+Route::post('/cache-data', [CacheController::class, 'store']);
+Route::post('/get_cached_data', [CacheController::class, 'get_cached_data']);
+
 
 Route::get('/users', function () {
     return StudioUser::all(); // Correct reference
@@ -52,12 +56,12 @@ Route::get('/studiodetails_of_user', function (Request $request) {
 
     // Fetching data from studiousers and studios with a filter
     $data = DB::table('studiousers')
-        ->join('studios', 'studiousers.studiokey', '=', 'studios.studiokey') // Joining studios table
-        ->select('studios.studioname') // Selecting specific columns
-        ->when($param, function ($query, $param) { // Optional filter
-            return $query->where('studiousers.userkey', '=', $param); // Use exact match
-        })
-        ->get();
+    ->join('studios', 'studiousers.studiokey', '=', 'studios.studiokey') // Joining 'orders' table
+    ->select('studios.studioname','studios.studiokey') // Selecting specific columns
+    ->when($param, function ($query, $param) { // Optional filter
+        return $query->where('studiousers.userkey', '=', "%{$param}%");
+    })
+    ->get();
 
     return response()->json($data);
 })->name('studiodetails_of_user');

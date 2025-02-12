@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('studiosalestypes', function (Blueprint $table) {
-            $table->id('saletypekey'); // Primary key
+        Schema::create('studioordertypes', function (Blueprint $table) {
+            $table->id('ordertypekey'); // Primary key
             $table->string('description');
         });
     }
@@ -22,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('studiosalestypes');
+        Schema::dropIfExists('studioordertypes');
     }
 };

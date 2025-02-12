@@ -3,17 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\StudioSalesType;
+use App\Models\StudioOrderType;
 
-class StudioSaleTypesController extends Controller
+class StudioOrderTypeController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $saleTypes = StudioSaleType::all();
-        return response()->json($saleTypes);
+        $orderTypes = StudioOrderType::all();
+        return response()->json($orderTypes);
     }
 
     /**
@@ -22,12 +22,12 @@ class StudioSaleTypesController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'SalesType' => 'required|string|max:255',
+            'ordertype' => 'required|string|max:255',
             'description' => 'nullable|string',
         ]);
 
-        $saleType = StudioSaleType::create($request->all());
-        return response()->json($saleType, 201);
+        $orderType = StudioOrderType::create($request->all());
+        return response()->json($orderType, 201);
     }
 
     /**
@@ -35,8 +35,8 @@ class StudioSaleTypesController extends Controller
      */
     public function show($id)
     {
-        $saleType = StudioSaleType::findOrFail($id);
-        return response()->json($saleType);
+        $orderType = StudioOrderType::findOrFail($id);
+        return response()->json($orderType);
     }
 
     /**
@@ -45,13 +45,13 @@ class StudioSaleTypesController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'SalesType' => 'required|string|max:255',
+            'OrderType' => 'required|string|max:255',
             'description' => 'nullable|string',
         ]);
 
-        $saleType = StudioSaleType::findOrFail($id);
-        $saleType->update($request->all());
-        return response()->json($saleType);
+        $orderType = StudioOrderType::findOrFail($id);
+        $orderType->update($request->all());
+        return response()->json($orderType);
     }
 
     /**
@@ -59,7 +59,7 @@ class StudioSaleTypesController extends Controller
      */
     public function destroy($id)
     {
-        StudioSaleType::destroy($id);
-        return response()->json(['message' => 'Sale type deleted successfully']);
+        StudioOrderType::destroy($id);
+        return response()->json(['message' => 'order type deleted successfully']);
     }
 }

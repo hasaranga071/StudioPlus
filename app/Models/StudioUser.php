@@ -2,32 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class StudioUser extends Model
+class StudioUser extends Authenticatable
 {
-    use HasFactory;
+    use Notifiable;
 
-    // Specify the table name
-    protected $table = 'StudioUsers';
+    protected $table = 'studiousers'; // Specify the custom table name
+    protected $primaryKey = 'userkey'; // Specify the custom primary key
 
-    // Specify the primary key (optional if 'id')
-    protected $primaryKey = 'userkey';
+    public $timestamps = false; // Disable default Laravel timestamps
 
-    // Disable auto-increment if not applicable
-    public $incrementing = true;
-
-    // Set the primary key type
-    protected $keyType = 'int';
-
-    // Enable/Disable timestamps
-    public $timestamps = true;
-
-    // If using different column names for created/updated timestamps
-    const CREATED_AT = 'createdtime';
-    const UPDATED_AT = 'updatedtime';
-
-    // Mass assignable attributes
     protected $fillable = [
         'studiokey',
         'username',
@@ -39,5 +25,10 @@ class StudioUser extends Model
         'address',
         'isactive',
         'profileimage',
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
     ];
 }

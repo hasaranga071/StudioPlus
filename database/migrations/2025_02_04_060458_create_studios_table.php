@@ -25,10 +25,10 @@ class CreateStudiosTable extends Migration
             $table->timestamp('updatedtime')->useCurrent()->nullable(); // Update time
 
             // Foreign key constraint
-            $table->foreign('userkey')
-                  ->references('userkey')
-                  ->on('studio_users') // Make sure the StudioUsers table exists
-                  ->onDelete('cascade');
+            //$table->foreign('userkey')
+                 //// ->references('userkey')
+                 // ->on('studio_users') // Make sure the StudioUsers table exists
+                //  ->onDelete('cascade');
         });
     }
 

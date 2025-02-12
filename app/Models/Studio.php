@@ -22,7 +22,7 @@ class Studio extends Model
     protected $keyType = 'int';
 
     // Timestamps (created_at, updated_at)
-    public $timestamps = true;
+    public $timestamps = false;
 
     // Fillable attributes for mass assignment
     protected $fillable = [

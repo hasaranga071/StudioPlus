@@ -99,12 +99,9 @@
 
 
 
-        <div class="form-group" style="display:flex;gap:2%;padding-top: 15px;">
-
-
-
+        <div class="form-group" style="display:inline-flex;padding-top: 15px;gap:10%">
             <div class="col-md-4">
-                <label class="col-md-4 control-label" for="otype">Order Type (*)</label>
+                <label _class="col-md-4 control-label" for="otype">Order Type (*)</label>
                 <select id="otype" name="otype" class="form-control">
                     <option value="1">Studio Sittings</option>
                     <option value="2">Extra Copy</option>
@@ -112,25 +109,23 @@
                     <option value="4">Frames</option>
                 </select>
             </div>
-
-
-
               <!-- Display Customer Name -->
           {{-- @if(Session::has('customer_name')) --}}
 
-          <div class="col-md-4">
-            <label class="col-md-4 control-label" >Customer Name</label><br>
-            <span id="customer-name"  class="label label-primary">  {{ Session::get('customer_name') ?? 'Not set' }}</span>
-        </div>
-         {{-- @endif --}}
-
-
-
             <div class="col-md-4">
-                <label class="col-md-4 control-label" for="phone">Order No.</label><br>
+                <label _class="col-md-4 control-label" >Customer Name</label><br>
+                <span id="customer-name"  class="label label-primary">  {{ Session::get('customer_name') ?? 'Not set' }}</span>
+            </div>
+         {{-- @endif --}}
+            <div class="col-md-4">
+                <label _class="col-md-4 control-label" for="phone">Order No.</label><br>
                 <span id="order-id" class="label label-primary">{{ Session::get('order_id') ?? 'Not set' }}</span>
             </div>
-        </div>
+            <div class="col-md-4">
+                <label _class="col-md-4 control-label">Delivery date</label>
+                <input class="form-control input-md" type="date" id="deldate" name="deldate">
+            </div>
+        </div></br></br>
         <div class="row">
             <div class="column2" style="background-color:#bbb;">
                 <div class="col-md-4" id="Sittings">
@@ -152,10 +147,6 @@
                     </div>
                 </div>
                 <div class="form-group" style="display:flex;gap: 50px">
-                    <div class="col-md-4">
-                        <label class="col-md-4 control-label">Delivery date</label>
-                        <input class="form-control input-md" type="date" id="deldate" name="deldate">
-                    </div>
                     <div class="col-md-4">
                         <label class="col-md-4 control-label">Urgent</label><br>
                         <input type="checkbox" id="urgent" name="urgent" style="zoom: 350%;">

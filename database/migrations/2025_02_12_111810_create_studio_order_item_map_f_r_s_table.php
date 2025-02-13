@@ -8,7 +8,7 @@ class CreateStudioOrderItemMapFRTable extends Migration
 {
     public function up()
     {
-        Schema::create('StudioOrderItemMapFR', function (Blueprint $table) {
+        Schema::create('studioorderitemmapfr', function (Blueprint $table) {
             $table->increments('frorderitemmapkey'); // Primary key with auto-increment
             $table->integer('orderkey'); // Foreign key to orders
             $table->integer('framesizekey'); // Foreign key to frame sizes
@@ -20,6 +20,6 @@ class CreateStudioOrderItemMapFRTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('StudioOrderItemMapFR');
+        Schema::dropIfExists('studioorderitemmapfr');
     }
 }

@@ -46,14 +46,13 @@ class StudioOrdersController extends Controller
                 // Validate request
                 $request->validate([
                     'studiokey' => 'required|integer',
-                    'orderid' => 'required|string',
+                    'orderid' => 'required|unique:studioorders,orderid',
                     'ordertypekey' => 'required|integer',
                     'customerkey' => 'required|integer',
                     'isurgent' => 'required|boolean',
                     'totalcost' => 'required|numeric',
                     'paidcost' => 'required|numeric',
                     'discount' => 'nullable|integer',
-                    'salestatus' => 'required|string',
                     'deliverydate' => 'nullable|date',
                     'remarks' => 'nullable|string',
                 ]);
@@ -79,7 +78,7 @@ class StudioOrdersController extends Controller
                     'salestatus' => 'New',
                     'createdtime' => now(),
                     'updatedtime' => now(),
-                    'deliverydate' => $request->delivery_date,
+                    'deliverydate' => $request->deliverydate,
                     'remarks' => $request->comments,
                 ]);
 

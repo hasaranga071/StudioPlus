@@ -17,6 +17,7 @@ class CreateStudioOrderItemMapSSTable extends Migration
             $table->integer('quantity'); // Total quantity
             $table->integer('softcopyquantity'); // Soft copy quantity
             $table->integer('hardcopyquantity'); // Hard copy quantity
+            $table->decimal('totalcost'); // total cost
         });
     }
 

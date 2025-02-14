@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\StudioOrder;
+use App\Models\StudioOrderTypeItemMap;
+use App\Models\StudioAppConfig;
+
 
 class StudioOrdersController extends Controller
 {
@@ -52,7 +55,7 @@ class StudioOrdersController extends Controller
                     'isurgent' => 'required|boolean',
                     'totalcost' => 'required|numeric',
                     'paidcost' => 'required|numeric',
-                    'discount' => 'nullable|integer',
+                    'discount' => 'required|integer',
                     'deliverydate' => 'nullable|date',
                     'remarks' => 'nullable|string',
                     'ordertypeitemkey ' => 'required|integer',
@@ -64,6 +67,47 @@ class StudioOrdersController extends Controller
                     return response()->json(['status' => 'error', 'message' => 'Customer not selected!'], 400);
                 }
 
+                $totalCost = 0;
+
+                // Calculate total cost from unit prices for  hard copies
+                foreach ($request->items as $item) {
+                    $orderTypeItemKey = $item['ordertypeitemkey'];
+
+                    // Fetch the UnitCost from StudioOrderItemMap table
+                    $unitCost = StudioOrderTypeItemMap::where('ordertypeitemkey', $orderTypeItemKey)->value('unitprice');
+
+                    if ($unitCost === null) {
+                        return response()->json(['status' => 'error', 'message' => "Unit price is empty for selected item"], 400);
+                    }
+
+                    $itemTotal = $unitCost * $item['hardcopycount'];
+                    $totalCost += $itemTotal;
+                }
+
+                // calculate soft copy from unit price
+                foreach ($request->items as $item) {
+                    $studiokey = $item['studiokey'];
+
+                    // Fetch the UnitCost from StuidoAppconfig table
+                    $unitCost = StudioAppConfig::where('studiokey', $studiokey)->value('softcopyunitprice');
+
+                    if ($unitCost === null) {
+                        return response()->json(['status' => 'error', 'message' => "Unit price is not configured for soft copies !"], 400);
+                    }
+
+                    $itemTotal = $unitCost * $item['softcopycount'];
+                    $totalCost += $itemTotal;
+                }
+
+                // apply discount for total price
+                foreach ($request->items as $item) {
+                    $discount = $item['discount'];
+                    $discountAmount = ($totalCost * $discount) / 100;
+                    $totalCost = $totalCost - $discountAmount;
+
+                }
+
+
                 // Create a new order
                 $order = StudioOrder::create([
                     'studiokey' => $request->studiokey, // Change this dynamically if needed
@@ -73,9 +117,9 @@ class StudioOrdersController extends Controller
                     'isurgent' => $request->isurgent,
                     'createduserkey' => auth()->id(),
                     'updateduserkey' => auth()->id(),
-                    'totalcost' => 0, // Will calculate later
-                    'paidcost' => 0,
-                    'discount' => 0,
+                    'totalcost' => $totalCost,
+                    'paidcost' => $request->paidcost,
+                    'discount' => $request->discount,
                     'salestatus' => 'New',
                     'createdtime' => now(),
                     'updatedtime' => now(),

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('studioordertypes', function (Blueprint $table) {
             $table->id('ordertypekey'); // Primary key
+            $table->string('ordertype');
             $table->string('description');
         });
     }
@@ -25,3 +26,5 @@ return new class extends Migration
         Schema::dropIfExists('studioordertypes');
     }
 };
+
+

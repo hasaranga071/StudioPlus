@@ -102,12 +102,12 @@
 
         <div class="form-group" style="display:inline-flex;padding-top: 15px;gap:10%">
             <div class="col-md-4">
-                <label _class="col-md-4 control-label" for="otype">Order Type (*)</label>
+                <label class="form-label" for="otype">Order Type (*)</label>
                 <select id="otype" name="otype" class="form-control">
-                    <option value="1">Studio Sittings</option>
-                    <option value="2">Extra Copy</option>
-                    <option value="3">Media</option>
-                    <option value="4">Frames</option>
+                    <option value="">Select an Order Type</option>
+                    @foreach ($orderTypes as $orderType)
+                        <option value="{{ $orderType->ordertypekey }}">{{ $orderType->ordertype }}</option>
+                    @endforeach
                 </select>
             </div>
               <!-- Display Customer Name -->

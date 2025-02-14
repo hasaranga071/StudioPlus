@@ -8,7 +8,7 @@ class CreateStudioOrderItemMapMETable extends Migration
 {
     public function up()
     {
-        Schema::create('StudioOrderItemMapME', function (Blueprint $table) {
+        Schema::create('studioorderitemmapme', function (Blueprint $table) {
             $table->increments('meorderitemmapkey'); // Primary key with auto-increment
             $table->integer('orderkey'); // Foreign key to orders
             $table->integer('ordertypeitemkey'); // Foreign key to order type items
@@ -20,6 +20,6 @@ class CreateStudioOrderItemMapMETable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('StudioOrderItemMapME');
+        Schema::dropIfExists('studioorderitemmapme');
     }
 }

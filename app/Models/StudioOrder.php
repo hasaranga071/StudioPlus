@@ -15,6 +15,7 @@ class StudioOrder extends Model
 
     protected $fillable = [
         'studiokey',
+        'orderid',
         'ordertypekey',
         'customerkey',
         'isurgent',

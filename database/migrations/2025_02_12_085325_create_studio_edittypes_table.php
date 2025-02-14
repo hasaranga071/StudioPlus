@@ -8,7 +8,7 @@ class CreateStudioEdittypesTable extends Migration
 {
     public function up()
     {
-        Schema::create('StudioEdittypes', function (Blueprint $table) {
+        Schema::create('studioedittypes', function (Blueprint $table) {
             $table->increments('edittypekey'); // Primary key with auto-increment
             $table->text('edittype'); // Text field for edit type
             $table->decimal('unitcost', 10, 2); // Decimal field for unit cost
@@ -17,6 +17,6 @@ class CreateStudioEdittypesTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('StudioEdittypes');
+        Schema::dropIfExists('studioedittypes');
     }
 }

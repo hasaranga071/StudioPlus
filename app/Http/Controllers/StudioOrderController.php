@@ -55,6 +55,7 @@ class StudioOrdersController extends Controller
                     'discount' => 'nullable|integer',
                     'deliverydate' => 'nullable|date',
                     'remarks' => 'nullable|string',
+                    'ordertypeitemkey ' => 'required|integer',
                 ]);
 
                 // Check if customer session exists

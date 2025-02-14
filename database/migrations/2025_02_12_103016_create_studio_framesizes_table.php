@@ -8,7 +8,7 @@ class CreateStudioFramesizesTable extends Migration
 {
     public function up()
     {
-        Schema::create('StudioFramesizes', function (Blueprint $table) {
+        Schema::create('studioframesizes', function (Blueprint $table) {
             $table->increments('framesizekey'); // Primary key with auto-increment
             $table->integer('ordertypeitemkey'); // Foreign key to order type item
             $table->integer('frametypekey'); // Foreign key to frame type
@@ -19,6 +19,6 @@ class CreateStudioFramesizesTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('StudioFramesizes');
+        Schema::dropIfExists('studioframesizes');
     }
 }

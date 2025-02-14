@@ -16,28 +16,89 @@ class StudioOrdersController extends Controller
         return response()->json($orders);
     }
 
-    /**
-     * Store a newly created order in storage.
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'studiokey' => 'required|integer',
-            'ordertypekey' => 'required|integer',
-            'customerkey' => 'required|integer',
-            'isurgent' => 'required|boolean',
-            'totalcost' => 'required|numeric',
-            'paidcost' => 'required|numeric',
-            'discount' => 'nullable|integer',
-            'salestatus' => 'required|string',
-            'deliverydate' => 'nullable|date',
-            'remarks' => 'nullable|string',
-        ]);
+    // /**
+    //  * Store a newly created order in storage.
+    //  */
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'studiokey' => 'required|integer',
+    //         'ordertypekey' => 'required|integer',
+    //         'customerkey' => 'required|integer',
+    //         'isurgent' => 'required|boolean',
+    //         'totalcost' => 'required|numeric',
+    //         'paidcost' => 'required|numeric',
+    //         'discount' => 'nullable|integer',
+    //         'salestatus' => 'required|string',
+    //         'deliverydate' => 'nullable|date',
+    //         'remarks' => 'nullable|string',
+    //     ]);
 
-        $order = StudioOrder::create($request->all());
-        return response()->json($order, 201);
-    }
+    //     $order = StudioOrder::create($request->all());
+    //     return response()->json($order, 201);
+    // }
 
+    // this is for Studio sittings order store
+    public function storeOrder_ss(Request $request)
+        {
+            DB::beginTransaction();
+            try {
+                // Validate request
+                $request->validate([
+                    'studiokey' => 'required|integer',
+                    'orderid' => 'required|unique:studioorders,orderid',
+                    'ordertypekey' => 'required|integer',
+                    'customerkey' => 'required|integer',
+                    'isurgent' => 'required|boolean',
+                    'totalcost' => 'required|numeric',
+                    'paidcost' => 'required|numeric',
+                    'discount' => 'nullable|integer',
+                    'deliverydate' => 'nullable|date',
+                    'remarks' => 'nullable|string',
+                ]);
+
+                // Check if customer session exists
+                $customerKey = Session::get('customer_key');
+                if (!$customerKey) {
+                    return response()->json(['status' => 'error', 'message' => 'Customer not selected!'], 400);
+                }
+
+                // Create a new order
+                $order = StudioOrder::create([
+                    'studiokey' => $request->studiokey, // Change this dynamically if needed
+                    'ordertypekey' => $request->ordertypekey,
+                    'customerkey' => $customerKey,
+                    'orderid' => $request->orderid,
+                    'isurgent' => $request->isurgent,
+                    'createduserkey' => auth()->id(),
+                    'updateduserkey' => auth()->id(),
+                    'totalcost' => 0, // Will calculate later
+                    'paidcost' => 0,
+                    'discount' => 0,
+                    'salestatus' => 'New',
+                    'createdtime' => now(),
+                    'updatedtime' => now(),
+                    'deliverydate' => $request->deliverydate,
+                    'remarks' => $request->comments,
+                ]);
+
+                // Insert data into StudioOrderItemMapSS table
+                foreach ($request->items as $item) {
+                    StudioOrderItemMapSS::create([
+                        'orderkey' => $order->orderkey,
+                        'itemname' => $item['name'],
+                        'quantity' => $item['quantity'],
+                        'price' => $item['price'],
+                    ]);
+                }
+
+                DB::commit();
+                return response()->json(['status' => 'success', 'message' => 'Order created successfully!', 'order_id' => $order->orderkey]);
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return response()->json(['status' => 'error', 'message' => 'Error creating order', 'error' => $e->getMessage()], 500);
+            }
+        }
     /**
      * Display the specified order.
      */
@@ -61,6 +122,7 @@ class StudioOrdersController extends Controller
             'paidcost' => 'sometimes|numeric',
             'discount' => 'sometimes|integer',
             'salestatus' => 'sometimes|string',
+            'orderid' => 'sometimes|string',
             'deliverydate' => 'sometimes|date',
             'remarks' => 'sometimes|string',
         ]);

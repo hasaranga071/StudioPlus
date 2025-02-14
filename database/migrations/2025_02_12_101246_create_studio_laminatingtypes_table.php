@@ -8,7 +8,7 @@ class CreateStudioLaminatingtypesTable extends Migration
 {
     public function up()
     {
-        Schema::create('StudioLaminatingtypes', function (Blueprint $table) {
+        Schema::create('studiolaminatingtypes', function (Blueprint $table) {
             $table->increments('lamtypekey'); // Primary key with auto-increment
             $table->text('laminatetype'); // Text field for the lamination type
             $table->decimal('unitcost', 10, 2); // Decimal field for unit cost
@@ -17,6 +17,6 @@ class CreateStudioLaminatingtypesTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('StudioLaminatingtypes');
+        Schema::dropIfExists('studiolaminatingtypes');
     }
 }

@@ -8,7 +8,7 @@ class CreateStudioFrametypesTable extends Migration
 {
     public function up()
     {
-        Schema::create('StudioFrametypes', function (Blueprint $table) {
+        Schema::create('studioframetypes', function (Blueprint $table) {
             $table->increments('frametypekey'); // Primary key with auto-increment
             $table->text('frametype'); // Text field for frame type
         });
@@ -16,6 +16,6 @@ class CreateStudioFrametypesTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('StudioFrametypes');
+        Schema::dropIfExists('studioframetypes');
     }
 }

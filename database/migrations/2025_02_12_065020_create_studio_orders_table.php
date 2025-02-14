@@ -9,6 +9,7 @@ return new class extends Migration {
     {
         Schema::create('studioorders', function (Blueprint $table) {
             $table->id('orderkey');
+            $table->string('orderid')->unique();
             $table->unsignedBigInteger('studiokey');
             $table->unsignedBigInteger('ordertypekey');
             $table->unsignedBigInteger('customerkey');

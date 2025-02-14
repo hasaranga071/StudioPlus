@@ -16,13 +16,13 @@
         </div>
         <div style="display:inline-flex;padding-top: 15px;">
             <form id="order_search">
-                <div class="col-md-4" id="Sittings">
-                    <label class="col-md-4 control-label" >Order Type</label>
-                    <select id="search-otype" name="otype" class="form-control" style="width: 80%;">
-                        <option value="1">Studio Sittings</option>
-                        <option value="2">Extra Copy</option>
-                        <option value="3">Media</option>
-                        <option value="4">Frames</option>
+                <div class="col-md-4">
+                    <label class="form-label" for="otype">Order Type (*)</label>
+                    <select id="search-otype" name="otype" value="1" class="form-control">
+           
+                        @foreach ($orderTypes as $orderType)
+                            <option value="{{ $orderType->ordertypekey }}">{{ $orderType->ordertype }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <!-- <div class="col-md-4" id="Sittings">
@@ -35,25 +35,25 @@
                     </select>
                 </div> -->
                 <div class="col-md-4" id="cname">
-                        <label class="col-md-4 control-label" for="name">Name</label>
-                        <input id="search-name" name="username" style="width: 80%;" type="text" class="form-control input-md" required="">
+                        <label class="col-md-4 control-label" for="name">Customer Name,Phone or Order No.</label>
+                        <input id="search-term" name="username" style="width: 80%;" type="text" class="form-control input-md" required="">
                         <span class="error-message text-danger" id="username-error"></span>
   
                 </div>
-                <div class="col-md-4" id="cphone">
-                        <label class="col-md-4 control-label" for="phone">Phone</label>
-                        <input id="search-phone" name="phonenumber" style="width: 80%;" type="text" class="form-control input-md" required="">
-                        <span class="error-message text-danger" id="phonenumber-error"></span>
+                <div class="col-md-4">
+                    <label _class="col-md-4 control-label">Delivery date-within</label>
+                    <input class="form-control input-md" type="date" id="search-stdate" name="search-stdate">
+                    <input class="form-control input-md" type="date" id="search-enddate" name="search-enddate">
                 </div>
                 <div class="col-md-4" style="padding-top: 30px;">
-                        <button type="submit" class="btn btn-primary">Search</button>
+                    <button type="submit" id="searchBtn" class="btn btn-primary">Search</button>
                 </div>
 
             </Form> 
 
         </div></br></br>
         <div>
-            <div  style="background-color:#aaa;">
+            <div style="background-color:#aaa;" id="orderResults">
                 <table class="table table-bordered">
                     <thead>
                         <tr>
@@ -61,7 +61,7 @@
                             <th>Order Type</th>
                             <th>Date Time</th>
                             <th>Urgent</th>
-                            <th>Comments</th>
+                            <th>Created At</th>
                             <th>Total Cost (LKR)</th>
                             <th>Total Paid (LKR)</th>
                             <th>Comments</th>
@@ -82,68 +82,74 @@
 <script>
 $(document).ready(function() {
     // Existing order Search
-    $('#order_search').on('submit', function(e) {
-        e.preventDefault();
-        const searchData = {
-            otype: $('#search-otype').val(),
-            name: $('#search-name').val(),
-            phone: $('#search-phone').val(),
-            _token: $('input[name="_token"]').val()
-        };
 
-        $.ajax({
-            url: "{{ route('orders.search') }}",
-            method: 'POST',
-            data: searchData,
-            dataType: 'json',
-            success: function(response) {
-                if (response.status) {
-                    displaySearchResults(response.customers);
+
+    $('#searchBtn').click(function () {
+            let otype = $('#search-otype').val(); 
+            let query = $('#search-term').val(); 
+            let startDate = $('#search-stdate').val(); 
+            let endDate = $('#search-enddate').val();
+            event.preventDefault(); // Prevent default form submission
+
+            $.ajax({
+                url: "/orders/search",
+                type: "POST",
+                data: {
+                    query: query,
+                    otype: otype,
+                    start_date: startDate,
+                    end_date: endDate,
+                    _token: "{{ csrf_token() }}" // CSRF Token for security
+                },
+                success: function (response) {
+                    //if (response.status) {
+                        console.log('search result',response.orders)
+                        displayOrderSearchResults(response.orders);
+              //  }
+                    // let results = "<ul>";
+                    // console.log('search result',results)
+                    // response.forEach(order => {
+                    //     results += `<li>Order #${order.order_number}, Customer: ${order.customer.name}, Phone: ${order.customer.phone_number}, Date: ${order.created_at}</li>`;
+                    // });
+                    // results += "</ul>";
+                    // $('#orderResults').html(results);
                 }
-            },
-            error: function() {
-                $('#search-results').html(
-                    '<div class="alert alert-danger">Error performing search.</div>'
-                );
-            }
+            });
         });
     });
-
-    function displaySearchResults(customers) {
-        if (!customers.length) {
+    
+    function displayOrderSearchResults(orders) {
+        
+       // if (!orders.length) {
             $('#search-results').html(
-                '<div class="alert alert-info">No customers found.</div>'
+                '<div class="alert alert-info">No Orders found.</div>'
             );
             return;
-        }
+       // }
 
         let html = `
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Phone</th>
-                        <th>Address</th>
-                        <th>Email</th>
-                        <th>Action</th>
+                        <th>Order No.</th>
+                        <th>Type</th>
+                        <th>Date Time</th>
+                        // <th>Urgent</th>
+                        // <th>Total Cost</th>
+                        // <th>Paid Amt</th>
                     </tr>
                 </thead>
                 <tbody>
         `;
 
-        customers.forEach(function(customer) {
+        orders.forEach(function(order) {
             html += `
                 <tr>
-                    <td>${customer.username}</td>
-                    <td>${customer.phonenumber}</td>
-                    <td>${customer.address || ''}</td>
-                    <td>${customer.email || ''}</td>
-                    <td>
-                        <button type="button" class="btn btn-sm btn-primary select-customer"
-                                data-id="${customer.id}" data-name="${customer.username}">
-                            Select
-                        </button>
-                    </td>
+                    <td>${order.orderno}</td>
+                    <td>${order.ordertype}</td>
+                    <td>${order.createdtime}</td>
+                    // <td>${order.email || ''}</td>
+
                 </tr>
             `;
         });
@@ -152,66 +158,6 @@ $(document).ready(function() {
         $('#search-results').html(html);
     }
 
-    // Handle customer selection
-    $(document).on('click', '.select-customer', function() {
-    const customerId = $(this).data('id');
-    const customerName = $(this).data('name');
-
-    // Store selected customer info in the input fields
-    $('#selected-customer-id').val(customerId);
-    $('#selected-customer-name').text(customerName);
-
-    // Send AJAX request to store customer info in session
-    $.ajax({
-        url: "{{ url('/set-customer-session') }}",
-        type: "POST",
-        data: {
-            _token: "{{ csrf_token() }}",
-            customer_id: customerId,
-            customer_name: customerName
-        },
-        success: function(response) {
-            console.log(response.message);
-            updateCustomerName();
-        },
-        error: function(xhr) {
-            console.error("Error setting session:", xhr);
-        }
-    });
-});
-});
-
-function updateCustomerName() {
-            $.ajax({
-                url: "{{ url('/get-customer-session') }}",
-                type: "GET",
-                success: function (response) {
-                    if (response.customer_name) {
-                        $("#customer-name").text(response.customer_name);
-                        generateOrderId();
-                    } else {
-                        $("#customer-name").text("No customer selected");
-                    }
-                }
-            });
-        }
-function generateOrderId() {
-    $.ajax({
-        url: "{{ url('/set-order-session') }}",
-        type: "POST",
-        data: {
-            _token: "{{ csrf_token() }}"
-        },
-        success: function(response) {
-            if (response.status === 'success') {
-                $("#order-id").text(response.order_id);
-            }
-        },
-        error: function(xhr) {
-            console.error("Error generating order ID:", xhr);
-        }
-    });
-}
 </script>
 @endpush
 @endsection

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 #use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\StudioOrder;
 
 class NewOrderController extends Controller
 {
@@ -18,21 +19,41 @@ class NewOrderController extends Controller
 
   public function search(Request $request)
   {
-      $query = StudioOrder::query();
 
-      if ($request->otype) {
-        ->join('studios', 'studiousers.studiokey', '=', 'studios.studiokey') // Joining 'orders' table
-          $query->where('username', 'LIKE', '%' . $request->username . '%');
-      }
-      if ($request->phonenumber) {
-          $query->where('phonenumber', 'LIKE', '%' . $request->phonenumber . '%');
-      }
+        // Validate input
+        $request->validate([
+            'otype'      => 'nullable|string|max:255',
+            'query'      => 'nullable|string|max:255',
+            'start_date' => 'nullable|date',
+            'end_date'   => 'nullable|date|after_or_equal:start_date',
+        ]);
 
-      $customers = $query->get();
+        // Get input values
+        $otype      = $request->input('otype');
+        $query      = $request->input('query');
+        $start_date = $request->input('start_date');
+        $end_date   = $request->input('end_date');
 
-      return response()->json([
-          'status' => true,
-          'customers' => $customers
-      ]);
+        // Search orders based on multiple criteria
+        $orders = StudioOrder::where(function ($q) use ($query,$otype) {
+            if (!empty($query)) {
+                $q->where('orderno', 'LIKE', '%' . $query . '%')
+                  ->where('ordertypekey','=', $otype)
+                // Order number search
+                  ->orWhereHas('customer', function ($q) use ($query) { // Search in customer table
+                      $q->where('username', 'LIKE', '%' . $query . '%')
+                        ->orWhere('phonenumber', 'LIKE', '%' . $query . '%');
+                  });
+            }
+        })
+        ->when(!empty($start_date) && !empty($end_date), function ($q) use ($start_date, $end_date) {
+            $q->whereBetween('createdtime', [$start_date, $end_date]);
+        })
+        
+        ->with('customer') // Load customer data
+        ->get();
+
+        return response()->json($orders);
+
   }
 }

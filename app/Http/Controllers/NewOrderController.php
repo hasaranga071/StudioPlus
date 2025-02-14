@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 #use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\StudioOrder;
+use Illuminate\Support\Facades\Session;
+use App\Models\StudioOrderType;
 
 class NewOrderController extends Controller
 {
@@ -15,11 +17,17 @@ class NewOrderController extends Controller
     Session::forget('customer_id');
     Session::forget('order_id');
 
-    return view ('pages.todo.neworder');
+        // Fetch all order types from the database
+        $orderTypes = StudioOrderType::all();
+
+        // Pass the data to the view
+        return view('pages.todo.neworder', compact('orderTypes'));
   }
   public function orders()
   {
-    return view ('pages.todo.orders');
+    // Fetch all order types from the database
+    $orderTypes = StudioOrderType::all();
+    return view ('pages.todo.orders', compact('orderTypes'));
   }
 
   public function search(Request $request)
@@ -43,7 +51,7 @@ class NewOrderController extends Controller
         $orders = StudioOrder::where(function ($q) use ($query,$otype) {
             if (!empty($query)) {
                 $q->where('orderno', 'LIKE', '%' . $query . '%')
-                  ->where('ordertypekey','=', $otype)
+                  ->orWhere('ordertypekey','=', $otype)
                 // Order number search
                   ->orWhereHas('customer', function ($q) use ($query) { // Search in customer table
                       $q->where('username', 'LIKE', '%' . $query . '%')

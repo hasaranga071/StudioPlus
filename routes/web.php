@@ -30,7 +30,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders', [NewOrderController::class, "orders"])->name('orders');
 
     //OrderType
-    Route::get('/neworder', [StudioOrderTypeController::class, 'newOrder'])->name('neworder');
+    #Route::get('/odertype', [StudioOrderTypeController::class, 'newOrder'])->name('neworder');
+
+
 
 
     // Studio Users

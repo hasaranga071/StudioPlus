@@ -16,14 +16,14 @@ class StudioOrderTypeController extends Controller
         return response()->json($orderTypes);
     }
 
-    public function newOrder()
-    {
-        // Fetch all order types from the database
-        $orderTypes = StudioOrderType::all();
+    // public function newOrder()
+    // {
+    //     // Fetch all order types from the database
+    //     $orderTypes = StudioOrderType::all();
 
-        // Pass the data to the view
-        return view('pages.todo.neworder', compact('orderTypes'));
-    }
+    //     // Pass the data to the view
+    //     return view('pages.todo.neworder', compact('orderTypes'));
+    // }
 
     /**
      * Store a newly created resource in storage.

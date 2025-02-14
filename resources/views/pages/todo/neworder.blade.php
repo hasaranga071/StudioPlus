@@ -103,8 +103,8 @@
         <div class="form-group" style="display:inline-flex;padding-top: 15px;gap:10%">
             <div class="col-md-4">
                 <label class="form-label" for="otype">Order Type (*)</label>
-                <select id="otype" name="otype" class="form-control">
-                    <option value="">Select an Order Type</option>
+                <select id="otype" name="otype" class="form-control" value='1'>
+                    
                     @foreach ($orderTypes as $orderType)
                         <option value="{{ $orderType->ordertypekey }}">{{ $orderType->ordertype }}</option>
                     @endforeach
@@ -129,13 +129,19 @@
         </div></br></br>
         <div class="row">
             <div class="column2" style="background-color:#bbb;">
-                <div class="col-md-4" id="Sittings">
-                    <label class="col-md-4 control-label" for="item">Item (*)</label>
-                    <select id="sittingitem" name="item" class="form-control" style="width: 57%;">
-                        <option value="1">Passport</option>
-                        <option value="2">NIC</option>
-                        <option value="3">Stamp</option>
-                    </select>
+                <div class="form-group" style="display:flex;gap: 50px">
+                    <div class="col-md-4" id="Sittings">
+                        <label class="col-md-4 control-label" for="item">Item (*)</label>
+                        <select id="sittingitem" name="item" class="form-control" style="width: 57%;">
+                            <option value="1">Passport</option>
+                            <option value="2">NIC</option>
+                            <option value="3">Stamp</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="col-md-4 control-label">Urgent</label><br>
+                        <input type="checkbox" id="urgent" name="urgent" style="zoom: 350%;">
+                    </div>
                 </div>
                 <div class="form-group" style="display:flex;gap: 50px">
                     <div class="col-md-4">
@@ -148,10 +154,7 @@
                     </div>
                 </div>
                 <div class="form-group" style="display:flex;gap: 50px">
-                    <div class="col-md-4">
-                        <label class="col-md-4 control-label">Urgent</label><br>
-                        <input type="checkbox" id="urgent" name="urgent" style="zoom: 350%;">
-                    </div>
+                
                 </div>
                 <div class="col-md-4">
                     <label class="col-md-4 control-label">Comments</label><br>

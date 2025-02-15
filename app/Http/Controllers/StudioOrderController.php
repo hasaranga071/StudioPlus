@@ -4,8 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\StudioOrder;
+use App\Models\StudioOrderTypeItemMap;
+use App\Models\StudioAppConfig;
+use App\Models\StudioEdittype;
+use App\Models\StudioLaminatingtype;
+use App\Models\StudioOrderItemMapSS;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
-class StudioOrdersController extends Controller
+
+
+class StudioOrderController extends Controller
 {
     /**
      * Display a listing of the orders.
@@ -50,11 +59,13 @@ class StudioOrdersController extends Controller
                     'ordertypekey' => 'required|integer',
                     'customerkey' => 'required|integer',
                     'isurgent' => 'required|boolean',
-                    'totalcost' => 'required|numeric',
                     'paidcost' => 'required|numeric',
-                    'discount' => 'nullable|integer',
+                    'discount' => 'required|integer',
                     'deliverydate' => 'nullable|date',
                     'remarks' => 'nullable|string',
+                    'ordertypeitemkey' => 'required|exists:studioordertypeitemmap,ordertypeitemkey', // Ensure it exists in the DB
+                    'edittypekey ' => 'nullable|integer',
+                    'lamtypekey ' => 'nullable|integer',
                 ]);
 
                 // Check if customer session exists
@@ -63,18 +74,90 @@ class StudioOrdersController extends Controller
                     return response()->json(['status' => 'error', 'message' => 'Customer not selected!'], 400);
                 }
 
+                $totalCost = 0;
+                $ssitemCost = 0;
+                // \Log::info('Request Data:', $request->all());
+
+                // Calculate total cost from unit prices for  hard copies
+
+                    $orderTypeItemKey = $request->ordertypeitemkey;
+
+                    // Fetch the UnitCost from StudioOrderItemMap table
+                    $unitCost = StudioOrderTypeItemMap::where('ordertypeitemkey', $orderTypeItemKey)->value('unitprice');
+
+                    if ($unitCost === null) {
+                        return response()->json(['status' => 'error', 'message' => "Unit price is empty for selected item"], 400);
+                    }
+
+                    $itemTotal = $unitCost * $request->hardcopycount;
+                    $totalCost += $itemTotal;
+
+
+                // calculate soft copy from unit price
+
+                    $studiokey = $request->studiokey;
+
+                    // Fetch the UnitCost from StuidoAppconfig table
+                    $unitCost = StudioAppConfig::where('studiokey', $studiokey)->value('softcopyunitprice');
+
+                    if ($unitCost === null) {
+                        return response()->json(['status' => 'error', 'message' => "Unit price is not configured for soft copies !"], 400);
+                    }
+
+                    $itemTotal = $unitCost * $request->softcopycount;
+                    $totalCost += $itemTotal;
+                    $ssitemCost = $totalCost;
+
+                    \Log::info('orderTypeItemKey :', ['orderTypeItemKey' =>  $orderTypeItemKey]);
+                // add cost for editing
+
+                    $edittypekey = $request->edittypekey;
+
+                    // Fetch the UnitCost from studiodittypes table
+                    $unitCost = StudioEdittype::where('edittypekey', $edittypekey)->value('unitcost');
+
+                    if ($unitCost === null) {
+                        return response()->json(['status' => 'error', 'message' => "Unit price is not configured for this edit type !"], 400);
+                    }
+
+                    $totalCost += $unitCost;
+
+
+                // add cost for Laminating
+
+                    $lamtypekey =  $request->lamtypekey;
+
+                    // Fetch the UnitCost from studiodittypes table
+                    $unitCost = StudioLaminatingtype::where('lamtypekey', $lamtypekey)->value('unitcost');
+
+                    if ($unitCost === null) {
+                        return response()->json(['status' => 'error', 'message' => "Unit price is not configured for this laminating type !"], 400);
+                    }
+
+                    $totalCost += $unitCost;
+
+
+                // apply discount for total price
+
+                    $discount = $request->discount;
+                    $discountAmount = ($totalCost * $discount) / 100;
+                    $totalCost = $totalCost - $discountAmount;
+
+
+
+
                 // Create a new order
                 $order = StudioOrder::create([
                     'studiokey' => $request->studiokey, // Change this dynamically if needed
                     'ordertypekey' => $request->ordertypekey,
-                    'customerkey' => $customerKey,
+                    'customerkey' => $request->customerkey,
                     'orderid' => $request->orderid,
                     'isurgent' => $request->isurgent,
                     'createduserkey' => auth()->id(),
                     'updateduserkey' => auth()->id(),
-                    'totalcost' => 0, // Will calculate later
-                    'paidcost' => 0,
-                    'discount' => 0,
+                    'totalcost' => $totalCost,
+                    'paidcost' => $request->paidcost,
+                    'discount' => $request->discount,
                     'salestatus' => 'New',
                     'createdtime' => now(),
                     'updatedtime' => now(),
@@ -83,14 +166,17 @@ class StudioOrdersController extends Controller
                 ]);
 
                 // Insert data into StudioOrderItemMapSS table
-                foreach ($request->items as $item) {
+
                     StudioOrderItemMapSS::create([
                         'orderkey' => $order->orderkey,
-                        'itemname' => $item['name'],
-                        'quantity' => $item['quantity'],
-                        'price' => $item['price'],
+                        'ordertypeitemkey' => $request->ordertypeitemkey,
+                        'edittypekey' => $request->edittypekey,
+                        'lamtypekey' => $request->lamtypekey,
+                        'softcopyquantity' => $request->softcopycount,
+                        'hardcopyquantity' => $request->hardcopycount,
+                        'totalcost' => $ssitemCost,
                     ]);
-                }
+
 
                 DB::commit();
                 return response()->json(['status' => 'success', 'message' => 'Order created successfully!', 'order_id' => $order->orderkey]);

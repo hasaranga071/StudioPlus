@@ -104,7 +104,7 @@
             <div class="col-md-4">
                 <label class="form-label" for="otype">Order Type (*)</label>
                 <select id="otype" name="otype" class="form-control" value='1'>
-                    
+
                     @foreach ($orderTypes as $orderType)
                         <option value="{{ $orderType->ordertypekey }}">{{ $orderType->ordertype }}</option>
                     @endforeach
@@ -154,7 +154,7 @@
                     </div>
                 </div>
                 <div class="form-group" style="display:flex;gap: 50px">
-                
+
                 </div>
                 <div class="col-md-4">
                     <label class="col-md-4 control-label">Comments</label><br>
@@ -163,6 +163,7 @@
                 <div class="col-md-4" style="padding-top: 30px;">
 
                     <button id="add-order" class="btn btn-primary">Add</button>
+                    {{-- <button id="testStoreOrder" class="btn btn-primary">Test Order</button> --}}
                 </div>
             </div>
             <div class="column1" style="background-color:#aaa;">
@@ -442,6 +443,39 @@ function generateOrderId() {
         }
     });
 }
+
+// Test Order
+$("#testStoreOrder").click(function () {
+            $.ajax({
+                url: "{{ route('storeOrder_ss') }}", // Ensure this route is correctly defined in web.php
+                type: "POST",
+                data: {
+                    studiokey: 1,
+                    orderid: 'SS-20250215180844',
+                    ordertypekey: 1,
+                    ordertypeitemkey:1,
+                    edittypekey:1,
+                    lamtypekey:1,
+                    customerkey: 8,
+                    isurgent: 0,
+                    discount: 10,
+                    paidcost: 500,
+                    softcopycount:1,
+                    hardcopycount:2,
+                    deliverydate: $("#deldate").val(),
+                    remarks: "Test Order 01",
+                    _token: "{{ csrf_token() }}" // Required for Laravel AJAX requests
+                },
+                success: function (response) {
+                    console.log("Order Created Successfully:", response);
+                    alert("Order Created Successfully!");
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error:", xhr.responseText);
+                    alert("Failed to create order.");
+                }
+            });
+        });
 
 
 </script>

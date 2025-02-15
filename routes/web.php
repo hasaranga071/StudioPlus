@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\CacheController;
 use App\Http\Controllers\StudioOrderTypeController;
+use App\Http\Controllers\StudioOrderController;
+use App\Http\Controllers\StudioOrderItemMapSS;
 
 Route::post('/cache-data', [CacheController::class, 'store']);
 Route::post('/get_cached_data', [CacheController::class, 'get_cached_data']);
@@ -28,6 +30,8 @@ Route::middleware('auth')->group(function () {
     // Orders
     Route::get('/neworder', [NewOrderController::class, "neworder"])->name('neworder');
     Route::get('/orders', [NewOrderController::class, "orders"])->name('orders');
+    Route::post('/store-order-ss', [StudioOrderController::class, 'storeOrder_ss'])->name('storeOrder_ss');
+
 
     //OrderType
     #Route::get('/odertype', [StudioOrderTypeController::class, 'newOrder'])->name('neworder');

@@ -24,7 +24,6 @@ class StudioOrderItemMapSS extends Model
         'ordertypeitemkey',
         'edittypekey',
         'lamtypekey',
-        'quantity',
         'softcopyquantity',
         'hardcopyquantity',
         'totalcost',

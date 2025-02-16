@@ -461,7 +461,7 @@ $("#testStoreOrder").click(function () {
                     discount: 10,
                     paidcost: 500,
                     softcopycount:1,
-                    hardcopycount:2,
+                    hardcopycount:1,
                     deliverydate: $("#deldate").val(),
                     remarks: "Test Order 01",
                     _token: "{{ csrf_token() }}" // Required for Laravel AJAX requests

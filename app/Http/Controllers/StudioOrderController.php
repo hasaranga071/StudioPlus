@@ -55,7 +55,7 @@ class StudioOrderController extends Controller
                 // Validate request
                 $request->validate([
                     'studiokey' => 'required|integer',
-                    'orderid' => 'required|unique:studioorders,orderid',
+                    'orderid' => 'required|string',
                     'ordertypekey' => 'required|integer',
                     'customerkey' => 'required|integer',
                     'isurgent' => 'required|boolean',
@@ -106,9 +106,8 @@ class StudioOrderController extends Controller
 
                     $itemTotal = $unitCost * $request->softcopycount;
                     $totalCost += $itemTotal;
-                    $ssitemCost = $totalCost;
 
-                    \Log::info('orderTypeItemKey :', ['orderTypeItemKey' =>  $orderTypeItemKey]);
+                    // \Log::info('orderTypeItemKey :', ['orderTypeItemKey' =>  $orderTypeItemKey]);
                 // add cost for editing
 
                     $edittypekey = $request->edittypekey;
@@ -135,7 +134,7 @@ class StudioOrderController extends Controller
                     }
 
                     $totalCost += $unitCost;
-
+                    $ssitemCost = $totalCost;
 
                 // apply discount for total price
 
@@ -145,37 +144,90 @@ class StudioOrderController extends Controller
 
 
 
+                // Check if order already exists
+                $order = StudioOrder::where('orderid', $request->orderid)->first();
+                $sorderkey = 0;
+                if ($order) {
+                    // update the order
+                    $sorderkey = $order -> orderkey;
 
-                // Create a new order
-                $order = StudioOrder::create([
-                    'studiokey' => $request->studiokey, // Change this dynamically if needed
-                    'ordertypekey' => $request->ordertypekey,
-                    'customerkey' => $request->customerkey,
-                    'orderid' => $request->orderid,
-                    'isurgent' => $request->isurgent,
-                    'createduserkey' => auth()->id(),
-                    'updateduserkey' => auth()->id(),
-                    'totalcost' => $totalCost,
-                    'paidcost' => $request->paidcost,
-                    'discount' => $request->discount,
-                    'salestatus' => 'New',
-                    'createdtime' => now(),
-                    'updatedtime' => now(),
-                    'deliverydate' => $request->deliverydate,
-                    'remarks' => $request->comments,
-                ]);
+                     // Insert / update data into StudioOrderItemMapSS table
+                     StudioOrderItemMapSS::updateOrCreate(
+                        [
+                            'orderkey' =>  $sorderkey,
+                            'ordertypeitemkey' => $request->ordertypeitemkey
+                        ],
+                        [
+                            'edittypekey' => $request->edittypekey,
+                            'lamtypekey' => $request->lamtypekey,
+                            'softcopyquantity' => $request->softcopycount,
+                            'hardcopyquantity' => $request->hardcopycount,
+                            'totalcost' => $ssitemCost,
+                        ]
+                    );
+                    $totalitemCost = StudioOrderItemMapSS::where('orderkey', $sorderkey)->sum('totalcost');
+                    // calculating all item cost for the order
+                    $discount = $request->discount;
+                    $discountAmount = ($totalitemCost * $discount) / 100;
+                    $totalitemCost = $totalitemCost - $discountAmount;
 
-                // Insert data into StudioOrderItemMapSS table
-
-                    StudioOrderItemMapSS::create([
-                        'orderkey' => $order->orderkey,
-                        'ordertypeitemkey' => $request->ordertypeitemkey,
-                        'edittypekey' => $request->edittypekey,
-                        'lamtypekey' => $request->lamtypekey,
-                        'softcopyquantity' => $request->softcopycount,
-                        'hardcopyquantity' => $request->hardcopycount,
-                        'totalcost' => $ssitemCost,
+                    $order->update([
+                        'studiokey' => $request->studiokey,
+                        'ordertypekey' => $request->ordertypekey,
+                        'customerkey' => $request->customerkey,
+                        'isurgent' => $request->isurgent,
+                        'salestatus' => 'New',
+                        'updatedtime' => now(),
+                        'deliverydate' => $request->deliverydate,
+                        'remarks' => $request->remarks,
+                        'updateduserkey' => auth()->id(),
+                        'updatedtime' => now(),
+                        'totalcost' => $totalitemCost,
+                        'paidcost' => $request->paidcost,
+                        'discount' => $request->discount,
                     ]);
+
+                    $message = 'Order Updated Successfully!';
+                }
+                else {
+                    // Create a new order
+                    $order = StudioOrder::create([
+                        'studiokey' => $request->studiokey, // Change this dynamically if needed
+                        'ordertypekey' => $request->ordertypekey,
+                        'customerkey' => $request->customerkey,
+                        'orderid' => $request->orderid,
+                        'isurgent' => $request->isurgent,
+                        'createduserkey' => auth()->id(),
+                        'updateduserkey' => auth()->id(),
+                        'totalcost' => $totalCost,
+                        'paidcost' => $request->paidcost,
+                        'discount' => $request->discount,
+                        'salestatus' => 'New',
+                        'createdtime' => now(),
+                        'updatedtime' => now(),
+                        'deliverydate' => $request->deliverydate,
+                        'remarks' => $request->comments,
+                    ]);
+
+                    $sorderkey = $order->orderkey;
+
+                    StudioOrderItemMapSS::updateOrCreate(
+                        [
+                            'orderkey' =>  $sorderkey,
+                            'ordertypeitemkey' => $request->ordertypeitemkey
+                        ],
+                        [
+                            'edittypekey' => $request->edittypekey,
+                            'lamtypekey' => $request->lamtypekey,
+                            'softcopyquantity' => $request->softcopycount,
+                            'hardcopyquantity' => $request->hardcopycount,
+                            'totalcost' => $ssitemCost,
+                        ]
+                    );
+
+
+                 }
+
 
 
                 DB::commit();

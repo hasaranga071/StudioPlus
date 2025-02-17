@@ -163,12 +163,6 @@
                 </div>
                 <div class="form-group" style="display:flex;gap: 50px">
                     <div class="col-md-4">
-                        <label class="col-md-4 control-label">Quantity</label>
-                        <input id="quntity" name="quntity" type="text" class="form-control input-md" required="">
-                    </div>                   
-                </div>
-                <div class="form-group" style="display:flex;gap: 50px">
-                    <div class="col-md-4">
                         <label class="col-md-4 control-label">H-Copies</label>
                         <input id="hcopy" name="hcopy" type="text" class="form-control input-md" required="">
                     </div>

@@ -133,15 +133,39 @@
                     <div class="col-md-4" id="Sittings">
                         <label class="col-md-4 control-label" for="item">Item (*)</label>
                         <select id="sittingitem" name="item" class="form-control" style="width: 57%;">
-                            <option value="1">Passport</option>
-                            <option value="2">NIC</option>
-                            <option value="3">Stamp</option>
+                            <option value="">Select an Item</option> <!-- Placeholder -->
                         </select>
                     </div>
                     <div class="col-md-4">
                         <label class="col-md-4 control-label">Urgent</label><br>
                         <input type="checkbox" id="urgent" name="urgent" style="zoom: 350%;">
                     </div>
+                </div>
+                <div class="form-group" style="display:flex;gap: 50px">
+                    <div class="col-md-4" id="edittypemain">
+                        <label class="form-label" for="edittype">Edit Type (*)</label>                        
+                        <select id="edittype" name="edittype" class="form-control">
+                        <option value="">Select Edit Type</option>
+                            @foreach ($editTypes as $editType)
+                                <option value="{{ $editType->edittypekey }}">{{ $editType->edittype }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4" id="lamtypemain">
+                        <label class="form-label" for="lamtype">Laminate Type (*)</label>                        
+                        <select id="lamtype" name="lamtype" class="form-control">
+                        <option value="">Select Laminating Type</option>
+                            @foreach ($lamTypes as $lamType)
+                                <option value="{{ $lamType->lamtypekey }}">{{ $lamType->laminatetype }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" style="display:flex;gap: 50px">
+                    <div class="col-md-4">
+                        <label class="col-md-4 control-label">Quantity</label>
+                        <input id="quntity" name="quntity" type="text" class="form-control input-md" required="">
+                    </div>                   
                 </div>
                 <div class="form-group" style="display:flex;gap: 50px">
                     <div class="col-md-4">
@@ -152,9 +176,6 @@
                         <label class="col-md-4 control-label">S-Copies</label>
                         <input id="scopy" name="scopy" type="text" class="form-control input-md" required="">
                     </div>
-                </div>
-                <div class="form-group" style="display:flex;gap: 50px">
-                
                 </div>
                 <div class="col-md-4">
                     <label class="col-md-4 control-label">Comments</label><br>
@@ -192,257 +213,190 @@
 
 @push('scripts')
 <script>
-    console.log("Script Loaded in neworder");
+    $(document).ready(function () {
+        console.log("Script Loaded in neworder");
 
-$(document).ready(function() {
-    // Toggle between new and existing customer forms
-    $('input[name="client-radio"]').click(function() {
-        const isNew = $(this).val() == "1";
-        $('#newCustomerForm').toggle(isNew);
-        $('#existingCustomerForm').toggle(!isNew);
-    });
-
-    // Toggle sittings section based on order type
-    $("#otype").change(function() {
-        $("#Sittings").toggle($(this).val() == "1");
-        generateOrderId();
-    });
-
-    // New Customer Registration
-    $(document).on('submit', '#newCustomerForm', function(e) {
-        console.log('Form submitted'); // Add this line
-        e.preventDefault();
-        $('.error-message').text('');
-        $('#new-customer-message').hide();
-        $("#address_text").val($("#town option:selected").text());
-        $.ajax({
-            url: "{{ route('customers.store') }}",
-            method: 'POST',
-            data: $(this).serialize(),
-            dataType: 'json',
-            success: function(response) {
-                if (response.status) {
-                    $('#new-customer-message')
-                        .removeClass('alert-danger')
-                        .addClass('alert-success')
-                        .html(response.message)
-                        .show();
-                    $('#newCustomerForm')[0].reset();
-                    updateCustomerName();
-
-                    setTimeout(function() {
-                        $('#new-customer-message').fadeOut();
-                    }, 3000);
-                }
-            },
-            error: function(xhr) {
-                if (xhr.status === 422) {
-                    const errors = xhr.responseJSON.errors;
-                    $.each(errors, function(field, messages) {
-                        $(`#${field}-error`).text(messages[0]);
-                    });
-                } else {
-                    $('#new-customer-message')
-                        .removeClass('alert-success')
-                        .addClass('alert-danger')
-                        .html('An error occurred while registering the customer.')
-                        .show();
-                }
-            }
+        // Toggle between new and existing customer forms
+        $('input[name="client-radio"]').click(function () {
+            const isNew = $(this).val() == "1";
+            $('#newCustomerForm').toggle(isNew);
+            $('#existingCustomerForm').toggle(!isNew);
         });
 
-});
+        // Toggle sittings section and generate Order ID based on order type
+        $("#otype").change(function () {
+            generateOrderId();
+            toggleField();
+            loadOrderTypeItems();
+        });
 
-$(document).on("click", "#add-order", function () {
-    console.log('Add function Triggerd..........')
-    event.preventDefault();
+        toggleField(); // Run function on page load
 
-    var customername = $('#customer-name').text();
-    if (customername=='  Not set'){
-        alert('Please select a customer before adding an order.');
-        return;
-    }
-            let orderType = $("#otype option:selected").text();
-            let hCopies = $("#hcopy").val();
-            let sCopies = $("#scopy").val();
-            let deliveryDate = $("#deldate").val();
-            let sittingitem =  $("#sittingitem option:selected").text();
-            let urgent = $("#urgent").is(":checked") ? "Yes" : "No";
-            let comments = $("#comments").val();
+        function toggleField() {
+            var selectedOrderType = $("#otype option:selected").text();
+            
+            $('#edittypemain').toggle(selectedOrderType !== "Frames");
+            $('#lamtypemain').toggle(selectedOrderType === "Media");
+        }
 
-            // Validate input
-            if (!deliveryDate) {
-                alert("Please select a delivery date.");
+        function loadOrderTypeItems() {
+            var ordertypekey = $("#otype").val();
+            if (ordertypekey) {
+                $.ajax({
+                    url: '/ordertypeitem/' + ordertypekey,
+                    type: 'GET',
+                    success: function (data) {
+                        $('#sittingitem').empty().append('<option value="">Select an Item</option>');
+                        $.each(data, function (key, item) {
+                            $('#sittingitem').append('<option value="' + item.ordertypeitemkey + '">' + item.itemname + '</option>');
+                        });
+                    },
+                    error: function () {
+                        alert('Failed to fetch items. Please try again.');
+                    }
+                });
+            }
+        }
+
+        // New Customer Registration
+        $(document).on('submit', '#newCustomerForm', function (e) {
+            e.preventDefault();
+            $('.error-message').text('');
+            $('#new-customer-message').hide();
+            $("#address_text").val($("#town option:selected").text());
+            
+            $.ajax({
+                url: "{{ route('customers.store') }}",
+                method: 'POST',
+                data: $(this).serialize(),
+                dataType: 'json',
+                success: function (response) {
+                    if (response.status) {
+                        $('#new-customer-message').removeClass('alert-danger').addClass('alert-success').html(response.message).show();
+                        $('#newCustomerForm')[0].reset();
+                        updateCustomerName();
+                        setTimeout(() => $('#new-customer-message').fadeOut(), 3000);
+                    }
+                },
+                error: function (xhr) {
+                    if (xhr.status === 422) {
+                        $.each(xhr.responseJSON.errors, function (field, messages) {
+                            $(`#${field}-error`).text(messages[0]);
+                        });
+                    } else {
+                        $('#new-customer-message').removeClass('alert-success').addClass('alert-danger').html('An error occurred while registering the customer.').show();
+                    }
+                }
+            });
+        });
+
+        // Add order to summary table
+        $(document).on("click", "#add-order", function (event) {
+            event.preventDefault();
+            var customername = $('#customer-name').text();
+            if (customername === '  Not set') {
+                alert('Please select a customer before adding an order.');
                 return;
             }
 
-            if(orderType !== 'Studio Sittings') {
-                sittingitem = '';
-            }
-
-            // Append order details to the summary table
+            let orderType = $("#otype option:selected").text();
+            let sittingitem = orderType === 'Studio Sittings' ? $("#sittingitem option:selected").text() : '';
             let newRow = `
                 <tr>
                     <td>${orderType}</td>
                     <td>${sittingitem}</td>
-                    <td>${hCopies}</td>
-                    <td>${sCopies}</td>
-                    <td>${deliveryDate}</td>
-                    <td>${urgent}</td>
-                    <td>${comments}</td>
+                    <td>${$("#hcopy").val()}</td>
+                    <td>${$("#scopy").val()}</td>
+                    <td>${$("#deldate").val()}</td>
+                    <td>${$("#urgent").is(":checked") ? "Yes" : "No"}</td>
+                    <td>${$("#comments").val()}</td>
                     <td><button class="btn btn-danger btn-sm remove-order">✕</button></td>
-                </tr>
-            `;
+                </tr>`;
 
             $("#order-summary").append(newRow);
+        });
 
-            // Clear form fields after adding
-            // $("#h_copies").val(1);
-            // $("#s_copies").val(0);
-            // $("#delivery_date").val("");
-            // $("#urgent").prop("checked", false);
-            // $("#comments").val("");
-});
- // Remove order from the summary table
- $(document).on("click", ".remove-order", function () {
+        // Remove order from summary table
+        $(document).on("click", ".remove-order", function () {
             $(this).closest("tr").remove();
         });
 
-
-    // Existing Customer Search
-    $('#existingCustomerForm').on('submit', function(e) {
-        e.preventDefault();
-        const searchData = {
-            username: $('#search-name').val(),
-            phonenumber: $('#search-phone').val(),
-            _token: $('input[name="_token"]').val()
-        };
-
-        $.ajax({
-            url: "{{ route('customers.search') }}",
-            method: 'POST',
-            data: searchData,
-            dataType: 'json',
-            success: function(response) {
-                if (response.status) {
-                    displaySearchResults(response.customers);
+        // Existing Customer Search
+        $('#existingCustomerForm').on('submit', function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: "{{ route('customers.search') }}",
+                method: 'POST',
+                data: {
+                    username: $('#search-name').val(),
+                    phonenumber: $('#search-phone').val(),
+                    _token: $('input[name="_token"]').val()
+                },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.status) displaySearchResults(response.customers);
+                },
+                error: function () {
+                    $('#search-results').html('<div class="alert alert-danger">Error performing search.</div>');
                 }
-            },
-            error: function() {
-                $('#search-results').html(
-                    '<div class="alert alert-danger">Error performing search.</div>'
-                );
-            }
+            });
         });
-    });
 
-    function displaySearchResults(customers) {
-        if (!customers.length) {
-            $('#search-results').html(
-                '<div class="alert alert-info">No customers found.</div>'
-            );
-            return;
-        }
+        function displaySearchResults(customers) {
+            let html = customers.length ? `<table class="table table-bordered">
+                <thead><tr><th>Name</th><th>Phone</th><th>Address</th><th>Email</th><th>Action</th></tr></thead><tbody>` :
+                '<div class="alert alert-info">No customers found.</div>';
 
-        let html = `
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Phone</th>
-                        <th>Address</th>
-                        <th>Email</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
-
-        customers.forEach(function(customer) {
-            html += `
-                <tr>
+            $.each(customers, function (index, customer) {
+                html += `<tr>
                     <td>${customer.username}</td>
                     <td>${customer.phonenumber}</td>
                     <td>${customer.address || ''}</td>
                     <td>${customer.email || ''}</td>
-                    <td>
-                        <button type="button" class="btn btn-sm btn-primary select-customer"
-                                data-id="${customer.id}" data-name="${customer.username}">
-                            Select
-                        </button>
-                    </td>
-                </tr>
-            `;
+                    <td><button type="button" class="btn btn-sm btn-primary select-customer" data-id="${customer.id}" data-name="${customer.username}">Select</button></td>
+                </tr>`;
+            });
+            html += '</tbody></table>';
+            $('#search-results').html(html);
+        }
+
+        $(document).on('click', '.select-customer', function () {
+            const customerId = $(this).data('id');
+            const customerName = $(this).data('name');
+            $('#selected-customer-id').val(customerId);
+            $('#selected-customer-name').text(customerName);
+            
+            $.ajax({
+                url: "{{ url('/set-customer-session') }}",
+                type: "POST",
+                data: { _token: "{{ csrf_token() }}", customer_id: customerId, customer_name: customerName },
+                success: function () { updateCustomerName(); },
+                error: function (xhr) { console.error("Error setting session:", xhr); }
+            });
         });
 
-        html += '</tbody></table>';
-        $('#search-results').html(html);
-    }
-
-    // Handle customer selection
-    $(document).on('click', '.select-customer', function() {
-    const customerId = $(this).data('id');
-    const customerName = $(this).data('name');
-
-    // Store selected customer info in the input fields
-    $('#selected-customer-id').val(customerId);
-    $('#selected-customer-name').text(customerName);
-
-    // Send AJAX request to store customer info in session
-    $.ajax({
-        url: "{{ url('/set-customer-session') }}",
-        type: "POST",
-        data: {
-            _token: "{{ csrf_token() }}",
-            customer_id: customerId,
-            customer_name: customerName
-        },
-        success: function(response) {
-            console.log(response.message);
-            updateCustomerName();
-        },
-        error: function(xhr) {
-            console.error("Error setting session:", xhr);
-        }
-    });
-});
-});
-
-function updateCustomerName() {
+        function updateCustomerName() {
             $.ajax({
                 url: "{{ url('/get-customer-session') }}",
                 type: "GET",
                 success: function (response) {
-                    if (response.customer_name) {
-                        $("#customer-name").text(response.customer_name);
-                        generateOrderId();
-                    } else {
-                        $("#customer-name").text("No customer selected");
-                    }
+                    $("#customer-name").text(response.customer_name || "No customer selected");
+                    generateOrderId();
                 }
             });
         }
-function generateOrderId() {
-    $.ajax({
-        url: "{{ url('/set-order-session') }}",
-        type: "POST",
-        data: {
-            _token: "{{ csrf_token() }}",
-            ordertype : $("#otype option:selected").text()
-        },
-        success: function(response) {
-            if (response.status === 'success') {
-                let orderid = response.order_id;
 
-                $("#order-id").text(orderid);
-            }
-        },
-        error: function(xhr) {
-            console.error("Error generating order ID:", xhr);
+        function generateOrderId() {
+            $.ajax({
+                url: "{{ url('/set-order-session') }}",
+                type: "POST",
+                data: { _token: "{{ csrf_token() }}", ordertype: $("#otype option:selected").text() },
+                success: function (response) {
+                    if (response.status === 'success') $("#order-id").text(response.order_id);
+                }
+            });
         }
     });
-}
-
 
 </script>
 @endpush

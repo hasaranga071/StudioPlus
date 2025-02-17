@@ -28,9 +28,10 @@ Route::middleware('auth')->group(function () {
     // Orders
     Route::get('/neworder', [NewOrderController::class, "neworder"])->name('neworder');
     Route::get('/orders', [NewOrderController::class, "orders"])->name('orders');
+    Route::get('/ordertypeitem/{ordertypekey}', [NewOrderController::class, "ordertypeitems"])->name('ordertypeitem');
 
-    //OrderType
-    #Route::get('/odertype', [StudioOrderTypeController::class, 'newOrder'])->name('neworder');
+    //EditType
+    Route::get('/edittypes', [NewOrderController::class, 'edittypes'])->name('edittype');
 
 
 

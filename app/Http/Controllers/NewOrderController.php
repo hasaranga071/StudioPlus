@@ -46,24 +46,33 @@ class NewOrderController extends Controller
         $query      = $request->input('query');
         $start_date = $request->input('start_date');
         $end_date   = $request->input('end_date');
+        
 
         // Search orders based on multiple criteria
         $orders = StudioOrder::where(function ($q) use ($query,$otype) {
+            // if (!empty($query)) {
+            //     $q->where('ordertypekey','=', $otype)
+            //       ->orWhere('orderno', 'LIKE', '%' . $query . '%')
+            //     // Order number search
+            //       ->orWhereHas('customer', function ($q) use ($query) { // Search in customer table
+            //           $q->where('username', 'LIKE', '%' . $query . '%')
+            //             ->orWhere('phonenumber', 'LIKE', '%' . $query . '%');
+            //       });
+            // }
+            if (!empty($otype)) {
+              $q->where('studioorders.ordertypekey', $otype);
+            }
+      
             if (!empty($query)) {
-                $q->where('orderno', 'LIKE', '%' . $query . '%')
-                  ->orWhere('ordertypekey','=', $otype)
-                // Order number search
-                  ->orWhereHas('customer', function ($q) use ($query) { // Search in customer table
-                      $q->where('username', 'LIKE', '%' . $query . '%')
-                        ->orWhere('phonenumber', 'LIKE', '%' . $query . '%');
-                  });
+              $q->Where('orderno', 'LIKE', '%' . $query . '%');
             }
         })
         ->when(!empty($start_date) && !empty($end_date), function ($q) use ($start_date, $end_date) {
-            $q->whereBetween('createdtime', [$start_date, $end_date]);
+            $q->whereBetween('studioorders.createdtime', [$start_date, $end_date]);
         })
-        
-        ->with('customer') // Load customer data
+        ->join('studioordertypes', 'studioorders.ordertypekey', '=', 'studioordertypes.ordertypekey') // Join order types
+        ->join('studiocustomers', 'studioorders.customerkey', '=', 'studiocustomers.customerkey') 
+        //->select('studioorders.ordertypekey','studioorders.orderno', 'studioordertypes.ordertype') // Select required fields
         ->get();
 
         return response()->json($orders);

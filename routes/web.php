@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\CacheController;
 use App\Http\Controllers\StudioOrderTypeController;
+use App\Http\Controllers\StudioOrderController;
+use App\Http\Controllers\StudioOrderItemMapSS;
 
 Route::post('/cache-data', [CacheController::class, 'store']);
 Route::post('/get_cached_data', [CacheController::class, 'get_cached_data']);
@@ -28,12 +30,11 @@ Route::middleware('auth')->group(function () {
     // Orders
     Route::get('/neworder', [NewOrderController::class, "neworder"])->name('neworder');
     Route::get('/orders', [NewOrderController::class, "orders"])->name('orders');
+    Route::get('/ordertypeitem/{ordertypekey}', [NewOrderController::class, "ordertypeitems"])->name('ordertypeitem');
+    Route::post('/store-order-ss', [StudioOrderController::class, 'storeOrder_ss'])->name('storeOrder_ss');
 
-    //OrderType
-    #Route::get('/odertype', [StudioOrderTypeController::class, 'newOrder'])->name('neworder');
-
-
-
+    //EditType
+    Route::get('/edittypes', [NewOrderController::class, 'edittypes'])->name('edittype');
 
     // Studio Users
     Route::post('/studio-user', [StudioUserController::class, 'store'])->name('studio-user.store');
@@ -44,7 +45,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/get-customer-session', [StudioCustomerController::class, 'getCustomerSession']);
     Route::post('/set-customer-session', [StudioCustomerController::class, 'setCustomerSession']);
     Route::post('/set-order-session', [StudioCustomerController::class, 'setOrderSession']);
-
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 use App\Models\StudioOrder;
 use Illuminate\Support\Facades\Session;
 use App\Models\StudioOrderType;
+use App\Models\StudioOrderTypeItemMap;
+use App\Models\StudioEdittype;
+use App\Models\StudioLaminatingtype;
+
 
 class NewOrderController extends Controller
 {
@@ -20,14 +24,29 @@ class NewOrderController extends Controller
         // Fetch all order types from the database
         $orderTypes = StudioOrderType::all();
 
+        // Fetch all edit types from the database
+        $editTypes = StudioEdittype::all();
+
+        // Fetch all laminate types from the database
+        $lamTypes = StudioLaminatingtype::all();
+
         // Pass the data to the view
-        return view('pages.todo.neworder', compact('orderTypes'));
+        return view('pages.todo.neworder', compact('editTypes', 'orderTypes', 'lamTypes'));
   }
   public function orders()
   {
     // Fetch all order types from the database
     $orderTypes = StudioOrderType::all();
     return view ('pages.todo.orders', compact('orderTypes'));
+  }
+
+  public function ordertypeitems($ordertypekey)
+  {
+      // Fetch items where the ordertypekey matches
+      $items = StudioOrderTypeItemMap::where('ordertypekey', $ordertypekey)->get();
+
+      // Return as JSON response
+      return response()->json($items);
   }
 
   public function search(Request $request)

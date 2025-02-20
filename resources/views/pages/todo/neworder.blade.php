@@ -53,6 +53,9 @@
                         </select>
                         <span class="error-message text-danger" id="address-error"></span>
                         <input type="hidden" name="address_text" id="address_text">
+                        <input type="hidden" name="studiokeynew" id="studiokeynew">
+
+
                     </div>
                     <div class="col-md-4">
                         <label class="col-md-4 control-label" for="email">Email</label>
@@ -89,7 +92,8 @@
         </form>
     </fieldset>
 </div>
-
+<input type="hidden" id="customerkey" name="customerkey">
+<input type="hidden" id="studiokeyex" name="studiokeyex">
 <!-- Order Details Form -->
 <form id="orderDetailsForm" class="form-horizontal" style="height: 600px;">
     <fieldset>
@@ -132,7 +136,7 @@
                 <div class="form-group" style="display:flex;gap: 50px">
                     <div class="col-md-4" id="Sittings">
                         <label class="col-md-4 control-label" for="item">Item (*)</label>
-                        <select id="sittingitem" name="item" class="form-control" style="width: 57%;">
+                        <select id="sittingitem" name="item" class="form-control" _style="width: 57%;">
                             <option value="">Select an Item</option> <!-- Placeholder -->
                         </select>
                     </div>
@@ -143,7 +147,7 @@
                 </div>
                 <div class="form-group" style="display:flex;gap: 50px">
                     <div class="col-md-4" id="edittypemain">
-                        <label class="form-label" for="edittype">Edit Type (*)</label>                        
+                        <label class="form-label" for="edittype">Edit Type (*)</label>
                         <select id="edittype" name="edittype" class="form-control">
                         <option value="">Select Edit Type</option>
                             @foreach ($editTypes as $editType)
@@ -152,7 +156,7 @@
                         </select>
                     </div>
                     <div class="col-md-4" id="lamtypemain">
-                        <label class="form-label" for="lamtype">Laminate Type (*)</label>                        
+                        <label class="form-label" for="lamtype">Laminate Type (*)</label>
                         <select id="lamtype" name="lamtype" class="form-control">
                         <option value="">Select Laminating Type</option>
                             @foreach ($lamTypes as $lamType)
@@ -169,6 +173,17 @@
                     <div class="col-md-4">
                         <label class="col-md-4 control-label">S-Copies</label>
                         <input id="scopy" name="scopy" type="text" class="form-control input-md" required="">
+                    </div>
+
+                </div>
+                <div class="form-group" style="display:flex;gap: 50px">
+                    <div class="col-md-4">
+                        <label class="col-md-4 control-label">Paid Amount</label>
+                        <input id="paidamount" name="paidamount" type="text" class="form-control input-md" required="">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="col-md-4 control-label">Discount</label>
+                        <input id="discount" name="discount" type="text" class="form-control input-md" required="">
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -211,6 +226,22 @@
     $(document).ready(function () {
         console.log("Script Loaded in neworder");
 
+
+        axios.post('/get_cached_data', {
+        key: 'studiokey', // Cache key
+        value: skey,          // Cache value
+        //minutes: 10                // Cache duration (optional)
+        })
+        .then(response => {
+
+            $('#studiokeyex').text(response.data['studiokey']);
+            $('#studiokeynew').val(response.data['studiokey']);
+            console.log('loaded from cache in new order :',response.data);  // Output: 'Data cached successfully!'
+        })
+        .catch(error => {
+            console.error('Error caching data:', error);
+        });
+
         // Toggle between new and existing customer forms
         $('input[name="client-radio"]').click(function () {
             const isNew = $(this).val() == "1";
@@ -221,15 +252,15 @@
         // Toggle sittings section and generate Order ID based on order type
         $("#otype").change(function () {
             generateOrderId();
-            toggleField();
-            loadOrderTypeItems();
+           // toggleField();
+           //  loadOrderTypeItems();
         });
 
         toggleField(); // Run function on page load
 
         function toggleField() {
             var selectedOrderType = $("#otype option:selected").text();
-            
+
             $('#edittypemain').toggle(selectedOrderType !== "Frames");
             $('#lamtypemain').toggle(selectedOrderType === "Media");
         }
@@ -259,7 +290,7 @@
             $('.error-message').text('');
             $('#new-customer-message').hide();
             $("#address_text").val($("#town option:selected").text());
-            
+
             $.ajax({
                 url: "{{ route('customers.store') }}",
                 method: 'POST',
@@ -294,8 +325,12 @@
                 return;
             }
 
+            // order insert
+            orderstore();
+
             let orderType = $("#otype option:selected").text();
             let sittingitem = orderType === 'Studio Sittings' ? $("#sittingitem option:selected").text() : '';
+
             let newRow = `
                 <tr>
                     <td>${orderType}</td>
@@ -348,7 +383,7 @@
                     <td>${customer.phonenumber}</td>
                     <td>${customer.address || ''}</td>
                     <td>${customer.email || ''}</td>
-                    <td><button type="button" class="btn btn-sm btn-primary select-customer" data-id="${customer.id}" data-name="${customer.username}">Select</button></td>
+                    <td><button type="button" class="btn btn-sm btn-primary select-customer" data-studiokey="${customer.studiokey}" data-id="${customer.customerkey}" data-name="${customer.username}">Select</button></td>
                 </tr>`;
             });
             html += '</tbody></table>';
@@ -358,9 +393,12 @@
         $(document).on('click', '.select-customer', function () {
             const customerId = $(this).data('id');
             const customerName = $(this).data('name');
+            const studiokey = $(this).data('studiokey');
             $('#selected-customer-id').val(customerId);
             $('#selected-customer-name').text(customerName);
-            
+            $('#customerkey').text(customerId);
+          //  $('#studiokeyex').text(studiokey);
+
             $.ajax({
                 url: "{{ url('/set-customer-session') }}",
                 type: "POST",
@@ -376,6 +414,8 @@
                 type: "GET",
                 success: function (response) {
                     $("#customer-name").text(response.customer_name || "No customer selected");
+                    $("#customerkey").text(response.customer_id);
+                    $("#studiokey").text(response.studio_key);
                     generateOrderId();
                 }
             });
@@ -390,30 +430,57 @@
                     if (response.status === 'success') $("#order-id").text(response.order_id);
                 }
             });
+            toggleField();
+            loadOrderTypeItems();
         }
     });
 
 
     // Test Order
-    $("#testStoreOrder").click(function () {
+    function orderstore () {
+
+        var studiokey = $("#studiokeyex").text();
+
+        var ordertypekey = $("#otype option:selected").val();
+        var ordertypeitemkey = $("#sittingitem option:selected").val();
+        var edittypekey = $("#edittype option:selected").val();
+        var lamtypekey = $("#lamtype option:selected").val();
+        var isurgent = $("#urgent").prop("checked") ? 1 : 0;
+        var discount = $("#discount").val();
+        var hcopycount = $("#hcopy").val();
+        var scopycount = $("#scopy").val();
+        var paidcost = $("#paidamount").val();
+        var comments = $("#comments").val();
+        var customerkey = $("#customerkey").text();
+        if(!ordertypekey){
+            alert('Please select the order type');
+            return false;
+        }
+
+        if(!ordertypeitemkey){
+            alert('Please select the order item');
+            return false;
+        }
+
+
         $.ajax({
-            url: "{{ route('storeOrder_ss') }}", // Ensure this route is correctly defined in web.php
+            url: "{{ route('storeOrder_ss') }}",
             type: "POST",
             data: {
-                studiokey: 1,
-                orderid: 'SS-20250215180844',
-                ordertypekey: 1,
-                ordertypeitemkey:1,
-                edittypekey:1,
-                lamtypekey:1,
-                customerkey: 8,
-                isurgent: 0,
-                discount: 10,
-                paidcost: 500,
-                softcopycount:1,
-                hardcopycount:1,
+                studiokey: studiokey,
+                orderid: $("#order-id").text(),
+                ordertypekey: ordertypekey,
+                ordertypeitemkey:ordertypeitemkey,
+                edittypekey:edittypekey,
+                lamtypekey:lamtypekey,
+                customerkey: customerkey,
+                isurgent: isurgent,
+                discount: discount,
+                paidcost: paidcost,
+                softcopycount:scopycount,
+                hardcopycount:hcopycount,
                 deliverydate: $("#deldate").val(),
-                remarks: "Test Order 01",
+                remarks: comments,
                 _token: "{{ csrf_token() }}" // Required for Laravel AJAX requests
             },
             success: function (response) {
@@ -425,7 +492,7 @@
                 alert("Failed to create order.");
             }
         });
-    });
+    }
 </script>
 @endpush
 @endsection

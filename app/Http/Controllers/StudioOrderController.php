@@ -130,7 +130,8 @@ class StudioOrderController extends Controller
                     $unitCost = StudioLaminatingtype::where('lamtypekey', $lamtypekey)->value('unitcost');
 
                     if ($unitCost === null) {
-                        return response()->json(['status' => 'error', 'message' => "Unit price is not configured for this laminating type !"], 400);
+                        $unitCost = 0;
+                       // return response()->json(['status' => 'error', 'message' => "Unit price is not configured for this laminating type !"], 400);
                     }
 
                     $totalCost += $unitCost;

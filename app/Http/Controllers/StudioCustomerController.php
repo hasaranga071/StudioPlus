@@ -38,14 +38,15 @@ class StudioCustomerController extends Controller
                 'phonenumber' => $request->phonenumber,
                 'address' => $request->address_text ?? '',
                 'email' => $request->email ?? null,
-                'studiokey' => 1,
+                'studiokey' => $request->studiokeynew,
                 'createdtime' => now(),
             ]);
 
            // Store customer details in the session with primary key
-    Session::put('customer_id', $customer->id);  // Store primary key
+    Session::put('customer_id', $customer->customerkey);  // Store primary key
     Session::put('customer_name', $customer->username);
-    Session::put('customer_key', 'CUST-' . $customer->id); // Example key format
+    Session::put('customer_key', 'CUST-' . $customer->customerkey); // Example key format
+    Session::put('studio_key', $customer->studiokey); // Example key format
 
             if ($request->ajax()) {
                 return response()->json([
@@ -90,13 +91,15 @@ class StudioCustomerController extends Controller
     {
         return response()->json([
             'customer_name' => Session::get('customer_name'),
-            'customer_id' => Session::get('customer_id')
+            'customer_id' => Session::get('customer_id'),
+            'studio_key' => Session::get('studio_key')
         ]);
     }
 
     public function setCustomerSession(Request $request)
         {
             Session::put('customer_id', $request->customer_id);
+            Session::put('studio_key', $request->studio_key);
             Session::put('customer_name', $request->customer_name);
             Session::put('customer_key', 'CUST-' . $request->customer_id); // Example format
 

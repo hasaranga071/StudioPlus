@@ -53,7 +53,9 @@
                         </select>
                         <span class="error-message text-danger" id="address-error"></span>
                         <input type="hidden" name="address_text" id="address_text">
-                        <input type="hidden" name="customer-id" id="customer-id">
+                        <input type="hidden" name="studiokeynew" id="studiokeynew">
+
+
                     </div>
                     <div class="col-md-4">
                         <label class="col-md-4 control-label" for="email">Email</label>
@@ -90,7 +92,8 @@
         </form>
     </fieldset>
 </div>
-
+<input type="hidden" id="customerkey" name="customerkey">
+<input type="hidden" id="studiokeyex" name="studiokeyex">
 <!-- Order Details Form -->
 <form id="orderDetailsForm" class="form-horizontal" style="height: 600px;">
     <fieldset>
@@ -222,6 +225,22 @@
 <script>
     $(document).ready(function () {
         console.log("Script Loaded in neworder");
+
+
+        axios.post('/get_cached_data', {
+        key: 'studiokey', // Cache key
+        value: skey,          // Cache value
+        //minutes: 10                // Cache duration (optional)
+        })
+        .then(response => {
+
+            $('#studiokeyex').text(response.data['studiokey']);
+            $('#studiokeynew').val(response.data['studiokey']);
+            console.log('loaded from cache in new order :',response.data);  // Output: 'Data cached successfully!'
+        })
+        .catch(error => {
+            console.error('Error caching data:', error);
+        });
 
         // Toggle between new and existing customer forms
         $('input[name="client-radio"]').click(function () {
@@ -364,7 +383,7 @@
                     <td>${customer.phonenumber}</td>
                     <td>${customer.address || ''}</td>
                     <td>${customer.email || ''}</td>
-                    <td><button type="button" class="btn btn-sm btn-primary select-customer" data-id="${customer.customerkey}" data-name="${customer.username}">Select</button></td>
+                    <td><button type="button" class="btn btn-sm btn-primary select-customer" data-studiokey="${customer.studiokey}" data-id="${customer.customerkey}" data-name="${customer.username}">Select</button></td>
                 </tr>`;
             });
             html += '</tbody></table>';
@@ -374,8 +393,11 @@
         $(document).on('click', '.select-customer', function () {
             const customerId = $(this).data('id');
             const customerName = $(this).data('name');
+            const studiokey = $(this).data('studiokey');
             $('#selected-customer-id').val(customerId);
             $('#selected-customer-name').text(customerName);
+            $('#customerkey').text(customerId);
+          //  $('#studiokeyex').text(studiokey);
 
             $.ajax({
                 url: "{{ url('/set-customer-session') }}",
@@ -392,6 +414,8 @@
                 type: "GET",
                 success: function (response) {
                     $("#customer-name").text(response.customer_name || "No customer selected");
+                    $("#customerkey").text(response.customer_id);
+                    $("#studiokey").text(response.studio_key);
                     generateOrderId();
                 }
             });
@@ -415,19 +439,7 @@
     // Test Order
     function orderstore () {
 
-        var studiokey = 0;
-
-        axios.post('/get_cached_data', {
-        key: 'studiokey', // Cache key
-        value: skey,          // Cache value
-        //minutes: 10
-        })
-        .then(response => {
-            studiokey =   response.data['studiokey']
-        })
-        .catch(error => {
-            console.error('Error caching data:', error);
-        });
+        var studiokey = $("#studiokeyex").text();
 
         var ordertypekey = $("#otype option:selected").val();
         var ordertypeitemkey = $("#sittingitem option:selected").val();
@@ -439,6 +451,7 @@
         var scopycount = $("#scopy").val();
         var paidcost = $("#paidamount").val();
         var comments = $("#comments").val();
+        var customerkey = $("#customerkey").text();
         if(!ordertypekey){
             alert('Please select the order type');
             return false;
@@ -460,7 +473,7 @@
                 ordertypeitemkey:ordertypeitemkey,
                 edittypekey:edittypekey,
                 lamtypekey:lamtypekey,
-                customerkey: "{{ Session::get('customer_id')}}",
+                customerkey: customerkey,
                 isurgent: isurgent,
                 discount: discount,
                 paidcost: paidcost,

@@ -32,6 +32,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders', [NewOrderController::class, "orders"])->name('orders');
     Route::get('/ordertypeitem/{ordertypekey}', [NewOrderController::class, "ordertypeitems"])->name('ordertypeitem');
     Route::post('/store-order-ss', [StudioOrderController::class, 'storeOrder_ss'])->name('storeOrder_ss');
+    Route::get('/order-itemsummary/{orderkey}', [StudioOrderController::class, 'getOrderItemSummary'])->name('orderitemsummary_ss');
+
 
     //EditType
     Route::get('/edittypes', [NewOrderController::class, 'edittypes'])->name('edittype');

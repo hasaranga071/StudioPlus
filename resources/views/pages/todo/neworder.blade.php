@@ -207,6 +207,7 @@
                             <th>S-Copies</th>
                             <th>Delivery Date</th>
                             <th>Urgent</th>
+                            <th>Total Cost</th>
                             <th>Comments</th>
                             <th>Action</th>
                         </tr>
@@ -319,31 +320,12 @@
         // Add order to summary table
         $(document).on("click", "#add-order", function (event) {
             event.preventDefault();
-            var customername = $('#customer-name').text();
-            if (customername === '  Not set') {
-                alert('Please select a customer before adding an order.');
-                return;
-            }
+
 
             // order insert
             orderstore();
 
-            let orderType = $("#otype option:selected").text();
-            let sittingitem = orderType === 'Studio Sittings' ? $("#sittingitem option:selected").text() : '';
 
-            let newRow = `
-                <tr>
-                    <td>${orderType}</td>
-                    <td>${sittingitem}</td>
-                    <td>${$("#hcopy").val()}</td>
-                    <td>${$("#scopy").val()}</td>
-                    <td>${$("#deldate").val()}</td>
-                    <td>${$("#urgent").is(":checked") ? "Yes" : "No"}</td>
-                    <td>${$("#comments").val()}</td>
-                    <td><button class="btn btn-danger btn-sm remove-order">✕</button></td>
-                </tr>`;
-
-            $("#order-summary").append(newRow);
         });
 
         // Remove order from summary table
@@ -432,6 +414,18 @@
             });
             toggleField();
             loadOrderTypeItems();
+            clearOrderFields();
+        }
+
+        function clearOrderFields() {
+            $("#order-form").find("input, select, textarea").val("");
+            $("#discount").val("");
+            $("#hcopy").val("");
+            $("#scopy").val("");
+            $("#paidamount").val("");
+            $("#deldate").val("");
+            $("#edittype option:selected").val("");
+
         }
     });
 
@@ -446,12 +440,19 @@
         var edittypekey = $("#edittype option:selected").val();
         var lamtypekey = $("#lamtype option:selected").val();
         var isurgent = $("#urgent").prop("checked") ? 1 : 0;
-        var discount = $("#discount").val();
-        var hcopycount = $("#hcopy").val();
-        var scopycount = $("#scopy").val();
-        var paidcost = $("#paidamount").val();
+        var discount = $("#discount").val() || 0;
+        var hcopycount = $("#hcopy").val() || 0;;
+        var scopycount = $("#scopy").val() || 0;;
+        var paidcost = $("#paidamount").val() || 0;;
         var comments = $("#comments").val();
         var customerkey = $("#customerkey").text();
+        var customername = $('#customer-name').text();
+        var deliverydate = $("#deldate").val();
+        if (customername === '  Not set') {
+            alert('Please select a customer before adding an order.');
+            return;
+        }
+
         if(!ordertypekey){
             alert('Please select the order type');
             return false;
@@ -459,6 +460,10 @@
 
         if(!ordertypeitemkey){
             alert('Please select the order item');
+            return false;
+        }
+        if(!deliverydate){
+            alert('Please select the Diliver Date !');
             return false;
         }
 
@@ -481,17 +486,54 @@
                 hardcopycount:hcopycount,
                 deliverydate: $("#deldate").val(),
                 remarks: comments,
+                iscompleted:0,
                 _token: "{{ csrf_token() }}" // Required for Laravel AJAX requests
             },
             success: function (response) {
                 console.log("Order Created Successfully:", response);
-                alert("Order Created Successfully!");
+                // render table
+                ordersummarytable(response.order_id);
+                alert(response.message);
             },
             error: function (xhr, status, error) {
                 console.error("Error:", xhr.responseText);
                 alert("Failed to create order.");
             }
         });
+    }
+
+    function ordersummarytable (orderkey){
+        let orderType = $("#otype option:selected").text();
+            let sittingitem = orderType === 'Studio Sittings' ? $("#sittingitem option:selected").text() : '';
+
+            $.ajax({
+        url: "/order-itemsummary/" + orderkey,
+        type: "GET",
+        success: function (response) {
+            if (response.status === "success") {
+                let orderSummaryHtml = "";
+                response.orderItems.forEach(item => {
+                    orderSummaryHtml += `
+                        <tr>
+                            <td>${item.ordertype}</td>
+                            <td>${item.itemname}</td>
+                            <td>${item.softcopyquantity}</td>
+                            <td>${item.hardcopyquantity}</td>
+                            <td>${item.deliverydate}</td>
+                            <td>${item.isurgent}</td>
+                            <td>${item.totalcost}</td>
+                            <td>${item.remarks}</td>
+                            <td><button class="btn btn-danger btn-sm remove-order">✕</button></td>
+                        </tr>
+                    `;
+                });
+                $("#order-summary").html(orderSummaryHtml);
+            }
+        },
+        error: function (xhr) {
+            console.error("Error fetching order summary:", xhr);
+        }
+    });
     }
 </script>
 @endpush

@@ -151,6 +151,7 @@ class StudioOrderController extends Controller
                 if ($order) {
                     // update the order
                     $sorderkey = $order -> orderkey;
+                    $lamTypeKey = $request->lamtypekey ?? 0;  // If null, assign 0
 
                      // Insert / update data into StudioOrderItemMapSS table
                      StudioOrderItemMapSS::updateOrCreate(
@@ -223,16 +224,17 @@ class StudioOrderController extends Controller
                             'softcopyquantity' => $request->softcopycount,
                             'hardcopyquantity' => $request->hardcopycount,
                             'totalcost' => $ssitemCost,
+                            'iscompleted' => $request->iscompleted,
                         ]
                     );
-
+                    $message = 'Order Created Successfully!';
 
                  }
 
 
 
                 DB::commit();
-                return response()->json(['status' => 'success', 'message' => 'Order created successfully!', 'order_id' => $order->orderkey]);
+                return response()->json(['status' => 'success', 'message' => $message, 'order_id' => $order->orderkey]);
             } catch (\Exception $e) {
                 DB::rollBack();
                 return response()->json(['status' => 'error', 'message' => 'Error creating order', 'error' => $e->getMessage()], 500);
@@ -270,6 +272,33 @@ class StudioOrderController extends Controller
         $order->update($request->all());
         return response()->json($order);
     }
+
+    public function getOrderItemSummary($orderkey)
+    {
+        $orderItems = DB::table('studioorderitemmapss as soim')
+            ->join('studioordertypeitemmap as sotim', 'soim.ordertypeitemkey', '=', 'sotim.ordertypeitemkey')
+            ->join('studioordertypes as sot', 'sotim.ordertypekey', '=', 'sot.ordertypekey')
+            ->join('studioorders as so', 'soim.orderkey', '=', 'so.orderkey') // Fixed join condition
+            ->where('soim.orderkey', $orderkey)
+            ->select(
+                'sot.ordertype as ordertype', // Check if "SalesType" is the correct column name
+                'sotim.itemname as itemname', // Ensure "description" is correct in studioordertypeitemmap
+                'soim.softcopyquantity',
+                'soim.hardcopyquantity',
+                'soim.totalcost',
+                'so.isurgent',
+                'so.deliverydate',
+                'so.remarks'
+            )
+            ->get();
+
+        return response()->json([
+            'status' => 'success',
+            'orderItems' => $orderItems
+        ]);
+    }
+
+
 
     /**
      * Remove the specified order from storage.

@@ -26,6 +26,115 @@
      <!-- Scripts -->
      <!-- @vite(['resources/css/app.css', 'resources/js/app.js']) -->
 
+     <style>
+        .edit-order, .remove-order {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            padding: 5px;
+            font-size: 14px;
+            border-radius: 50%;
+        }
+
+        .edit-order {
+            background-color: #28a745;
+            border: none;
+            color: white;
+        }
+
+        .remove-order {
+            background-color: #dc3545;
+            border: none;
+            color: white;
+        }
+
+        td {
+            text-align: center;
+        }
+
+        .edit-order i, .remove-order i {
+            font-size: 12px;
+        }
+        .action-buttons {
+            display: flex;
+            align-items: center;
+            gap: 5px; /* Space between buttons */
+        }
+
+        .action-buttons button {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 14px;
+            padding: 5px;
+        }
+        .highlighted-row {
+            background-color: #777a7b !important; /* Light blue background */
+            transition: background-color 0.3s ease-in-out;
+        }
+        /* Improved table styling */
+            .order-summary-table {
+                width: 100%;
+                border-collapse: collapse;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            /* Styling for table headers */
+            .order-summary-table thead {
+                background-color: #757576;
+                color: rgb(22, 21, 21);
+                text-align: center;
+                font-weight: bold;
+            }
+
+            /* Styling for table rows */
+            .order-summary-table tbody tr {
+                transition: background 0.3s ease-in-out;
+            }
+
+            /* Alternate row colors
+            .order-summary-table tbody tr:nth-child(even) {
+                background-color: #f8f9fa;
+            } */
+
+            /* Row hover effect */
+            .order-summary-table tbody tr:hover {
+                background-color: #7d7b7b;
+            }
+
+            /* Action buttons */
+            .order-actions {
+                display: flex;
+                gap: 5px;
+                justify-content: center;
+            }
+
+            .order-actions .btn {
+                padding: 5px 8px;
+                font-size: 14px;
+                border-radius: 5px;
+            }
+
+            .btn-edit {
+                background-color: #136426;
+                color: white;
+            }
+
+            .btn-delete {
+                background-color: #dc3545;
+                color: white;
+            }
+
+
+
+        </style>
 
 
 </head>

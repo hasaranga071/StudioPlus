@@ -95,7 +95,7 @@
 <input type="hidden" id="customerkey" name="customerkey">
 <input type="hidden" id="studiokeyex" name="studiokeyex">
 <!-- Order Details Form -->
-<form id="orderDetailsForm" class="form-horizontal" style="height: 600px;">
+<form id="orderDetailsForm" class="form-horizontal" _style="height: 600px;">
     <fieldset>
         <div style="display:flex">
             <div class="section_logo"><img width="30px" height="30px" src="{{ asset('images/order.png') }}"/></div>
@@ -196,9 +196,9 @@
                     {{-- <button id="testStoreOrder" class="btn btn-primary">Test Order</button> --}}
                 </div>
             </div>
-            <div class="column1" style="background-color:#aaa;">
+            <div class="column1" style="background-color:#aaa;" id="order-summary-tb">
                 <h2>Order Summary</h2>
-                <table class="table table-bordered">
+                <table class="table table-bordered order-summary-table">
                     <thead>
                         <tr>
                             <th>Order Type</th>
@@ -417,16 +417,55 @@
             clearOrderFields();
         }
 
-        function clearOrderFields() {
-            $("#order-form").find("input, select, textarea").val("");
-            $("#discount").val("");
-            $("#hcopy").val("");
-            $("#scopy").val("");
-            $("#paidamount").val("");
-            $("#deldate").val("");
-            $("#edittype option:selected").val("");
+        $(document).on('click', '.edit-order', function () {
+         event.preventDefault();
+        let row = $(this).closest('tr'); // Get the clicked row
+        let ssorderitemmapkey = row.data('ssorderitemmapkey'); // Get the ID
+        $("#add-order").text("Update").removeClass("btn-primary").addClass("btn-warning");
+        $(".highlighted-row").removeClass("highlighted-row");
 
-        }
+        // Highlight the row of the clicked edit button
+        $(this).closest("tr").addClass("highlighted-row");
+
+        // Fetch existing order details (example: using AJAX)
+        $.ajax({
+            url: "/order-item-details/"+ssorderitemmapkey, // Route for fetching details
+            type: "GET",
+            success: function (response) {
+                if (response.status === 'success') {
+                    let item = response.orderItems[0];
+                    console.log('orderitem',item);
+                    // Populate the input fields
+
+
+                    $("#urgent").prop('checked', item.isurgent == 1);
+                    $("#comments").val(item.remarks).change();
+
+                    $("#discount").val(item.discount);
+                    $("#hcopy").val(item.hardcopyquantity);
+                    $("#scopy").val(item.softcopyquantity);
+                    $("#paidamount").val(item.paidcost);
+                    $("#deldate").val(item.deliverydate).change();
+                    if ($("#sittingitem option[value='" + item.ordertypeitemkey + "']").length === 0) {
+                        $("#sittingitem").append(`<option value="${item.ordertypeitemkey}">${item.itemname}</option>`);
+                    }
+                    $("#sittingitem").val(item.ordertypeitemkey).change();
+                    if ($("#edittype option[value='" + item.edittypekey + "']").length === 0) {
+                        $("#edittype").append(`<option value="${item.edittypekey}">${item.edittype}</option>`);
+                    }
+                    $("#edittype").val(item.edittypekey).change();
+
+                    // Store the ID for updating later
+                    $("#ssorderitemmapkey").val(item.ssorderitemmapkey);
+                }
+            },
+            error: function (xhr) {
+                console.error("Error fetching order details:", xhr.responseText);
+            }
+            });
+        });
+
+
     });
 
 
@@ -493,6 +532,7 @@
                 console.log("Order Created Successfully:", response);
                 // render table
                 ordersummarytable(response.order_id);
+                clearOrderFields();
                 alert(response.message);
             },
             error: function (xhr, status, error) {
@@ -514,16 +554,19 @@
                 let orderSummaryHtml = "";
                 response.orderItems.forEach(item => {
                     orderSummaryHtml += `
-                        <tr>
+                        <tr data-ssorderitemmapkey="${item.ssorderitemmapkey}">
                             <td>${item.ordertype}</td>
                             <td>${item.itemname}</td>
                             <td>${item.softcopyquantity}</td>
                             <td>${item.hardcopyquantity}</td>
                             <td>${item.deliverydate}</td>
-                            <td>${item.isurgent}</td>
-                            <td>${item.totalcost}</td>
+                            <td>${item.isurgent == 1 ? 'Yes' : 'No'}</td>
+                            <td>Rs ${item.totalcost}</td>
                             <td>${item.remarks}</td>
-                            <td><button class="btn btn-danger btn-sm remove-order">✕</button></td>
+                             <td class="order-actions">
+                <button class="btn btn-edit edit-order"><i class="fas fa-edit"></i></button>
+                <button class="btn btn-delete remove-order"><i class="fas fa-trash"></i></button>
+            </td>
                         </tr>
                     `;
                 });
@@ -535,6 +578,18 @@
         }
     });
     }
+
+
+
+        function clearOrderFields() {
+            $("#order-form").find("input, select, textarea").val("");
+            $("#discount").val("");
+            $("#hcopy").val("");
+            $("#scopy").val("");
+            $("#paidamount").val("");
+
+        }
+
 </script>
 @endpush
 @endsection

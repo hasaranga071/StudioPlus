@@ -30,6 +30,8 @@ class StudioOrderItemMapSS extends Model
         'iscompleted',
     ];
 
+
+
     public function order()
     {
         return $this->belongsTo(StudioOrder::class, 'orderkey');

@@ -208,7 +208,7 @@ class StudioOrderController extends Controller
                         'createdtime' => now(),
                         'updatedtime' => now(),
                         'deliverydate' => $request->deliverydate,
-                        'remarks' => $request->comments,
+                        'remarks' => $request->remarks,
                     ]);
 
                     $sorderkey = $order->orderkey;
@@ -281,14 +281,49 @@ class StudioOrderController extends Controller
             ->join('studioorders as so', 'soim.orderkey', '=', 'so.orderkey') // Fixed join condition
             ->where('soim.orderkey', $orderkey)
             ->select(
-                'sot.ordertype as ordertype', // Check if "SalesType" is the correct column name
-                'sotim.itemname as itemname', // Ensure "description" is correct in studioordertypeitemmap
+                'sot.ordertype as ordertype',
+                'sotim.itemname as itemname',
                 'soim.softcopyquantity',
                 'soim.hardcopyquantity',
                 'soim.totalcost',
                 'so.isurgent',
                 'so.deliverydate',
+                'so.remarks',
+                'soim.ssorderitemmapkey as ssorderitemmapkey'
+            )
+            ->get();
+
+        return response()->json([
+            'status' => 'success',
+            'orderItems' => $orderItems
+        ]);
+    }
+
+    public function getOrderItemDetails($ssorderitemmapkey)
+    {
+        $orderItems = DB::table('studioorderitemmapss as soim')
+            ->join('studioordertypeitemmap as sotim', 'soim.ordertypeitemkey', '=', 'sotim.ordertypeitemkey')
+            ->join('studioordertypes as sot', 'sotim.ordertypekey', '=', 'sot.ordertypekey')
+            ->join('studioorders as so', 'soim.orderkey', '=', 'so.orderkey')
+            ->leftJoin('studioedittypes as set', 'soim.edittypekey', '=', 'set.edittypekey')
+            ->where('soim.ssorderitemmapkey', $ssorderitemmapkey)
+            ->select(
+                'sot.ordertype as ordertype',
+                'sotim.itemname as itemname',
+                'soim.softcopyquantity',
+                'soim.hardcopyquantity',
+                'soim.totalcost',
+                'so.isurgent',
+                'so.deliverydate',
+                'sotim.ordertypekey',
+                'soim.ordertypeitemkey',
+                'soim.edittypekey',
+                'soim.lamtypekey',
+                'so.paidcost',
+                'so.discount',
+                'set.edittype',
                 'so.remarks'
+
             )
             ->get();
 

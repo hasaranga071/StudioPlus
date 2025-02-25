@@ -34,6 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/store-order-ss', [StudioOrderController::class, 'storeOrder_ss'])->name('storeOrder_ss');
     Route::get('/order-itemsummary/{orderkey}', [StudioOrderController::class, 'getOrderItemSummary'])->name('orderitemsummary_ss');
     Route::get('/order-item-details/{ssorderitemmapkey}', [StudioOrderController::class, 'getOrderItemDetails'])->name('orderitemdetail_ss');
+    Route::delete('/delete-order-item/{ssorderitemmapkey}', [StudioOrderController::class, 'deleteOrderItem']);
 
 
     //EditType

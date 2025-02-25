@@ -216,6 +216,16 @@
                         <!-- Orders will be dynamically added here -->
                     </tbody>
                 </table>
+
+                <div style="text-align: center;">
+
+                    @if(session('success'))
+                        <div id="flash-message" class="alert alert-success">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+                </div>
+
             </div>
         </div>
     </fieldset>
@@ -225,7 +235,7 @@
 @push('scripts')
 <script>
     $(document).ready(function () {
-        console.log("Script Loaded in neworder");
+       // console.log("Script Loaded in neworder");
 
 
         axios.post('/get_cached_data', {
@@ -237,7 +247,7 @@
 
             $('#studiokeyex').text(response.data['studiokey']);
             $('#studiokeynew').val(response.data['studiokey']);
-            console.log('loaded from cache in new order :',response.data);  // Output: 'Data cached successfully!'
+
         })
         .catch(error => {
             console.error('Error caching data:', error);
@@ -329,9 +339,53 @@
         });
 
         // Remove order from summary table
-        $(document).on("click", ".remove-order", function () {
-            $(this).closest("tr").remove();
+        $(document).on('click', '.remove-order', function() {
+            event.preventDefault();
+            let orderItemId = $(this).data('id');
+            let orderkey = $(this).data('orderid');
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Do you want to delete this order item?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "/delete-order-item/" + orderItemId,  // Laravel route
+                        type: "DELETE",
+                        data: {
+                            _token: "{{ csrf_token() }}"
+                        },
+                        success: function(response) {
+                          //  Swal.fire("Deleted!", "The order item has been deleted.", "success");
+                          $("body").prepend(`
+                            <div id="flash-message" class="alert alert-success"
+                                style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                                z-index: 9999; padding: 15px 20px; font-size: 16px; text-align: center;
+                                background-color: #434844; color: white; border-radius: 5px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);">
+                                Order item deleted !
+                            </div>
+                        `);
+                            // Automatically remove the message after 2 seconds
+                            setTimeout(function() {
+                                $("#flash-message").fadeOut("slow", function() {
+                                    $(this).remove();
+                                });
+                            }, 2000);
+                            ordersummarytable(orderkey);
+                        },
+                        error: function() {
+                            Swal.fire("Error!", "Something went wrong.", "error");
+                        }
+                    });
+                }
+            });
         });
+
 
         // Existing Customer Search
         $('#existingCustomerForm').on('submit', function (e) {
@@ -421,7 +475,7 @@
          event.preventDefault();
         let row = $(this).closest('tr'); // Get the clicked row
         let ssorderitemmapkey = row.data('ssorderitemmapkey'); // Get the ID
-        $("#add-order").text("Update").removeClass("btn-primary").addClass("btn-warning");
+        $("#add-order").text("Update");
         $(".highlighted-row").removeClass("highlighted-row");
 
         // Highlight the row of the clicked edit button
@@ -445,7 +499,8 @@
                     $("#hcopy").val(item.hardcopyquantity);
                     $("#scopy").val(item.softcopyquantity);
                     $("#paidamount").val(item.paidcost);
-                    $("#deldate").val(item.deliverydate).change();
+                    let deliveryDate = item.deliverydate.split(" ")[0]; // Extracts "2025-02-26"
+                    $("#deldate").val(deliveryDate).change();
                     if ($("#sittingitem option[value='" + item.ordertypeitemkey + "']").length === 0) {
                         $("#sittingitem").append(`<option value="${item.ordertypeitemkey}">${item.itemname}</option>`);
                     }
@@ -531,9 +586,21 @@
             success: function (response) {
                 console.log("Order Created Successfully:", response);
                 // render table
+                $("body").prepend(`
+                            <div id="flash-message" class="alert alert-success"
+                                style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                                z-index: 9999; padding: 15px 20px; font-size: 16px; text-align: center;
+                                background-color: #434844; color: white; border-radius: 5px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);">
+                                Order item Added !</div>`);
+                            // Automatically remove the message after 2 seconds
+                            setTimeout(function() {
+                                $("#flash-message").fadeOut("slow", function() {
+                                    $(this).remove();
+                                });
+                            }, 2000);
                 ordersummarytable(response.order_id);
                 clearOrderFields();
-                alert(response.message);
+              //  alert(response.message);
             },
             error: function (xhr, status, error) {
                 console.error("Error:", xhr.responseText);
@@ -565,7 +632,7 @@
                             <td>${item.remarks}</td>
                              <td class="order-actions">
                 <button class="btn btn-edit edit-order"><i class="fas fa-edit"></i></button>
-                <button class="btn btn-delete remove-order"><i class="fas fa-trash"></i></button>
+                <button class="btn btn-delete remove-order" data-orderid="${item.orderkey}" data-id="${item.ssorderitemmapkey}"><i class="fas fa-trash"></i></button>
             </td>
                         </tr>
                     `;
@@ -589,6 +656,7 @@
             $("#paidamount").val("");
 
         }
+
 
 </script>
 @endpush

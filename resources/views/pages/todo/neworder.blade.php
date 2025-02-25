@@ -216,6 +216,7 @@
                         <!-- Orders will be dynamically added here -->
                     </tbody>
                 </table>
+
             </div>
         </div>
     </fieldset>
@@ -225,7 +226,7 @@
 @push('scripts')
 <script>
     $(document).ready(function () {
-        console.log("Script Loaded in neworder");
+       // console.log("Script Loaded in neworder");
 
 
         axios.post('/get_cached_data', {
@@ -237,7 +238,7 @@
 
             $('#studiokeyex').text(response.data['studiokey']);
             $('#studiokeynew').val(response.data['studiokey']);
-            console.log('loaded from cache in new order :',response.data);  // Output: 'Data cached successfully!'
+
         })
         .catch(error => {
             console.error('Error caching data:', error);
@@ -421,7 +422,7 @@
          event.preventDefault();
         let row = $(this).closest('tr'); // Get the clicked row
         let ssorderitemmapkey = row.data('ssorderitemmapkey'); // Get the ID
-        $("#add-order").text("Update").removeClass("btn-primary").addClass("btn-warning");
+        $("#add-order").text("Update");
         $(".highlighted-row").removeClass("highlighted-row");
 
         // Highlight the row of the clicked edit button
@@ -533,7 +534,7 @@
                 // render table
                 ordersummarytable(response.order_id);
                 clearOrderFields();
-                alert(response.message);
+              //  alert(response.message);
             },
             error: function (xhr, status, error) {
                 console.error("Error:", xhr.responseText);

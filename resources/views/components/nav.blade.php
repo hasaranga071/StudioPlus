@@ -5,10 +5,10 @@
                 <img  id="slogo" width="100px" height="100px" src=""/>
                 <div class="companybrand">STUDIO plus +<div>
             </div>
-        </ul>	
+        </ul>
         <div id='sname' class="navbar-brand">MY STUDIO</div>
 
-    
+
 	<div class="collapse navbar-collapse" style="margin-left: 180px;">
 		<ul class="custom-navbar-nav navbar-nav ">
 			<li _class="nav-item active"> <a class="navbar-link" href="index.html">Dashboard</</li>
@@ -113,18 +113,18 @@
 
 
                 <!-- end login panel -->
-                
+
 			</div>
 		</ul>
 	</div>
-</div>			
+</div>
 </nav>
 <script>
     var sname,skey;
         $(document).ready(function () {
-            
+
         var userkey="{{ auth()->user()->id }}";
-            
+
         axios.get('/studiodetails_of_user', {
             params: {
                 UserKey: 1
@@ -140,7 +140,7 @@
         .catch(error => {
             console.error("There was an error!", error);
         });
-    
+
         //cache data
         axios.post('/cache-data', {
         key: 'studiokey', // Cache key
@@ -154,7 +154,7 @@
             console.error('Error caching data:', error);
         });
 
-       
+
 
         axios.post('/get_cached_data', {
         key: 'studiokey', // Cache key
@@ -162,7 +162,7 @@
         //minutes: 10                // Cache duration (optional)
         })
         .then(response => {
-            console.log('loaded from cache :',response.data);  // Output: 'Data cached successfully!'
+          //  console.log('loaded from cache :',response.data);  // Output: 'Data cached successfully!'
         })
         .catch(error => {
             console.error('Error caching data:', error);

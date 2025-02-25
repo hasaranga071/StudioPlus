@@ -240,6 +240,20 @@ class StudioOrderController extends Controller
                 return response()->json(['status' => 'error', 'message' => 'Error creating order', 'error' => $e->getMessage()], 500);
             }
         }
+
+        public function deleteOrderItem($id) {
+            // Find and delete the order item
+            $orderItem = DB::table('studioorderitemmapss')->where('ssorderitemmapkey', $id)->delete();
+
+            if ($orderItem) {
+               // $this->storeOrder_ss(); // Call storeOrder_ss function after deletion
+               session()->flash('success', 'The order item has been deleted successfully.');
+               return response()->json(['success' => true]);
+            }
+
+            return response()->json(['error' => 'Failed to delete order item'], 500);
+        }
+
     /**
      * Display the specified order.
      */
@@ -289,7 +303,8 @@ class StudioOrderController extends Controller
                 'so.isurgent',
                 'so.deliverydate',
                 'so.remarks',
-                'soim.ssorderitemmapkey as ssorderitemmapkey'
+                'soim.ssorderitemmapkey as ssorderitemmapkey',
+                'soim.orderkey'
             )
             ->get();
 

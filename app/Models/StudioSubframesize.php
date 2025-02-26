@@ -5,16 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class StudioFramesize extends Model
+class StudioSubframesize extends Model
 {
     use HasFactory;
 
-    protected $table = 'studioframesizes'; // Ensure this matches the database table name
-    protected $primaryKey = 'framesizekey'; // Set the correct primary key
+    protected $table = 'studiosubframesizes'; // Ensure this matches the database table name
+    protected $primaryKey = 'subframesizekey'; // Set the correct primary key
     public $timestamps = false; // Disable timestamps if not needed
 
     protected $fillable = [
-        'size',
+        'framesize',
         'unitprice',
     ];
 }

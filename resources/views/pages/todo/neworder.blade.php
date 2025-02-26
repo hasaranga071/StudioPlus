@@ -166,6 +166,46 @@
                     </div>
                 </div>
                 <div class="form-group" style="display:flex;gap: 50px">
+                    <div class="col-md-4" id="frametypemain">
+                        <label class="form-label" for="frametype">Type (*)</label>
+                        <select id="frametype" name="frametype" class="form-control">
+                        <option value="">Select Type</option>
+                            @foreach ($frameTypes as $frametype)
+                                <option value="{{ $frametype->frametypekey }}">{{ $frametype->frametype }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4" id="framesizemain">
+                        <label class="form-label" for="framesize">Size (*)</label>
+                        <select id="framesize" name="framesize" class="form-control">
+                        <option value="">Select Size</option>
+                            @foreach ($frameSizes as $framesize)
+                                <option value="{{ $framesize->framesizekey }}">{{ $framesize->size }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" style="display:flex;gap: 50px">                    
+                    <div class="col-md-4" id="subframesizemain">
+                        <label class="form-label" for="subframesize">Frame Size (*)</label>
+                        <select id="subframesize" name="subframesize" class="form-control">
+                        <option value="">Select Frame Size</option>
+                            @foreach ($frameSubSizes as $subframesize)
+                                <option value="{{ $subframesize->subframesizekey }}">{{ $subframesize->framesize }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4" id="subframetypemain">
+                        <label class="form-label" for="subframetype">Frame Type (*)</label>
+                        <select id="subframetype" name="subframetype" class="form-control">
+                        <option value="">Select Frame Type</option>
+                            @foreach ($frameSubTypes as $subframetype)
+                                <option value="{{ $subframetype->subframetypekey }}">{{ $subframetype->subframetype }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" style="display:flex;gap: 50px">
                     <div class="col-md-4">
                         <label class="col-md-4 control-label">H-Copies</label>
                         <input id="hcopy" name="hcopy" type="text" class="form-control input-md" required="">
@@ -263,17 +303,23 @@
         // Toggle sittings section and generate Order ID based on order type
         $("#otype").change(function () {
             generateOrderId();
-           // toggleField();
-           //  loadOrderTypeItems();
+        });
+
+        // Toggle frame type section based on Fiber Fream
+        $("#frametype").change(function () {
+            toggleField();
         });
 
         toggleField(); // Run function on page load
 
         function toggleField() {
             var selectedOrderType = $("#otype option:selected").text();
+            var selectedFrameType = $("#frametype option:selected").text();
 
-            $('#edittypemain').toggle(selectedOrderType !== "Frames");
+            $('#frametypemain, #framesizemain, #subframesizemain, #subframetypemain').toggle(selectedOrderType === "Frames");
             $('#lamtypemain').toggle(selectedOrderType === "Media");
+            $('#Sittings, #edittypemain').toggle(selectedOrderType !== "Frames");
+            $('#subframesizemain, #subframetypemain').toggle(selectedFrameType === "Fiber Frame");
         }
 
         function loadOrderTypeItems() {

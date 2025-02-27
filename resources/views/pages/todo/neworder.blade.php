@@ -185,7 +185,7 @@
                         </select>
                     </div>
                 </div>
-                <div class="form-group" style="display:flex;gap: 50px">                    
+                <div class="form-group" style="display:flex;gap: 50px">
                     <div class="col-md-4" id="subframesizemain">
                         <label class="form-label" for="subframesize">Frame Size (*)</label>
                         <select id="subframesize" name="subframesize" class="form-control">
@@ -647,9 +647,30 @@
               //  alert(response.message);
             },
             error: function (xhr, status, error) {
-                console.error("Error:", xhr.responseText);
-                alert("Failed to create order.");
+            console.error("Error:", xhr.responseText);
+
+            // Attempt to parse the JSON response
+            try {
+                var response = JSON.parse(xhr.responseText);
+
+                // Display the error message using SweetAlert2
+                Swal.fire({
+                    title: 'Failed to Create Order',
+                    text: response.message || 'An unexpected error occurred.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            } catch (e) {
+                // If parsing fails, display a generic error message
+                Swal.fire({
+                    title: 'Failed to Create Order',
+                    text: 'An unexpected error occurred.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
             }
+        }
+
         });
     }
 

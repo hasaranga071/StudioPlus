@@ -111,13 +111,16 @@ class StudioOrderController extends Controller
                 // add cost for editing
 
                     $edittypekey = $request->edittypekey;
-
-                    // Fetch the UnitCost from studiodittypes table
+                    if ($edittypekey > 0)
+                    {
+                         // Fetch the UnitCost from studiodittypes table
                     $unitCost = StudioEdittype::where('edittypekey', $edittypekey)->value('unitcost');
 
                     if ($unitCost === null) {
                         return response()->json(['status' => 'error', 'message' => "Unit price is not configured for this edit type !"], 400);
                     }
+                    }
+
 
                     $totalCost += $unitCost;
 

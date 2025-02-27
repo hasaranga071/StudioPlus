@@ -206,11 +206,11 @@
                     </div>
                 </div>
                 <div class="form-group" style="display:flex;gap: 50px">
-                    <div class="col-md-4">
+                    <div class="col-md-4" id="hcopymain">
                         <label class="col-md-4 control-label">H-Copies</label>
                         <input id="hcopy" name="hcopy" type="text" class="form-control input-md" required="">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4" id="scopymain">
                         <label class="col-md-4 control-label">S-Copies</label>
                         <input id="scopy" name="scopy" type="text" class="form-control input-md" required="">
                     </div>
@@ -318,7 +318,7 @@
 
             $('#frametypemain, #framesizemain, #subframesizemain, #subframetypemain').toggle(selectedOrderType === "Frames");
             $('#lamtypemain').toggle(selectedOrderType === "Media");
-            $('#Sittings, #edittypemain').toggle(selectedOrderType !== "Frames");
+            $('#Sittings, #edittypemain, #hcopymain, #scopymain').toggle(selectedOrderType !== "Frames");
             $('#subframesizemain, #subframetypemain').toggle(selectedFrameType === "Fiber Frame");
         }
 

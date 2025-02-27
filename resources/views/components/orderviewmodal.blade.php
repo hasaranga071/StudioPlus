@@ -1,3 +1,4 @@
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
     <div class="modal-dialog  modal-xl">
         <div class="modal-content">
@@ -33,18 +34,10 @@
                             <span class="font-semibold" id="status"></span>
                         </div>
                     </div></br></br>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full table-auto">
-                                <thead>
-                                    <tr class="bg-gray-100">
-                                        <th class="px-4 py-2 text-left">Item Type</th>
-                                        <th class="px-4 py-2 text-left">Hard Copies</th>
-                                        <th class="px-4 py-2 text-left">Soft Copies</th>
-                                        <th class="px-4 py-2 text-left">Comments</th>
-                                    </tr>
-                                </thead>
-                               
-                            </table> 
+                   
+
+                    <div id="orderitemResults" class="overflow-x-auto">
+                       
                         </div>
                     </div>
             </div>

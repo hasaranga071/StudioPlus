@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 #use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\StudioOrder;
+use App\Models\StudioOrderItemMapSS;
 use Illuminate\Support\Facades\Session;
 use App\Models\StudioOrderType;
 use App\Models\StudioOrderTypeItemMap;
@@ -97,4 +98,36 @@ class NewOrderController extends Controller
         return response()->json($orders);
 
   }
+  public function itemsearch(Request $request)
+  {
+
+        // Get input values
+    //     $orderkey      = $request->input('orderkey');
+
+      
+    //     // Search order items based on orderkey
+    //     $orderitems = StudioOrderItemMapSS::where(function ($q) use ($orderkey) {
+
+    //         if (!empty($orderkey)) {
+    //           $q->where('StudioOrderItemMapSS.orderkey', $orderkey);
+              
+    //         }
+    
+    //     })
+    //  ->get();
+
+    //     return response()->json($orderitems);
+    // Get input values
+    $orderkey = $request->input('orderkey');
+
+    // Search order items based on orderkey and include item type from related model
+    $orderitems = StudioOrderItemMapSS::with('editType','lamType'.'orderTypeItem') // Assuming 'itemType' is the relationship method
+        ->when(!empty($orderkey), function ($query) use ($orderkey) {
+            $query->where('StudioOrderItemMapSS.orderkey', $orderkey);
+        })
+        ->get();
+
+    return response()->json($orderitems);
+  }
+  
 }

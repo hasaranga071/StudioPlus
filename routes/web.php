@@ -40,6 +40,18 @@ Route::middleware('auth')->group(function () {
     //EditType
     Route::get('/edittypes', [NewOrderController::class, 'edittypes'])->name('edittype');
 
+    //FrameType
+    Route::get('/frametypes', [NewOrderController::class, 'frametypes'])->name('frametype');
+
+    //FrameSize
+    Route::get('/framesizes', [NewOrderController::class, 'framesizes'])->name('framesize');
+
+    //SubFrameType
+    Route::get('/subframetypes', [NewOrderController::class, 'subframetypes'])->name('subframetype');
+
+    //SubFrameSize
+    Route::get('/subframesizes', [NewOrderController::class, 'subframesizes'])->name('subframesize');
+
     // Studio Users
     Route::post('/studio-user', [StudioUserController::class, 'store'])->name('studio-user.store');
 

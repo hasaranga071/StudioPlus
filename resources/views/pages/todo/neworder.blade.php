@@ -217,14 +217,14 @@
                     </tbody>
                 </table>
 
-                <div style="text-align: center;">
+                <div class="order-summary-totals" style="margin-top: 20px; margin-left: auto; margin-right: auto;">
+                    <table class="table table-bordered" style="background: #9c9c9c; border-radius: 8px; overflow: hidden;">
+                        <tbody id="order-summary-total">
 
-                    @if(session('success'))
-                        <div id="flash-message" class="alert alert-success">
-                            {{ session('success') }}
-                        </div>
-                    @endif
+                        </tbody>
+                    </table>
                 </div>
+
 
             </div>
         </div>
@@ -538,7 +538,7 @@
         var hcopycount = $("#hcopy").val() || 0;;
         var scopycount = $("#scopy").val() || 0;;
         var paidcost = $("#paidamount").val() || 0;;
-        var comments = $("#comments").val();
+        var comments = $("#comments").val() || "";
         var customerkey = $("#customerkey").text();
         var customername = $('#customer-name').text();
         var deliverydate = $("#deldate").val();
@@ -586,12 +586,10 @@
             success: function (response) {
                 console.log("Order Created Successfully:", response);
                 // render table
-                $("body").prepend(`
-                            <div id="flash-message" class="alert alert-success"
-                                style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-                                z-index: 9999; padding: 15px 20px; font-size: 16px; text-align: center;
-                                background-color: #434844; color: white; border-radius: 5px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);">
-                                Order item Added !</div>`);
+                let flashbody = '<div id="flash-message" class="alert alert-success" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);z-index: 9999; padding: 15px 20px; font-size: 16px; text-align: center;background-color: #434844; color: white; border-radius: 5px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);">'
+                + response.message +'!</div>';
+
+                $("body").prepend(flashbody);
                             // Automatically remove the message after 2 seconds
                             setTimeout(function() {
                                 $("#flash-message").fadeOut("slow", function() {
@@ -619,7 +617,15 @@
         success: function (response) {
             if (response.status === "success") {
                 let orderSummaryHtml = "";
+                let orderSummaryTotalHtml = "";
+                let ordertotalcost = 0;
+                let orderdiscount = 0;
+                let discountamount = 0;
+                let paidamount = 0;
                 response.orderItems.forEach(item => {
+                    ordertotalcost += parseFloat(item.totalcost) || 0; // Add item cost
+                    orderdiscount = parseFloat(item.discount) || 0; // Add item cost
+                    paidamount = parseFloat(item.paidcost) || 0; // Add item cost
                     orderSummaryHtml += `
                         <tr data-ssorderitemmapkey="${item.ssorderitemmapkey}">
                             <td>${item.ordertype}</td>
@@ -637,7 +643,26 @@
                         </tr>
                     `;
                 });
+                discountamount =  (ordertotalcost * orderdiscount) / 100;
+                let balancedue = (ordertotalcost - discountamount) - paidamount;
+                orderSummaryTotalHtml = `<tr>
+                                <th style="width: 50%;">Total Cost</th>
+                                <td><span id="total-cost">Rs ${ordertotalcost.toFixed(2)}</span></td>
+                            </tr>
+                            <tr>
+                                <th>Discount (${orderdiscount}%)</th>
+                                <td><span id="total-cost">Rs ${discountamount.toFixed(2)}</span></td>
+                            </tr>
+                            <tr>
+                                <th>Paid Amount</th>
+                                <td><span id="total-cost">Rs ${paidamount.toFixed(2)}</span></td>
+                            </tr>
+                            <tr>
+                                <th>Balance Due</th>
+                                <td><span id="balance-due" style="font-weight:700;">Rs ${balancedue.toFixed(2)}</span></td>
+                            </tr> `;
                 $("#order-summary").html(orderSummaryHtml);
+                $("#order-summary-total").html(orderSummaryTotalHtml);
             }
         },
         error: function (xhr) {

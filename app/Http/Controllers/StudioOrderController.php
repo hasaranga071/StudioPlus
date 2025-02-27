@@ -303,6 +303,9 @@ class StudioOrderController extends Controller
                 'so.isurgent',
                 'so.deliverydate',
                 'so.remarks',
+                'so.totalcost as ordercost',
+                'so.paidcost',
+                'so.discount',
                 'soim.ssorderitemmapkey as ssorderitemmapkey',
                 'soim.orderkey'
             )

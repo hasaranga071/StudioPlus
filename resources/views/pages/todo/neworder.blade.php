@@ -53,6 +53,9 @@
                         </select>
                         <span class="error-message text-danger" id="address-error"></span>
                         <input type="hidden" name="address_text" id="address_text">
+                        <input type="hidden" name="studiokeynew" id="studiokeynew">
+
+
                     </div>
                     <div class="col-md-4">
                         <label class="col-md-4 control-label" for="email">Email</label>
@@ -89,9 +92,10 @@
         </form>
     </fieldset>
 </div>
-
+<input type="hidden" id="customerkey" name="customerkey">
+<input type="hidden" id="studiokeyex" name="studiokeyex">
 <!-- Order Details Form -->
-<form id="orderDetailsForm" class="form-horizontal" style="height: 600px;">
+<form id="orderDetailsForm" class="form-horizontal" _style="height: 600px;">
     <fieldset>
         <div style="display:flex">
             <div class="section_logo"><img width="30px" height="30px" src="{{ asset('images/order.png') }}"/></div>
@@ -132,7 +136,7 @@
                 <div class="form-group" style="display:flex;gap: 50px">
                     <div class="col-md-4" id="Sittings">
                         <label class="col-md-4 control-label" for="item">Item (*)</label>
-                        <select id="sittingitem" name="item" class="form-control" style="width: 57%;">
+                        <select id="sittingitem" name="item" class="form-control" _style="width: 57%;">
                             <option value="">Select an Item</option> <!-- Placeholder -->
                         </select>
                     </div>
@@ -143,7 +147,7 @@
                 </div>
                 <div class="form-group" style="display:flex;gap: 50px">
                     <div class="col-md-4" id="edittypemain">
-                        <label class="form-label" for="edittype">Edit Type (*)</label>                        
+                        <label class="form-label" for="edittype">Edit Type (*)</label>
                         <select id="edittype" name="edittype" class="form-control">
                         <option value="">Select Edit Type</option>
                             @foreach ($editTypes as $editType)
@@ -152,11 +156,51 @@
                         </select>
                     </div>
                     <div class="col-md-4" id="lamtypemain">
-                        <label class="form-label" for="lamtype">Laminate Type (*)</label>                        
+                        <label class="form-label" for="lamtype">Laminate Type (*)</label>
                         <select id="lamtype" name="lamtype" class="form-control">
                         <option value="">Select Laminating Type</option>
                             @foreach ($lamTypes as $lamType)
                                 <option value="{{ $lamType->lamtypekey }}">{{ $lamType->laminatetype }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" style="display:flex;gap: 50px">
+                    <div class="col-md-4" id="frametypemain">
+                        <label class="form-label" for="frametype">Type (*)</label>
+                        <select id="frametype" name="frametype" class="form-control">
+                        <option value="">Select Type</option>
+                            @foreach ($frameTypes as $frametype)
+                                <option value="{{ $frametype->frametypekey }}">{{ $frametype->frametype }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4" id="framesizemain">
+                        <label class="form-label" for="framesize">Size (*)</label>
+                        <select id="framesize" name="framesize" class="form-control">
+                        <option value="">Select Size</option>
+                            @foreach ($frameSizes as $framesize)
+                                <option value="{{ $framesize->framesizekey }}">{{ $framesize->size }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" style="display:flex;gap: 50px">                    
+                    <div class="col-md-4" id="subframesizemain">
+                        <label class="form-label" for="subframesize">Frame Size (*)</label>
+                        <select id="subframesize" name="subframesize" class="form-control">
+                        <option value="">Select Frame Size</option>
+                            @foreach ($frameSubSizes as $subframesize)
+                                <option value="{{ $subframesize->subframesizekey }}">{{ $subframesize->framesize }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4" id="subframetypemain">
+                        <label class="form-label" for="subframetype">Frame Type (*)</label>
+                        <select id="subframetype" name="subframetype" class="form-control">
+                        <option value="">Select Frame Type</option>
+                            @foreach ($frameSubTypes as $subframetype)
+                                <option value="{{ $subframetype->subframetypekey }}">{{ $subframetype->subframetype }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -170,6 +214,17 @@
                         <label class="col-md-4 control-label">S-Copies</label>
                         <input id="scopy" name="scopy" type="text" class="form-control input-md" required="">
                     </div>
+
+                </div>
+                <div class="form-group" style="display:flex;gap: 50px">
+                    <div class="col-md-4">
+                        <label class="col-md-4 control-label">Paid Amount</label>
+                        <input id="paidamount" name="paidamount" type="text" class="form-control input-md" required="">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="col-md-4 control-label">Discount</label>
+                        <input id="discount" name="discount" type="text" class="form-control input-md" required="">
+                    </div>
                 </div>
                 <div class="col-md-4">
                     <label class="col-md-4 control-label">Comments</label><br>
@@ -181,9 +236,9 @@
                     {{-- <button id="testStoreOrder" class="btn btn-primary">Test Order</button> --}}
                 </div>
             </div>
-            <div class="column1" style="background-color:#aaa;">
+            <div class="column1" style="background-color:#aaa;" id="order-summary-tb">
                 <h2>Order Summary</h2>
-                <table class="table table-bordered">
+                <table class="table table-bordered order-summary-table">
                     <thead>
                         <tr>
                             <th>Order Type</th>
@@ -192,6 +247,7 @@
                             <th>S-Copies</th>
                             <th>Delivery Date</th>
                             <th>Urgent</th>
+                            <th>Total Cost</th>
                             <th>Comments</th>
                             <th>Action</th>
                         </tr>
@@ -200,6 +256,16 @@
                         <!-- Orders will be dynamically added here -->
                     </tbody>
                 </table>
+
+                <div style="text-align: center;">
+
+                    @if(session('success'))
+                        <div id="flash-message" class="alert alert-success">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+                </div>
+
             </div>
         </div>
     </fieldset>
@@ -209,7 +275,23 @@
 @push('scripts')
 <script>
     $(document).ready(function () {
-        console.log("Script Loaded in neworder");
+       // console.log("Script Loaded in neworder");
+
+
+        axios.post('/get_cached_data', {
+        key: 'studiokey', // Cache key
+        value: skey,          // Cache value
+        //minutes: 10                // Cache duration (optional)
+        })
+        .then(response => {
+
+            $('#studiokeyex').text(response.data['studiokey']);
+            $('#studiokeynew').val(response.data['studiokey']);
+
+        })
+        .catch(error => {
+            console.error('Error caching data:', error);
+        });
 
         // Toggle between new and existing customer forms
         $('input[name="client-radio"]').click(function () {
@@ -221,17 +303,23 @@
         // Toggle sittings section and generate Order ID based on order type
         $("#otype").change(function () {
             generateOrderId();
+        });
+
+        // Toggle frame type section based on Fiber Fream
+        $("#frametype").change(function () {
             toggleField();
-            loadOrderTypeItems();
         });
 
         toggleField(); // Run function on page load
 
         function toggleField() {
             var selectedOrderType = $("#otype option:selected").text();
-            
-            $('#edittypemain').toggle(selectedOrderType !== "Frames");
+            var selectedFrameType = $("#frametype option:selected").text();
+
+            $('#frametypemain, #framesizemain, #subframesizemain, #subframetypemain').toggle(selectedOrderType === "Frames");
             $('#lamtypemain').toggle(selectedOrderType === "Media");
+            $('#Sittings, #edittypemain').toggle(selectedOrderType !== "Frames");
+            $('#subframesizemain, #subframetypemain').toggle(selectedFrameType === "Fiber Frame");
         }
 
         function loadOrderTypeItems() {
@@ -259,7 +347,7 @@
             $('.error-message').text('');
             $('#new-customer-message').hide();
             $("#address_text").val($("#town option:selected").text());
-            
+
             $.ajax({
                 url: "{{ route('customers.store') }}",
                 method: 'POST',
@@ -288,33 +376,62 @@
         // Add order to summary table
         $(document).on("click", "#add-order", function (event) {
             event.preventDefault();
-            var customername = $('#customer-name').text();
-            if (customername === '  Not set') {
-                alert('Please select a customer before adding an order.');
-                return;
-            }
 
-            let orderType = $("#otype option:selected").text();
-            let sittingitem = orderType === 'Studio Sittings' ? $("#sittingitem option:selected").text() : '';
-            let newRow = `
-                <tr>
-                    <td>${orderType}</td>
-                    <td>${sittingitem}</td>
-                    <td>${$("#hcopy").val()}</td>
-                    <td>${$("#scopy").val()}</td>
-                    <td>${$("#deldate").val()}</td>
-                    <td>${$("#urgent").is(":checked") ? "Yes" : "No"}</td>
-                    <td>${$("#comments").val()}</td>
-                    <td><button class="btn btn-danger btn-sm remove-order">✕</button></td>
-                </tr>`;
 
-            $("#order-summary").append(newRow);
+            // order insert
+            orderstore();
+
+
         });
 
         // Remove order from summary table
-        $(document).on("click", ".remove-order", function () {
-            $(this).closest("tr").remove();
+        $(document).on('click', '.remove-order', function() {
+            event.preventDefault();
+            let orderItemId = $(this).data('id');
+            let orderkey = $(this).data('orderid');
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Do you want to delete this order item?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "/delete-order-item/" + orderItemId,  // Laravel route
+                        type: "DELETE",
+                        data: {
+                            _token: "{{ csrf_token() }}"
+                        },
+                        success: function(response) {
+                          //  Swal.fire("Deleted!", "The order item has been deleted.", "success");
+                          $("body").prepend(`
+                            <div id="flash-message" class="alert alert-success"
+                                style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                                z-index: 9999; padding: 15px 20px; font-size: 16px; text-align: center;
+                                background-color: #434844; color: white; border-radius: 5px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);">
+                                Order item deleted !
+                            </div>
+                        `);
+                            // Automatically remove the message after 2 seconds
+                            setTimeout(function() {
+                                $("#flash-message").fadeOut("slow", function() {
+                                    $(this).remove();
+                                });
+                            }, 2000);
+                            ordersummarytable(orderkey);
+                        },
+                        error: function() {
+                            Swal.fire("Error!", "Something went wrong.", "error");
+                        }
+                    });
+                }
+            });
         });
+
 
         // Existing Customer Search
         $('#existingCustomerForm').on('submit', function (e) {
@@ -348,7 +465,7 @@
                     <td>${customer.phonenumber}</td>
                     <td>${customer.address || ''}</td>
                     <td>${customer.email || ''}</td>
-                    <td><button type="button" class="btn btn-sm btn-primary select-customer" data-id="${customer.id}" data-name="${customer.username}">Select</button></td>
+                    <td><button type="button" class="btn btn-sm btn-primary select-customer" data-studiokey="${customer.studiokey}" data-id="${customer.customerkey}" data-name="${customer.username}">Select</button></td>
                 </tr>`;
             });
             html += '</tbody></table>';
@@ -358,9 +475,12 @@
         $(document).on('click', '.select-customer', function () {
             const customerId = $(this).data('id');
             const customerName = $(this).data('name');
+            const studiokey = $(this).data('studiokey');
             $('#selected-customer-id').val(customerId);
             $('#selected-customer-name').text(customerName);
-            
+            $('#customerkey').text(customerId);
+          //  $('#studiokeyex').text(studiokey);
+
             $.ajax({
                 url: "{{ url('/set-customer-session') }}",
                 type: "POST",
@@ -376,6 +496,8 @@
                 type: "GET",
                 success: function (response) {
                     $("#customer-name").text(response.customer_name || "No customer selected");
+                    $("#customerkey").text(response.customer_id);
+                    $("#studiokey").text(response.studio_key);
                     generateOrderId();
                 }
             });
@@ -390,42 +512,198 @@
                     if (response.status === 'success') $("#order-id").text(response.order_id);
                 }
             });
+            toggleField();
+            loadOrderTypeItems();
+            clearOrderFields();
         }
+
+        $(document).on('click', '.edit-order', function () {
+         event.preventDefault();
+        let row = $(this).closest('tr'); // Get the clicked row
+        let ssorderitemmapkey = row.data('ssorderitemmapkey'); // Get the ID
+        $("#add-order").text("Update");
+        $(".highlighted-row").removeClass("highlighted-row");
+
+        // Highlight the row of the clicked edit button
+        $(this).closest("tr").addClass("highlighted-row");
+
+        // Fetch existing order details (example: using AJAX)
+        $.ajax({
+            url: "/order-item-details/"+ssorderitemmapkey, // Route for fetching details
+            type: "GET",
+            success: function (response) {
+                if (response.status === 'success') {
+                    let item = response.orderItems[0];
+                    console.log('orderitem',item);
+                    // Populate the input fields
+
+
+                    $("#urgent").prop('checked', item.isurgent == 1);
+                    $("#comments").val(item.remarks).change();
+
+                    $("#discount").val(item.discount);
+                    $("#hcopy").val(item.hardcopyquantity);
+                    $("#scopy").val(item.softcopyquantity);
+                    $("#paidamount").val(item.paidcost);
+                    let deliveryDate = item.deliverydate.split(" ")[0]; // Extracts "2025-02-26"
+                    $("#deldate").val(deliveryDate).change();
+                    if ($("#sittingitem option[value='" + item.ordertypeitemkey + "']").length === 0) {
+                        $("#sittingitem").append(`<option value="${item.ordertypeitemkey}">${item.itemname}</option>`);
+                    }
+                    $("#sittingitem").val(item.ordertypeitemkey).change();
+                    if ($("#edittype option[value='" + item.edittypekey + "']").length === 0) {
+                        $("#edittype").append(`<option value="${item.edittypekey}">${item.edittype}</option>`);
+                    }
+                    $("#edittype").val(item.edittypekey).change();
+
+                    // Store the ID for updating later
+                    $("#ssorderitemmapkey").val(item.ssorderitemmapkey);
+                }
+            },
+            error: function (xhr) {
+                console.error("Error fetching order details:", xhr.responseText);
+            }
+            });
+        });
+
+
     });
 
 
     // Test Order
-    $("#testStoreOrder").click(function () {
+    function orderstore () {
+
+        var studiokey = $("#studiokeyex").text();
+
+        var ordertypekey = $("#otype option:selected").val();
+        var ordertypeitemkey = $("#sittingitem option:selected").val();
+        var edittypekey = $("#edittype option:selected").val();
+        var lamtypekey = $("#lamtype option:selected").val();
+        var isurgent = $("#urgent").prop("checked") ? 1 : 0;
+        var discount = $("#discount").val() || 0;
+        var hcopycount = $("#hcopy").val() || 0;;
+        var scopycount = $("#scopy").val() || 0;;
+        var paidcost = $("#paidamount").val() || 0;;
+        var comments = $("#comments").val();
+        var customerkey = $("#customerkey").text();
+        var customername = $('#customer-name').text();
+        var deliverydate = $("#deldate").val();
+        if (customername === '  Not set') {
+            alert('Please select a customer before adding an order.');
+            return;
+        }
+
+        if(!ordertypekey){
+            alert('Please select the order type');
+            return false;
+        }
+
+        if(!ordertypeitemkey){
+            alert('Please select the order item');
+            return false;
+        }
+        if(!deliverydate){
+            alert('Please select the Diliver Date !');
+            return false;
+        }
+
+
         $.ajax({
-            url: "{{ route('storeOrder_ss') }}", // Ensure this route is correctly defined in web.php
+            url: "{{ route('storeOrder_ss') }}",
             type: "POST",
             data: {
-                studiokey: 1,
-                orderid: 'SS-20250215180844',
-                ordertypekey: 1,
-                ordertypeitemkey:1,
-                edittypekey:1,
-                lamtypekey:1,
-                customerkey: 8,
-                isurgent: 0,
-                discount: 10,
-                paidcost: 500,
-                softcopycount:1,
-                hardcopycount:1,
+                studiokey: studiokey,
+                orderid: $("#order-id").text(),
+                ordertypekey: ordertypekey,
+                ordertypeitemkey:ordertypeitemkey,
+                edittypekey:edittypekey,
+                lamtypekey:lamtypekey,
+                customerkey: customerkey,
+                isurgent: isurgent,
+                discount: discount,
+                paidcost: paidcost,
+                softcopycount:scopycount,
+                hardcopycount:hcopycount,
                 deliverydate: $("#deldate").val(),
-                remarks: "Test Order 01",
+                remarks: comments,
+                iscompleted:0,
                 _token: "{{ csrf_token() }}" // Required for Laravel AJAX requests
             },
             success: function (response) {
                 console.log("Order Created Successfully:", response);
-                alert("Order Created Successfully!");
+                // render table
+                $("body").prepend(`
+                            <div id="flash-message" class="alert alert-success"
+                                style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                                z-index: 9999; padding: 15px 20px; font-size: 16px; text-align: center;
+                                background-color: #434844; color: white; border-radius: 5px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);">
+                                Order item Added !</div>`);
+                            // Automatically remove the message after 2 seconds
+                            setTimeout(function() {
+                                $("#flash-message").fadeOut("slow", function() {
+                                    $(this).remove();
+                                });
+                            }, 2000);
+                ordersummarytable(response.order_id);
+                clearOrderFields();
+              //  alert(response.message);
             },
             error: function (xhr, status, error) {
                 console.error("Error:", xhr.responseText);
                 alert("Failed to create order.");
             }
         });
+    }
+
+    function ordersummarytable (orderkey){
+        let orderType = $("#otype option:selected").text();
+            let sittingitem = orderType === 'Studio Sittings' ? $("#sittingitem option:selected").text() : '';
+
+            $.ajax({
+        url: "/order-itemsummary/" + orderkey,
+        type: "GET",
+        success: function (response) {
+            if (response.status === "success") {
+                let orderSummaryHtml = "";
+                response.orderItems.forEach(item => {
+                    orderSummaryHtml += `
+                        <tr data-ssorderitemmapkey="${item.ssorderitemmapkey}">
+                            <td>${item.ordertype}</td>
+                            <td>${item.itemname}</td>
+                            <td>${item.softcopyquantity}</td>
+                            <td>${item.hardcopyquantity}</td>
+                            <td>${item.deliverydate}</td>
+                            <td>${item.isurgent == 1 ? 'Yes' : 'No'}</td>
+                            <td>Rs ${item.totalcost}</td>
+                            <td>${item.remarks}</td>
+                             <td class="order-actions">
+                <button class="btn btn-edit edit-order"><i class="fas fa-edit"></i></button>
+                <button class="btn btn-delete remove-order" data-orderid="${item.orderkey}" data-id="${item.ssorderitemmapkey}"><i class="fas fa-trash"></i></button>
+            </td>
+                        </tr>
+                    `;
+                });
+                $("#order-summary").html(orderSummaryHtml);
+            }
+        },
+        error: function (xhr) {
+            console.error("Error fetching order summary:", xhr);
+        }
     });
+    }
+
+
+
+        function clearOrderFields() {
+            $("#order-form").find("input, select, textarea").val("");
+            $("#discount").val("");
+            $("#hcopy").val("");
+            $("#scopy").val("");
+            $("#paidamount").val("");
+
+        }
+
+
 </script>
 @endpush
 @endsection

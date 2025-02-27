@@ -130,7 +130,8 @@ class StudioOrderController extends Controller
                     $unitCost = StudioLaminatingtype::where('lamtypekey', $lamtypekey)->value('unitcost');
 
                     if ($unitCost === null) {
-                        return response()->json(['status' => 'error', 'message' => "Unit price is not configured for this laminating type !"], 400);
+                        $unitCost = 0;
+                       // return response()->json(['status' => 'error', 'message' => "Unit price is not configured for this laminating type !"], 400);
                     }
 
                     $totalCost += $unitCost;
@@ -150,6 +151,7 @@ class StudioOrderController extends Controller
                 if ($order) {
                     // update the order
                     $sorderkey = $order -> orderkey;
+                    $lamTypeKey = $request->lamtypekey ?? 0;  // If null, assign 0
 
                      // Insert / update data into StudioOrderItemMapSS table
                      StudioOrderItemMapSS::updateOrCreate(
@@ -206,7 +208,7 @@ class StudioOrderController extends Controller
                         'createdtime' => now(),
                         'updatedtime' => now(),
                         'deliverydate' => $request->deliverydate,
-                        'remarks' => $request->comments,
+                        'remarks' => $request->remarks,
                     ]);
 
                     $sorderkey = $order->orderkey;
@@ -222,21 +224,36 @@ class StudioOrderController extends Controller
                             'softcopyquantity' => $request->softcopycount,
                             'hardcopyquantity' => $request->hardcopycount,
                             'totalcost' => $ssitemCost,
+                            'iscompleted' => $request->iscompleted,
                         ]
                     );
-
+                    $message = 'Order Created Successfully!';
 
                  }
 
 
 
                 DB::commit();
-                return response()->json(['status' => 'success', 'message' => 'Order created successfully!', 'order_id' => $order->orderkey]);
+                return response()->json(['status' => 'success', 'message' => $message, 'order_id' => $order->orderkey]);
             } catch (\Exception $e) {
                 DB::rollBack();
                 return response()->json(['status' => 'error', 'message' => 'Error creating order', 'error' => $e->getMessage()], 500);
             }
         }
+
+        public function deleteOrderItem($id) {
+            // Find and delete the order item
+            $orderItem = DB::table('studioorderitemmapss')->where('ssorderitemmapkey', $id)->delete();
+
+            if ($orderItem) {
+               // $this->storeOrder_ss(); // Call storeOrder_ss function after deletion
+               session()->flash('success', 'The order item has been deleted successfully.');
+               return response()->json(['success' => true]);
+            }
+
+            return response()->json(['error' => 'Failed to delete order item'], 500);
+        }
+
     /**
      * Display the specified order.
      */
@@ -269,6 +286,69 @@ class StudioOrderController extends Controller
         $order->update($request->all());
         return response()->json($order);
     }
+
+    public function getOrderItemSummary($orderkey)
+    {
+        $orderItems = DB::table('studioorderitemmapss as soim')
+            ->join('studioordertypeitemmap as sotim', 'soim.ordertypeitemkey', '=', 'sotim.ordertypeitemkey')
+            ->join('studioordertypes as sot', 'sotim.ordertypekey', '=', 'sot.ordertypekey')
+            ->join('studioorders as so', 'soim.orderkey', '=', 'so.orderkey') // Fixed join condition
+            ->where('soim.orderkey', $orderkey)
+            ->select(
+                'sot.ordertype as ordertype',
+                'sotim.itemname as itemname',
+                'soim.softcopyquantity',
+                'soim.hardcopyquantity',
+                'soim.totalcost',
+                'so.isurgent',
+                'so.deliverydate',
+                'so.remarks',
+                'soim.ssorderitemmapkey as ssorderitemmapkey',
+                'soim.orderkey'
+            )
+            ->get();
+
+        return response()->json([
+            'status' => 'success',
+            'orderItems' => $orderItems
+        ]);
+    }
+
+    public function getOrderItemDetails($ssorderitemmapkey)
+    {
+        $orderItems = DB::table('studioorderitemmapss as soim')
+            ->join('studioordertypeitemmap as sotim', 'soim.ordertypeitemkey', '=', 'sotim.ordertypeitemkey')
+            ->join('studioordertypes as sot', 'sotim.ordertypekey', '=', 'sot.ordertypekey')
+            ->join('studioorders as so', 'soim.orderkey', '=', 'so.orderkey')
+            ->leftJoin('studioedittypes as set', 'soim.edittypekey', '=', 'set.edittypekey')
+            ->where('soim.ssorderitemmapkey', $ssorderitemmapkey)
+            ->select(
+                'sot.ordertype as ordertype',
+                'sotim.itemname as itemname',
+                'soim.softcopyquantity',
+                'soim.hardcopyquantity',
+                'soim.totalcost',
+                'so.isurgent',
+                'so.deliverydate',
+                'sotim.ordertypekey',
+                'soim.ordertypeitemkey',
+                'soim.edittypekey',
+                'soim.lamtypekey',
+                'so.paidcost',
+                'so.discount',
+                'set.edittype',
+                'so.remarks'
+
+            )
+            ->get();
+
+        return response()->json([
+            'status' => 'success',
+            'orderItems' => $orderItems
+        ]);
+    }
+
+
 
     /**
      * Remove the specified order from storage.

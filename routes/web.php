@@ -32,9 +32,25 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders', [NewOrderController::class, "orders"])->name('orders');
     Route::get('/ordertypeitem/{ordertypekey}', [NewOrderController::class, "ordertypeitems"])->name('ordertypeitem');
     Route::post('/store-order-ss', [StudioOrderController::class, 'storeOrder_ss'])->name('storeOrder_ss');
+    Route::get('/order-itemsummary/{orderkey}', [StudioOrderController::class, 'getOrderItemSummary'])->name('orderitemsummary_ss');
+    Route::get('/order-item-details/{ssorderitemmapkey}', [StudioOrderController::class, 'getOrderItemDetails'])->name('orderitemdetail_ss');
+    Route::delete('/delete-order-item/{ssorderitemmapkey}', [StudioOrderController::class, 'deleteOrderItem']);
+
 
     //EditType
     Route::get('/edittypes', [NewOrderController::class, 'edittypes'])->name('edittype');
+
+    //FrameType
+    Route::get('/frametypes', [NewOrderController::class, 'frametypes'])->name('frametype');
+
+    //FrameSize
+    Route::get('/framesizes', [NewOrderController::class, 'framesizes'])->name('framesize');
+
+    //SubFrameType
+    Route::get('/subframetypes', [NewOrderController::class, 'subframetypes'])->name('subframetype');
+
+    //SubFrameSize
+    Route::get('/subframesizes', [NewOrderController::class, 'subframesizes'])->name('subframesize');
 
     // Studio Users
     Route::post('/studio-user', [StudioUserController::class, 'store'])->name('studio-user.store');

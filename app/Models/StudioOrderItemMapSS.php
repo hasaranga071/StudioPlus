@@ -27,7 +27,10 @@ class StudioOrderItemMapSS extends Model
         'softcopyquantity',
         'hardcopyquantity',
         'totalcost',
+        'iscompleted',
     ];
+
+
 
     public function order()
     {

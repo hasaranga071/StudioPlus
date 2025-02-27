@@ -11,7 +11,10 @@ use App\Models\StudioOrderType;
 use App\Models\StudioOrderTypeItemMap;
 use App\Models\StudioEdittype;
 use App\Models\StudioLaminatingtype;
-
+use App\Models\StudioFrametype;
+use App\Models\StudioFramesize;
+use App\Models\StudioSubframetype;
+use App\Models\StudioSubframesize;
 
 class NewOrderController extends Controller
 {
@@ -31,8 +34,20 @@ class NewOrderController extends Controller
         // Fetch all laminate types from the database
         $lamTypes = StudioLaminatingtype::all();
 
+        // Fetch all frame types from the database
+        $frameTypes = StudioFrametype::all();
+
+        // Fetch all frame size from the database
+        $frameSizes = StudioFramesize::all();
+
+        // Fetch all frame types from the database
+        $frameSubTypes = StudioSubframetype::all();
+
+        // Fetch all frame size from the database
+        $frameSubSizes = StudioSubframesize::all();
+
         // Pass the data to the view
-        return view('pages.todo.neworder', compact('editTypes', 'orderTypes', 'lamTypes'));
+        return view('pages.todo.neworder', compact('editTypes', 'orderTypes', 'lamTypes', 'frameTypes', 'frameSizes', 'frameSubTypes', 'frameSubSizes'));
   }
   public function orders()
   {

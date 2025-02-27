@@ -499,6 +499,16 @@
                     $("#customerkey").text(response.customer_id);
                     $("#studiokey").text(response.studio_key);
                     generateOrderId();
+                    let flashbody = '<div id="flash-message" class="alert alert-success" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);z-index: 9999; padding: 15px 20px; font-size: 16px; text-align: center;background-color: #434844; color: white; border-radius: 5px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);">'
+                + response.customer_name +' selected.</div>';
+
+                $("body").prepend(flashbody);
+                            // Automatically remove the message after 2 seconds
+                            setTimeout(function() {
+                                $("#flash-message").fadeOut("slow", function() {
+                                    $(this).remove();
+                                });
+                            }, 2000);
                 }
             });
         }
@@ -589,21 +599,24 @@
         var customername = $('#customer-name').text();
         var deliverydate = $("#deldate").val();
         if (customername === '  Not set') {
-            alert('Please select a customer before adding an order.');
+
+            flashpopup('Please select a customer before adding an order.');
             return;
         }
 
         if(!ordertypekey){
-            alert('Please select the order type');
+            //alert('Please select the order type');
+
+                flashpopup('Please select the order type');
             return false;
         }
 
         if(!ordertypeitemkey){
-            alert('Please select the order item');
+            flashpopup('Please select the order item');
             return false;
         }
         if(!deliverydate){
-            alert('Please select the Diliver Date !');
+            flashpopup('Please select the Diliver Date !');
             return false;
         }
 
@@ -672,6 +685,16 @@
         }
 
         });
+    }
+
+    function flashpopup(msg)
+    {
+        Swal.fire({
+                    title: 'Error !',
+                    text: msg,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
     }
 
     function ordersummarytable (orderkey){

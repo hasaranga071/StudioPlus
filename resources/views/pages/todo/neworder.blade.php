@@ -238,24 +238,7 @@
             </div>
             <div class="column1" style="background-color:#aaa;" id="order-summary-tb">
                 <h2>Order Summary</h2>
-                <table class="table table-bordered order-summary-table">
-                    <thead>
-                        <tr>
-                            <th>Order Type</th>
-                            <th>Order Item</th>
-                            <th>H-Copies</th>
-                            <th>S-Copies</th>
-                            <th>Delivery Date</th>
-                            <th>Urgent</th>
-                            <th>Total Cost</th>
-                            <th>Comments</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="order-summary">
-                        <!-- Orders will be dynamically added here -->
-                    </tbody>
-                </table>
+                <div id="ordermaintable"></div>
 
                 <div class="order-summary-totals" style="margin-top: 20px; margin-left: auto; margin-right: auto;">
                     <table class="table table-bordered" style="background: #9c9c9c; border-radius: 8px; overflow: hidden;">
@@ -706,6 +689,24 @@
         type: "GET",
         success: function (response) {
             if (response.status === "success") {
+                let ordermaintable = `<table class="table table-bordered order-summary-table">
+                    <thead>
+                        <tr>
+                            <th>Order Type</th>
+                            <th>Order Item</th>
+                            <th>H-Copies</th>
+                            <th>S-Copies</th>
+                            <th>Delivery Date</th>
+                            <th>Urgent</th>
+                            <th>Total Cost</th>
+                            <th>Comments</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="order-summary">
+                        <!-- Orders will be dynamically added here -->
+                    </tbody>
+                </table>`;
                 let orderSummaryHtml = "";
                 let orderSummaryTotalHtml = "";
                 let ordertotalcost = 0;
@@ -751,6 +752,8 @@
                                 <th>Balance Due</th>
                                 <td><span id="balance-due" style="font-weight:700;">Rs ${balancedue.toFixed(2)}</span></td>
                             </tr> `;
+
+                $("#ordermaintable").html(ordermaintable);
                 $("#order-summary").html(orderSummaryHtml);
                 $("#order-summary-total").html(orderSummaryTotalHtml);
             }

@@ -94,3 +94,4 @@ require __DIR__ . '/auth.php';
 
 
 Route::post('/orders/search', [NewOrderController::class, 'search'])->name('orders.search');
+Route::post('/orders/itemsearch', [NewOrderController::class, 'itemsearch'])->name('orders.itemsearch');

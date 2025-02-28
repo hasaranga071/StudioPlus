@@ -681,88 +681,286 @@
                 });
     }
 
-    function ordersummarytable (orderkey){
-        let orderType = $("#otype option:selected").text();
-            let sittingitem = orderType === 'Studio Sittings' ? $("#sittingitem option:selected").text() : '';
+    function orderSummaryTableSS(orderKey){
+        $.ajax({
+            url: "/order-itemsummary/" + orderKey,
+            type: "GET",
+            success: function (response) {
+                if (response.status === "success") {
+                    let orderMainTable = `
+                        <table class="table table-bordered order-summary-table">
+                            <thead>
+                                <tr>
+                                    <th>Order Type</th>
+                                    <th>Order Item</th>
+                                    <th>Edit Type</th>
+                                    <th>H-Copies</th>
+                                    <th>S-Copies</th>
+                                    <th>Delivery Date</th>
+                                    <th>Urgent</th>
+                                    <th>Total Cost</th>
+                                    <th>Comments</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="order-summary">
+                                <!-- Orders will be dynamically added here -->
+                            </tbody>
+                        </table>`;
 
-            $.ajax({
-        url: "/order-itemsummary/" + orderkey,
-        type: "GET",
-        success: function (response) {
-            if (response.status === "success") {
-                let ordermaintable = `<table class="table table-bordered order-summary-table">
-                    <thead>
+                    let orderSummaryHtml = "";
+                    let orderSummaryTotalHtml = "";
+                    let orderTotalCost = 0;
+                    let orderDiscount = 0;
+                    let discountAmount = 0;
+                    let paidAmount = 0;
+
+                    response.orderItems.forEach(item => {
+                        orderTotalCost += parseFloat(item.totalcost) || 0;
+                        orderDiscount = parseFloat(item.discount) || 0;
+                        paidAmount = parseFloat(item.paidcost) || 0;
+                        
+                        orderSummaryHtml += `
+                            <tr data-ssorderitemmapkey="${item.ssorderitemmapkey}">
+                                <td>${item.ordertype}</td>
+                                <td>${item.itemname}</td>
+                                <td>${item.edittype}</td>
+                                <td>${item.softcopyquantity}</td>
+                                <td>${item.hardcopyquantity}</td>
+                                <td>${item.deliverydate}</td>
+                                <td>${item.isurgent == 1 ? 'Yes' : 'No'}</td>
+                                <td>Rs ${item.totalcost}</td>
+                                <td>${item.remarks}</td>
+                                <td class="order-actions">
+                                    <button class="btn btn-edit edit-order"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-delete remove-order" data-orderid="${item.orderkey}" data-id="${item.ssorderitemmapkey}"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>`;
+                    });
+                    
+                    discountAmount = (orderTotalCost * orderDiscount) / 100;
+                    let balanceDue = (orderTotalCost - discountAmount) - paidAmount;
+                    
+                    orderSummaryTotalHtml = `
                         <tr>
-                            <th>Order Type</th>
-                            <th>Order Item</th>
-                            <th>H-Copies</th>
-                            <th>S-Copies</th>
-                            <th>Delivery Date</th>
-                            <th>Urgent</th>
-                            <th>Total Cost</th>
-                            <th>Comments</th>
-                            <th>Action</th>
+                            <th style="width: 50%;">Total Cost</th>
+                            <td><span id="total-cost">Rs ${orderTotalCost.toFixed(2)}</span></td>
                         </tr>
-                    </thead>
-                    <tbody id="order-summary">
-                        <!-- Orders will be dynamically added here -->
-                    </tbody>
-                </table>`;
-                let orderSummaryHtml = "";
-                let orderSummaryTotalHtml = "";
-                let ordertotalcost = 0;
-                let orderdiscount = 0;
-                let discountamount = 0;
-                let paidamount = 0;
-                response.orderItems.forEach(item => {
-                    ordertotalcost += parseFloat(item.totalcost) || 0; // Add item cost
-                    orderdiscount = parseFloat(item.discount) || 0; // Add item cost
-                    paidamount = parseFloat(item.paidcost) || 0; // Add item cost
-                    orderSummaryHtml += `
-                        <tr data-ssorderitemmapkey="${item.ssorderitemmapkey}">
-                            <td>${item.ordertype}</td>
-                            <td>${item.itemname}</td>
-                            <td>${item.softcopyquantity}</td>
-                            <td>${item.hardcopyquantity}</td>
-                            <td>${item.deliverydate}</td>
-                            <td>${item.isurgent == 1 ? 'Yes' : 'No'}</td>
-                            <td>Rs ${item.totalcost}</td>
-                            <td>${item.remarks}</td>
-                             <td class="order-actions">
-                <button class="btn btn-edit edit-order"><i class="fas fa-edit"></i></button>
-                <button class="btn btn-delete remove-order" data-orderid="${item.orderkey}" data-id="${item.ssorderitemmapkey}"><i class="fas fa-trash"></i></button>
-            </td>
+                        <tr>
+                            <th>Discount (${orderDiscount}%)</th>
+                            <td><span id="total-cost">Rs ${discountAmount.toFixed(2)}</span></td>
                         </tr>
-                    `;
-                });
-                discountamount =  (ordertotalcost * orderdiscount) / 100;
-                let balancedue = (ordertotalcost - discountamount) - paidamount;
-                orderSummaryTotalHtml = `<tr>
-                                <th style="width: 50%;">Total Cost</th>
-                                <td><span id="total-cost">Rs ${ordertotalcost.toFixed(2)}</span></td>
-                            </tr>
-                            <tr>
-                                <th>Discount (${orderdiscount}%)</th>
-                                <td><span id="total-cost">Rs ${discountamount.toFixed(2)}</span></td>
-                            </tr>
-                            <tr>
-                                <th>Paid Amount</th>
-                                <td><span id="total-cost">Rs ${paidamount.toFixed(2)}</span></td>
-                            </tr>
-                            <tr>
-                                <th>Balance Due</th>
-                                <td><span id="balance-due" style="font-weight:700;">Rs ${balancedue.toFixed(2)}</span></td>
-                            </tr> `;
-
-                $("#ordermaintable").html(ordermaintable);
-                $("#order-summary").html(orderSummaryHtml);
-                $("#order-summary-total").html(orderSummaryTotalHtml);
+                        <tr>
+                            <th>Paid Amount</th>
+                            <td><span id="total-cost">Rs ${paidAmount.toFixed(2)}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Balance Due</th>
+                            <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
+                        </tr>`;
+                    
+                    $("#ordermaintable").html(orderMainTable);
+                    $("#order-summary").html(orderSummaryHtml);
+                    $("#order-summary-total").html(orderSummaryTotalHtml);
+                }
+            },
+            error: function (xhr) {
+                console.error("Error fetching order summary:", xhr);
             }
-        },
-        error: function (xhr) {
-            console.error("Error fetching order summary:", xhr);
+        });
+    }
+
+    function orderSummaryTableME(orderKey){
+        $.ajax({
+            url: "/order-itemsummary/" + orderKey,
+            type: "GET",
+            success: function (response) {
+                if (response.status === "success") {
+                    let orderMainTable = `
+                        <table class="table table-bordered order-summary-table">
+                            <thead>
+                                <tr>
+                                    <th>Order Type</th>
+                                    <th>Order Item</th>
+                                    <th>Edit Type</th>
+                                    <th>Laminating Type</th>
+                                    <th>H-Copies</th>
+                                    <th>S-Copies</th>
+                                    <th>Delivery Date</th>
+                                    <th>Urgent</th>
+                                    <th>Total Cost</th>
+                                    <th>Comments</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="order-summary">
+                                <!-- Orders will be dynamically added here -->
+                            </tbody>
+                        </table>`;
+
+                    let orderSummaryHtml = "";
+                    let orderSummaryTotalHtml = "";
+                    let orderTotalCost = 0;
+                    let orderDiscount = 0;
+                    let discountAmount = 0;
+                    let paidAmount = 0;
+
+                    response.orderItems.forEach(item => {
+                        orderTotalCost += parseFloat(item.totalcost) || 0;
+                        orderDiscount = parseFloat(item.discount) || 0;
+                        paidAmount = parseFloat(item.paidcost) || 0;
+                        
+                        orderSummaryHtml += `
+                            <tr data-ssorderitemmapkey="${item.ssorderitemmapkey}">
+                                <td>${item.ordertype}</td>
+                                <td>${item.itemname}</td>
+                                <td>${item.edittype}</td>
+                                <td>${item.lamtype}</td>
+                                <td>${item.softcopyquantity}</td>
+                                <td>${item.hardcopyquantity}</td>
+                                <td>${item.deliverydate}</td>
+                                <td>${item.isurgent == 1 ? 'Yes' : 'No'}</td>
+                                <td>Rs ${item.totalcost}</td>
+                                <td>${item.remarks}</td>
+                                <td class="order-actions">
+                                    <button class="btn btn-edit edit-order"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-delete remove-order" data-orderid="${item.orderkey}" data-id="${item.ssorderitemmapkey}"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>`;
+                    });
+                    
+                    discountAmount = (orderTotalCost * orderDiscount) / 100;
+                    let balanceDue = (orderTotalCost - discountAmount) - paidAmount;
+                    
+                    orderSummaryTotalHtml = `
+                        <tr>
+                            <th style="width: 50%;">Total Cost</th>
+                            <td><span id="total-cost">Rs ${orderTotalCost.toFixed(2)}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Discount (${orderDiscount}%)</th>
+                            <td><span id="total-cost">Rs ${discountAmount.toFixed(2)}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Paid Amount</th>
+                            <td><span id="total-cost">Rs ${paidAmount.toFixed(2)}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Balance Due</th>
+                            <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
+                        </tr>`;
+                    
+                    $("#ordermaintable").html(orderMainTable);
+                    $("#order-summary").html(orderSummaryHtml);
+                    $("#order-summary-total").html(orderSummaryTotalHtml);
+                }
+            },
+            error: function (xhr) {
+                console.error("Error fetching order summary:", xhr);
+            }
+        });
+    }
+
+    function orderSummaryTableFR(orderKey){
+        $.ajax({
+            url: "/order-itemsummary/" + orderKey,
+            type: "GET",
+            success: function (response) {
+                if (response.status === "success") {
+                    let orderMainTable = `
+                        <table class="table table-bordered order-summary-table">
+                            <thead>
+                                <tr>
+                                    <th>Order Type</th>
+                                    <th>Type</th>
+                                    <th>Size</th>
+                                    <th>F# Size</th>
+                                    <th>Frame Type</th>
+                                    <th>Delivery Date</th>
+                                    <th>Urgent</th>
+                                    <th>Total Cost</th>
+                                    <th>Comments</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="order-summary">
+                                <!-- Orders will be dynamically added here -->
+                            </tbody>
+                        </table>`;
+
+                    let orderSummaryHtml = "";
+                    let orderSummaryTotalHtml = "";
+                    let orderTotalCost = 0;
+                    let orderDiscount = 0;
+                    let discountAmount = 0;
+                    let paidAmount = 0;
+
+                    response.orderItems.forEach(item => {
+                        orderTotalCost += parseFloat(item.totalcost) || 0;
+                        orderDiscount = parseFloat(item.discount) || 0;
+                        paidAmount = parseFloat(item.paidcost) || 0;
+                        
+                        orderSummaryHtml += `
+                            <tr data-frorderitemmapkey="${item.frorderitemmapkey}">
+                                <td>${item.ordertype}</td>
+                                <td>${item.frametype}</td>
+                                <td>${item.size}</td>
+                                <td>${item.framesize}</td>
+                                <td>${item.subframetype}</td>
+                                <td>${item.deliverydate}</td>
+                                <td>${item.isurgent == 1 ? 'Yes' : 'No'}</td>
+                                <td>Rs ${item.totalcost}</td>
+                                <td>${item.remarks}</td>
+                                <td class="order-actions">
+                                    <button class="btn btn-edit edit-order"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-delete remove-order" data-orderid="${item.orderkey}" data-id="${item.frorderitemmapkey}"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>`;
+                    });
+                    
+                    discountAmount = (orderTotalCost * orderDiscount) / 100;
+                    let balanceDue = (orderTotalCost - discountAmount) - paidAmount;
+                    
+                    orderSummaryTotalHtml = `
+                        <tr>
+                            <th style="width: 50%;">Total Cost</th>
+                            <td><span id="total-cost">Rs ${orderTotalCost.toFixed(2)}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Discount (${orderDiscount}%)</th>
+                            <td><span id="total-cost">Rs ${discountAmount.toFixed(2)}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Paid Amount</th>
+                            <td><span id="total-cost">Rs ${paidAmount.toFixed(2)}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Balance Due</th>
+                            <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
+                        </tr>`;
+                    
+                    $("#ordermaintable").html(orderMainTable);
+                    $("#order-summary").html(orderSummaryHtml);
+                    $("#order-summary-total").html(orderSummaryTotalHtml);
+                }
+            },
+            error: function (xhr) {
+                console.error("Error fetching order summary:", xhr);
+            }
+        });
+    }
+
+    function orderSummaryTable(orderKey) {
+        let orderType = $("#otype option:selected").text();
+        if (orderType == 'Frames'){
+            orderSummaryTableFR(orderKey)
         }
-    });
+        else if(orderType == 'Media'){
+            orderSummaryTableME(orderKey)
+        }
+        else{
+            orderSummaryTableSS(orderKey)
+        }
     }
 
 

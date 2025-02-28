@@ -567,7 +567,7 @@
     function orderstore () {
 
         var studiokey = $("#studiokeyex").text();
-
+        var ordertype = $("#otype option:selected").text();
         var ordertypekey = $("#otype option:selected").val();
         var ordertypeitemkey = $("#sittingitem option:selected").val();
         var edittypekey = $("#edittype option:selected").val();
@@ -611,6 +611,7 @@
                 studiokey: studiokey,
                 orderid: $("#order-id").text(),
                 ordertypekey: ordertypekey,
+                ordertype: ordertype,
                 ordertypeitemkey:ordertypeitemkey,
                 edittypekey:edittypekey,
                 lamtypekey:lamtypekey,
@@ -718,7 +719,7 @@
                         orderTotalCost += parseFloat(item.totalcost) || 0;
                         orderDiscount = parseFloat(item.discount) || 0;
                         paidAmount = parseFloat(item.paidcost) || 0;
-                        
+
                         orderSummaryHtml += `
                             <tr data-ssorderitemmapkey="${item.ssorderitemmapkey}">
                                 <td>${item.ordertype}</td>
@@ -736,10 +737,10 @@
                                 </td>
                             </tr>`;
                     });
-                    
+
                     discountAmount = (orderTotalCost * orderDiscount) / 100;
                     let balanceDue = (orderTotalCost - discountAmount) - paidAmount;
-                    
+
                     orderSummaryTotalHtml = `
                         <tr>
                             <th style="width: 50%;">Total Cost</th>
@@ -757,7 +758,7 @@
                             <th>Balance Due</th>
                             <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
                         </tr>`;
-                    
+
                     $("#ordermaintable").html(orderMainTable);
                     $("#order-summary").html(orderSummaryHtml);
                     $("#order-summary-total").html(orderSummaryTotalHtml);
@@ -808,7 +809,7 @@
                         orderTotalCost += parseFloat(item.totalcost) || 0;
                         orderDiscount = parseFloat(item.discount) || 0;
                         paidAmount = parseFloat(item.paidcost) || 0;
-                        
+
                         orderSummaryHtml += `
                             <tr data-ssorderitemmapkey="${item.ssorderitemmapkey}">
                                 <td>${item.ordertype}</td>
@@ -827,10 +828,10 @@
                                 </td>
                             </tr>`;
                     });
-                    
+
                     discountAmount = (orderTotalCost * orderDiscount) / 100;
                     let balanceDue = (orderTotalCost - discountAmount) - paidAmount;
-                    
+
                     orderSummaryTotalHtml = `
                         <tr>
                             <th style="width: 50%;">Total Cost</th>
@@ -848,7 +849,7 @@
                             <th>Balance Due</th>
                             <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
                         </tr>`;
-                    
+
                     $("#ordermaintable").html(orderMainTable);
                     $("#order-summary").html(orderSummaryHtml);
                     $("#order-summary-total").html(orderSummaryTotalHtml);
@@ -898,7 +899,7 @@
                         orderTotalCost += parseFloat(item.totalcost) || 0;
                         orderDiscount = parseFloat(item.discount) || 0;
                         paidAmount = parseFloat(item.paidcost) || 0;
-                        
+
                         orderSummaryHtml += `
                             <tr data-frorderitemmapkey="${item.frorderitemmapkey}">
                                 <td>${item.ordertype}</td>
@@ -916,10 +917,10 @@
                                 </td>
                             </tr>`;
                     });
-                    
+
                     discountAmount = (orderTotalCost * orderDiscount) / 100;
                     let balanceDue = (orderTotalCost - discountAmount) - paidAmount;
-                    
+
                     orderSummaryTotalHtml = `
                         <tr>
                             <th style="width: 50%;">Total Cost</th>
@@ -937,7 +938,7 @@
                             <th>Balance Due</th>
                             <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
                         </tr>`;
-                    
+
                     $("#ordermaintable").html(orderMainTable);
                     $("#order-summary").html(orderSummaryHtml);
                     $("#order-summary-total").html(orderSummaryTotalHtml);
@@ -949,7 +950,7 @@
         });
     }
 
-    function orderSummaryTable(orderKey) {
+    function ordersummarytable(orderKey) {
         let orderType = $("#otype option:selected").text();
         if (orderType == 'Frames'){
             orderSummaryTableFR(orderKey)

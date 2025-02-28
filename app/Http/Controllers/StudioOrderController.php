@@ -9,6 +9,9 @@ use App\Models\StudioAppConfig;
 use App\Models\StudioEdittype;
 use App\Models\StudioLaminatingtype;
 use App\Models\StudioOrderItemMapSS;
+use App\Models\StudioOrderItemMapEC;
+use App\Models\StudioOrderItemMapME;
+use App\Models\StudioOrderItemMapFR;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
@@ -156,21 +159,76 @@ class StudioOrderController extends Controller
                     $sorderkey = $order -> orderkey;
                     $lamTypeKey = $request->lamtypekey ?? 0;  // If null, assign 0
 
+                    $ordertype = $request->ordertype;
                      // Insert / update data into StudioOrderItemMapSS table
-                     StudioOrderItemMapSS::updateOrCreate(
-                        [
-                            'orderkey' =>  $sorderkey,
-                            'ordertypeitemkey' => $request->ordertypeitemkey
-                        ],
-                        [
-                            'edittypekey' => $request->edittypekey,
-                            'lamtypekey' => $request->lamtypekey,
-                            'softcopyquantity' => $request->softcopycount,
-                            'hardcopyquantity' => $request->hardcopycount,
-                            'totalcost' => $ssitemCost,
-                        ]
-                    );
-                    $totalitemCost = StudioOrderItemMapSS::where('orderkey', $sorderkey)->sum('totalcost');
+                     $totalitemCost ;
+                    if ($ordertype=='Studio Sittings') {
+                        StudioOrderItemMapSS::updateOrCreate(
+                            [
+                                'orderkey' =>  $sorderkey,
+                                'ordertypeitemkey' => $request->ordertypeitemkey
+                            ],
+                            [
+                                'edittypekey' => $request->edittypekey,
+                                'lamtypekey' => $request->lamtypekey,
+                                'softcopyquantity' => $request->softcopycount,
+                                'hardcopyquantity' => $request->hardcopycount,
+                                'totalcost' => $ssitemCost,
+                            ]
+                        );
+                        $totalitemCost = StudioOrderItemMapSS::where('orderkey', $sorderkey)->sum('totalcost');
+                     }
+
+                     if ($ordertype=='Media') {
+                        StudioOrderItemMapME::updateOrCreate(
+                            [
+                                'orderkey' =>  $sorderkey,
+                                'ordertypeitemkey' => $request->ordertypeitemkey
+                            ],
+                            [
+                                'edittypekey' => $request->edittypekey,
+                                'lamtypekey' => $request->lamtypekey,
+                                'softcopyquantity' => $request->softcopycount,
+                                'hardcopyquantity' => $request->hardcopycount,
+                                'totalcost' => $ssitemCost,
+                            ]
+                        );
+                        $totalitemCost = StudioOrderItemMapME::where('orderkey', $sorderkey)->sum('totalcost');
+                     }
+
+                     if ($ordertype=='Extra Copy') {
+                        StudioOrderItemMapEC::updateOrCreate(
+                            [
+                                'orderkey' =>  $sorderkey,
+                                'ordertypeitemkey' => $request->ordertypeitemkey
+                            ],
+                            [
+                                'edittypekey' => $request->edittypekey,
+                                'softcopyquantity' => $request->softcopycount,
+                                'hardcopyquantity' => $request->hardcopycount,
+                                'totalcost' => $ssitemCost,
+                            ]
+                        );
+                        $totalitemCost = StudioOrderItemMapEC::where('orderkey', $sorderkey)->sum('totalcost');
+                    }
+
+                    if ($ordertype=='Frames') {
+                        StudioOrderItemMapFE::updateOrCreate(
+                            [
+                                'orderkey' =>  $sorderkey,
+                                'ordertypeitemkey' => $request->ordertypeitemkey
+                            ],
+                            [
+                                'edittypekey' => $request->edittypekey,
+                                'softcopyquantity' => $request->softcopycount,
+                                'hardcopyquantity' => $request->hardcopycount,
+                                'totalcost' => $ssitemCost,
+                            ]
+                        );
+                        $totalitemCost = StudioOrderItemMapFE::where('orderkey', $sorderkey)->sum('totalcost');
+                    }
+
+
                     // calculating all item cost for the order
                     $discount = $request->discount;
                     $discountAmount = ($totalitemCost * $discount) / 100;
@@ -215,21 +273,70 @@ class StudioOrderController extends Controller
                     ]);
 
                     $sorderkey = $order->orderkey;
+                    $ordertype = $request->ordertype;
+                    if ($ordertype=='Studio Sittings') {
+                        StudioOrderItemMapSS::updateOrCreate(
+                            [
+                                'orderkey' =>  $sorderkey,
+                                'ordertypeitemkey' => $request->ordertypeitemkey
+                            ],
+                            [
+                                'edittypekey' => $request->edittypekey,
+                                'lamtypekey' => $request->lamtypekey,
+                                'softcopyquantity' => $request->softcopycount,
+                                'hardcopyquantity' => $request->hardcopycount,
+                                'totalcost' => $ssitemCost,
+                                'iscompleted' => $request->iscompleted,
+                            ]
+                        );
+                    }
 
-                    StudioOrderItemMapSS::updateOrCreate(
-                        [
-                            'orderkey' =>  $sorderkey,
-                            'ordertypeitemkey' => $request->ordertypeitemkey
-                        ],
-                        [
-                            'edittypekey' => $request->edittypekey,
-                            'lamtypekey' => $request->lamtypekey,
-                            'softcopyquantity' => $request->softcopycount,
-                            'hardcopyquantity' => $request->hardcopycount,
-                            'totalcost' => $ssitemCost,
-                            'iscompleted' => $request->iscompleted,
-                        ]
-                    );
+                    if ($ordertype=='Extra Copy') {
+                        StudioOrderItemMapEC::updateOrCreate(
+                            [
+                                'orderkey' =>  $sorderkey,
+                                'ordertypeitemkey' => $request->ordertypeitemkey
+                            ],
+                            [
+                                'edittypekey' => $request->edittypekey,
+                                'softcopyquantity' => $request->softcopycount,
+                                'hardcopyquantity' => $request->hardcopycount,
+                                'totalcost' => $ssitemCost,
+                                'iscompleted' => $request->iscompleted,
+                            ]
+                        );
+                    }
+                    if ($ordertype=='Media') {
+                        StudioOrderItemMapME::updateOrCreate(
+                            [
+                                'orderkey' =>  $sorderkey,
+                                'ordertypeitemkey' => $request->ordertypeitemkey
+                            ],
+                            [
+                                'edittypekey' => $request->edittypekey,
+                                'lamtypekey' => $request->lamtypekey,
+                                'softcopyquantity' => $request->softcopycount,
+                                'hardcopyquantity' => $request->hardcopycount,
+                                'totalcost' => $ssitemCost,
+                                'iscompleted' => $request->iscompleted,
+                            ]
+                        );
+                    }
+                    if ($ordertype=='Frames') {
+                        StudioOrderItemMapFR::updateOrCreate(
+                            [
+                                'orderkey' =>  $sorderkey,
+                                'ordertypeitemkey' => $request->ordertypeitemkey
+                            ],
+                            [
+                                'edittypekey' => $request->edittypekey,
+                                'softcopyquantity' => $request->softcopycount,
+                                'hardcopyquantity' => $request->hardcopycount,
+                                'totalcost' => $ssitemCost,
+                                'iscompleted' => $request->iscompleted,
+                            ]
+                        );
+                    }
                     $message = 'Order Created Successfully!';
 
                  }
@@ -296,6 +403,7 @@ class StudioOrderController extends Controller
             ->join('studioordertypeitemmap as sotim', 'soim.ordertypeitemkey', '=', 'sotim.ordertypeitemkey')
             ->join('studioordertypes as sot', 'sotim.ordertypekey', '=', 'sot.ordertypekey')
             ->join('studioorders as so', 'soim.orderkey', '=', 'so.orderkey') // Fixed join condition
+            ->leftJoin('studioedittypes as set', 'soim.edittypekey', '=', 'set.edittypekey')
             ->where('soim.orderkey', $orderkey)
             ->select(
                 'sot.ordertype as ordertype',
@@ -310,7 +418,8 @@ class StudioOrderController extends Controller
                 'so.paidcost',
                 'so.discount',
                 'soim.ssorderitemmapkey as ssorderitemmapkey',
-                'soim.orderkey'
+                'soim.orderkey',
+                'set.edittype'
             )
             ->get();
 

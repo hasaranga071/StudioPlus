@@ -271,7 +271,7 @@ function loaddata()
             
              html += `
                  <tr>
-                     <td>${orderitem.orderkey}</td>
+                     <td>${orderitem.order_type_item.itemname}</td>
                      <td>${orderitem.hardcopyquantity}</td>
                      <td>${orderitem.softcopyquantity}</td>
                      <td>${orderitem.edit_type.edittype}</td>

@@ -136,7 +136,7 @@ class NewOrderController extends Controller
     $orderkey = $request->input('orderkey');
 
     // Search order items based on orderkey and include item type from related model
-    $orderitems = StudioOrderItemMapSS::with('editType','lamType'.'orderTypeItem') // Assuming 'itemType' is the relationship method
+    $orderitems = StudioOrderItemMapSS::with('editType','lamType','orderTypeItem') // Assuming 'itemType' is the relationship method
         ->when(!empty($orderkey), function ($query) use ($orderkey) {
             $query->where('StudioOrderItemMapSS.orderkey', $orderkey);
         })

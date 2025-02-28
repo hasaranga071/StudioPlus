@@ -567,7 +567,7 @@
     function orderstore () {
 
         var studiokey = $("#studiokeyex").text();
-
+        var ordertype = $("#otype option:selected").text();
         var ordertypekey = $("#otype option:selected").val();
         var ordertypeitemkey = $("#sittingitem option:selected").val();
         var edittypekey = $("#edittype option:selected").val();
@@ -611,6 +611,7 @@
                 studiokey: studiokey,
                 orderid: $("#order-id").text(),
                 ordertypekey: ordertypekey,
+                ordertype: ordertype,
                 ordertypeitemkey:ordertypeitemkey,
                 edittypekey:edittypekey,
                 lamtypekey:lamtypekey,

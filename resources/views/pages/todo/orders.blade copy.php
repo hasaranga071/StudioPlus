@@ -170,10 +170,15 @@ function loaddata()
                     <td>${order.paidcost}</td>
                     <td>${order.salestatus}</td>
                     <td>
-                        <button onClick="vieworder(${order.orderkey},'${order.orderno}','${order.createdtime}','${order.username}','${order.totalcost}','${order.discount}','${order.paidcost}','${order.urgent_flag === 1 ? 'Yes' : 'No'}','${order.salestatus}')" id="vieword" _data-orderkey="${order.orderkey}" type="button" class="btn btn-primary view-order"  >
-                        View
-                        </button>
+                  
+                        <button id="vieworder" data-orderkey="${order.orderkey}" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#orderModal"
+                        data-order-id="${order.orderno}" data-order-key="${order.orderkey}" data-order-date="${order.createdtime}"
+                        data-order-otype="${order.ordertype}" data-order-customer="${order.username}" data-order-total="${order.totalcost}"
+                        data-order-paid="${order.paidcost}" data-order-status="${order.salestatus}" data-order-urgent_flag="${order.urgent_flag === 1 ? 'Yes' : 'No'}" >
+    View
+</button>
                     </td>
+
                 </tr>
             `;
         });
@@ -222,87 +227,86 @@ function loaddata()
 
 
 //                         loaditemdata()
-                    function loaditemdata(okey){
-                        let orderkey = okey;
-                        //$('#orderitemResults').html("");
-                        //alert('load item data='+orderkey)
-                        $.ajax({
-                            url: "/orders/itemsearch",
-                            type: "POST",
-                            data: {
-                                orderkey: orderkey,
-                                _token: "{{ csrf_token() }}" // CSRF Token for security
-                            },
-                            success: function (response) {
-                                    console.log('Itemsearch result',response)
-                                    displayOrderitemSearchResults(response);
+//                     function loaditemdata(){
+//                         let orderkey = orderkey;
+//                         //$('#orderitemResults').html("");
+//                         alert('load item data')
+//                         $.ajax({
+//                             url: "/orders/itemsearch",
+//                             type: "POST",
+//                             data: {
+//                                 orderkey: orderkey,
+//                                 _token: "{{ csrf_token() }}" // CSRF Token for security
+//                             },
+//                             success: function (response) {
+//                                     console.log('Itemsearch result',response)
+//                                     displayOrderitemSearchResults(response);
 
-                            }
-                        });
+//                             }
+//                         });
                     
-                    }
+//                     }
 
-                    function displayOrderitemSearchResults(orderitems) {
+//                     function displayOrderitemSearchResults(orderitems) {
        
-                        if (!orderitems.length) {
-                                $('#orderitemResults').html(
-                                    '<div class="alert alert-info">No Order Items found.</div>'
-                                );
-                                return;
-                            }
+//                         if (!orderitems.length) {
+//                                 $('#search-results').html(
+//                                     '<div class="alert alert-info">No Order Items found.</div>'
+//                                 );
+//                                 return;
+//                             }
  
-         let html = `
-             <table class="table table-bordered">
-                 <thead>
-                     <tr>
-                         <th>Item Type</th>
-                         <th>Hard Copied</th>
-                         <th>Soft Copies</th>
-                         <th>Edit Type</th>
-                         <th>Laminate Type</th>
-                         <th>Cost (LKR)</th>
-                         <th>Status</th>
-                     </tr>
-                 </thead>
-                 <tbody>
-         `;
+//          let html = `
+//              <table class="table table-bordered">
+//                  <thead>
+//                      <tr>
+//                          <th>Item Type</th>
+//                          <th>Hard Copied</th>
+//                          <th>Soft Copies</th>
+//                          <th>Edit Type</th>
+//                          <th>Laminate Type</th>
+//                          <th>Cost (LKR)</th>
+//                          <th>Status</th>
+//                      </tr>
+//                  </thead>
+//                  <tbody>
+//          `;
  
-         orderitems.forEach(function(orderitem) {
+//          orderitems.forEach(function(orderitem) {
             
-             html += `
-                 <tr>
-                     <td>${orderitem.order_type_item.itemname}</td>
-                     <td>${orderitem.hardcopyquantity}</td>
-                     <td>${orderitem.softcopyquantity}</td>
-                     <td>${orderitem.edit_type.edittype}</td>
-                     <td>${orderitem.lam_type.laminatetype}</td>
-                     <td>${orderitem.totalcost}</td>
-                     <td>Inprogress</td>
+//              html += `
+//                  <tr>
+//                      <td>${orderitem.orderkey}</td>
+//                      <td>${orderitem.hardcopyquantity}</td>
+//                      <td>${orderitem.softcopyquantity}</td>
+//                      <td>${orderitem.edittypekey}</td>
+//                      <td>${orderitem.lamtypekey}</td>
+//                      <td>${orderitem.totalcost}</td>
+//                      <td>Inprogress</td>
                  
 
-                     <td>
+//                      <td>
                    
-                         <button type="button" class="btn btn-primary" >
-                         Edit
-                            </button>
-                     </td>
+//                          <button type="button" class="btn btn-primary" >
+//                          Edit
+//                             </button>
+//                      </td>
  
-                 </tr>
-             `;
-         });
+//                  </tr>
+//              `;
+//          });
  
-         html += '</tbody></table>';
-         $('#orderitemResults').html(html);
-     }
+//          html += '</tbody></table>';
+//          $('#orderitemResults').html(html);
+//      }
              
 
+// })
 
-
-
-function vieworder(key,no,odate,customer,total,discount,paid,urgent,status) {
-        event.preventDefault(); // Prevent default form submission
+$(document).ready(function () {
+    $("#vieworder").click(function () {
         let orderkey = $(this).data("orderkey"); // Get Order ID from button
-        //alert("orderkey  no ="+key+":"+no)
+        alert("orderkey="+orderkey)
 
         // Clear previous data and show loading placeholders
         $("#order-id").text("Loading...");
@@ -312,20 +316,38 @@ function vieworder(key,no,odate,customer,total,discount,paid,urgent,status) {
 
         // Show the modal first
         $("#orderModal").modal("show");
-        $("#onum").text(no);
-        $("#odate").text(odate);
-        $("#customer").text(customer);
-        $("#total").text(total);
-        $("#discount").text(discount);
-        $("#paid").text(paid);
-        $("#urgent").text(urgent);
-        $("#status").text(status);
 
-        loaditemdata(key)
+        // Once the modal is fully opened, make the AJAX request
+        $("#orderModal").on("shown.bs.modal", function () {
+            $.ajax({
+                url: `/orders/${orderId}`, // Laravel Route
+                type: "GET",
+                dataType: "json",
+                success: function (data) {
+                    // Populate modal with actual data
+                    $("#order-id").text(data.id);
+                    $("#customer-name").text(data.customer_name);
+                    $("#order-total").text("$" + data.total);
 
-        $(this).off("shown.bs.modal");
+                    let itemsList = "";
+                    data.items.forEach(item => {
+                        itemsList += `<li>${item.name} - $${item.price}</li>`;
+                    });
+                    $("#order-items").html(itemsList);
+                },
+                error: function () {
+                    $("#order-id").text("Error loading order!");
+                    $("#customer-name").text("Error");
+                    $("#order-total").text("Error");
+                    $("#order-items").html("<li>Error fetching items.</li>");
+                }
+            });
 
-        }
+            // Unbind the event to prevent multiple AJAX calls
+            $(this).off("shown.bs.modal");
+        });
+    });
+});
  
 
 </script>

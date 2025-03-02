@@ -812,7 +812,7 @@
 
                         orderSummaryHtml += `
                             <tr data-ssorderitemmapkey="${item.ssorderitemmapkey}">
-                                <td>${item.order.order_type.ordertype}</td> =
+                                <td>${item.order.order_type.ordertype}</td>
                                 <td>${item.order_type_item.itemname}</td>
                                 <td>${item.edit_type.edittype}</td>
                                 <td>${item.lamtype}</td>

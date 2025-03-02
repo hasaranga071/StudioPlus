@@ -537,7 +537,7 @@
                     $("#discount").val(item.discount);
                     $("#hcopy").val(item.hardcopyquantity);
                     $("#scopy").val(item.softcopyquantity);
-                    $("#paidamount").val(item.paidcost);
+                    $("#paidamount").val(item.order.paidcost);
                     let deliveryDate = item.deliverydate.split(" ")[0]; // Extracts "2025-02-26"
                     $("#deldate").val(deliveryDate).change();
                     if ($("#sittingitem option[value='" + item.ordertypeitemkey + "']").length === 0) {
@@ -716,21 +716,21 @@
                     let paidAmount = 0;
 
                     response.orderItems.forEach(item => {
-                        orderTotalCost += parseFloat(item.totalcost) || 0;
-                        orderDiscount = parseFloat(item.discount) || 0;
-                        paidAmount = parseFloat(item.paidcost) || 0;
+                        orderTotalCost += parseFloat(item.order.totalcost) || 0;
+                        orderDiscount = parseFloat(item.order.discount) || 0;
+                        paidAmount = parseFloat(item.order.paidcost) || 0;
 
                         orderSummaryHtml += `
                             <tr data-ssorderitemmapkey="${item.ssorderitemmapkey}">
-                                <td>${item.ordertype}</td>
-                                <td>${item.itemname}</td>
-                                <td>${item.edittype}</td>
+                                <td>${item.order.order_type.ordertype}</td>
+                                <td>${item.order_type_item.itemname}</td>
+                                <td>${item.edit_type?.edittype || ''}</td>
                                 <td>${item.softcopyquantity}</td>
                                 <td>${item.hardcopyquantity}</td>
-                                <td>${item.deliverydate}</td>
-                                <td>${item.isurgent == 1 ? 'Yes' : 'No'}</td>
-                                <td>Rs ${item.totalcost}</td>
-                                <td>${item.remarks}</td>
+                                <td>${item.order.deliverydate}</td>
+                                <td>${item.order.isurgent == 1 ? 'Yes' : 'No'}</td>
+                                <td>Rs ${item.order.totalcost}</td>
+                                <td>${item.order.remarks}</td>
                                 <td class="order-actions">
                                     <button class="btn btn-edit edit-order"><i class="fas fa-edit"></i></button>
                                     <button class="btn btn-delete remove-order" data-orderid="${item.orderkey}" data-id="${item.ssorderitemmapkey}"><i class="fas fa-trash"></i></button>
@@ -806,22 +806,22 @@
                     let paidAmount = 0;
 
                     response.orderItems.forEach(item => {
-                        orderTotalCost += parseFloat(item.totalcost) || 0;
-                        orderDiscount = parseFloat(item.discount) || 0;
-                        paidAmount = parseFloat(item.paidcost) || 0;
+                        orderTotalCost += parseFloat(item.order.totalcost) || 0;
+                        orderDiscount = parseFloat(item.order.discount) || 0;
+                        paidAmount = parseFloat(item.order.paidcost) || 0;
 
                         orderSummaryHtml += `
                             <tr data-ssorderitemmapkey="${item.ssorderitemmapkey}">
-                                <td>${item.ordertype}</td>
-                                <td>${item.itemname}</td>
-                                <td>${item.edittype}</td>
+                                <td>${item.order.order_type.ordertype}</td> =
+                                <td>${item.order_type_item.itemname}</td>
+                                <td>${item.edit_type.edittype}</td>
                                 <td>${item.lamtype}</td>
                                 <td>${item.softcopyquantity}</td>
                                 <td>${item.hardcopyquantity}</td>
-                                <td>${item.deliverydate}</td>
-                                <td>${item.isurgent == 1 ? 'Yes' : 'No'}</td>
-                                <td>Rs ${item.totalcost}</td>
-                                <td>${item.remarks}</td>
+                                <td>${item.order.deliverydate}</td>
+                                <td>${item.order.isurgent == 1 ? 'Yes' : 'No'}</td>
+                                <td>Rs ${item.order.totalcost}</td>
+                                <td>${item.order.remarks}</td>
                                 <td class="order-actions">
                                     <button class="btn btn-edit edit-order"><i class="fas fa-edit"></i></button>
                                     <button class="btn btn-delete remove-order" data-orderid="${item.orderkey}" data-id="${item.ssorderitemmapkey}"><i class="fas fa-trash"></i></button>
@@ -896,21 +896,21 @@
                     let paidAmount = 0;
 
                     response.orderItems.forEach(item => {
-                        orderTotalCost += parseFloat(item.totalcost) || 0;
-                        orderDiscount = parseFloat(item.discount) || 0;
-                        paidAmount = parseFloat(item.paidcost) || 0;
+                        orderTotalCost += parseFloat(item.order.totalcost) || 0;
+                        orderDiscount = parseFloat(item.order.discount) || 0;
+                        paidAmount = parseFloat(item.order.paidcost) || 0;
 
                         orderSummaryHtml += `
                             <tr data-frorderitemmapkey="${item.frorderitemmapkey}">
-                                <td>${item.ordertype}</td>
-                                <td>${item.frametype}</td>
+                                <td>${item.order.order_type.ordertype}</td>
+                                <td>${item.frame_type.frametype}</td>
                                 <td>${item.size}</td>
                                 <td>${item.framesize}</td>
                                 <td>${item.subframetype}</td>
-                                <td>${item.deliverydate}</td>
-                                <td>${item.isurgent == 1 ? 'Yes' : 'No'}</td>
-                                <td>Rs ${item.totalcost}</td>
-                                <td>${item.remarks}</td>
+                                <td>${item.order.deliverydate}</td>
+                                <td>${item.order.isurgent == 1 ? 'Yes' : 'No'}</td>
+                                <td>Rs ${item.order.totalcost}</td>
+                                <td>${item.order.remarks}</td>
                                 <td class="order-actions">
                                     <button class="btn btn-edit edit-order"><i class="fas fa-edit"></i></button>
                                     <button class="btn btn-delete remove-order" data-orderid="${item.orderkey}" data-id="${item.frorderitemmapkey}"><i class="fas fa-trash"></i></button>

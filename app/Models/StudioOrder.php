@@ -39,7 +39,7 @@ class StudioOrder extends Model
 
     public function orderType()
     {
-        return $this->belongsTo(StudioOrderType::class, 'ordertypekey','ordertype');
+        return $this->belongsTo(StudioOrderType::class, 'ordertypekey');
     }
 
     public function customer()

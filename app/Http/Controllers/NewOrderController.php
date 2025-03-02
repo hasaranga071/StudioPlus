@@ -16,6 +16,7 @@ use App\Models\StudioFramesize;
 use App\Models\StudioSubframetype;
 use App\Models\StudioSubframesize;
 
+
 class NewOrderController extends Controller
 {
   public function neworder()
@@ -81,7 +82,7 @@ class NewOrderController extends Controller
         $query      = $request->input('query');
         $start_date = $request->input('start_date');
         $end_date   = $request->input('end_date');
-        
+
 
         // Search orders based on multiple criteria
         $orders = StudioOrder::where(function ($q) use ($query,$otype) {
@@ -97,7 +98,7 @@ class NewOrderController extends Controller
             if (!empty($otype)) {
               $q->where('studioorders.ordertypekey', $otype);
             }
-      
+
             if (!empty($query)) {
               $q->Where('orderno', 'LIKE', '%' . $query . '%');
             }
@@ -106,7 +107,7 @@ class NewOrderController extends Controller
             $q->whereBetween('studioorders.createdtime', [$start_date, $end_date]);
         })
         ->join('studioordertypes', 'studioorders.ordertypekey', '=', 'studioordertypes.ordertypekey') // Join order types
-        ->join('studiocustomers', 'studioorders.customerkey', '=', 'studiocustomers.customerkey') 
+        ->join('studiocustomers', 'studioorders.customerkey', '=', 'studiocustomers.customerkey')
         //->select('studioorders.ordertypekey','studioorders.orderno', 'studioordertypes.ordertype') // Select required fields
         ->get();
 
@@ -119,15 +120,15 @@ class NewOrderController extends Controller
         // Get input values
     //     $orderkey      = $request->input('orderkey');
 
-      
+
     //     // Search order items based on orderkey
     //     $orderitems = StudioOrderItemMapSS::where(function ($q) use ($orderkey) {
 
     //         if (!empty($orderkey)) {
     //           $q->where('StudioOrderItemMapSS.orderkey', $orderkey);
-              
+
     //         }
-    
+
     //     })
     //  ->get();
 
@@ -144,5 +145,41 @@ class NewOrderController extends Controller
 
     return response()->json($orderitems);
   }
-  
+
+  public function getOrderItemSummary($orderkey)
+  {
+
+    $ordertypekey = StudioOrder::where('orderkey',  $orderkey)->value('ordertypekey');
+    $ordertype = StudioOrderType::where('ordertypekey',  $ordertypekey)->value('ordertype');
+
+    if ($ordertype=='Studio Sittings')
+    {
+        // Search order items based on orderkey
+        $orderitems = StudioOrderItemMapSS::with('editType','lamType','orderTypeItem','order.orderType') // Assuming 'itemType' is the relationship method
+        ->when(!empty($orderkey), function ($query) use ($orderkey) {
+            $query->where('StudioOrderItemMapSS.orderkey', $orderkey);
+        })
+        ->get();
+        return response()->json([
+            'status' => 'success',
+            'orderItems' => $orderitems
+        ]);
+    }
+
+    else if ($ordertype=='Extra Copy')
+    {
+        // Search order items based on orderkey
+        $orderitems = StudioOrderItemMapEC::with('editType','lamType','orderTypeItem','order') // Assuming 'itemType' is the relationship method
+        ->when(!empty($orderkey), function ($query) use ($orderkey) {
+            $query->where('StudioOrderItemMapEC.orderkey', $orderkey);
+        })
+        ->get();
+        return response()->json([
+            'status' => 'success',
+            'orderItems' => $orderitems
+        ]);
+    }
+
+  }
+
 }

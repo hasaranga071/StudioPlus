@@ -514,6 +514,7 @@
          event.preventDefault();
         let row = $(this).closest('tr'); // Get the clicked row
         let ssorderitemmapkey = row.data('ssorderitemmapkey'); // Get the ID
+        var ordertype = $("#otype option:selected").text();
         $("#add-order").text("Update");
         $(".highlighted-row").removeClass("highlighted-row");
 
@@ -522,8 +523,9 @@
 
         // Fetch existing order details (example: using AJAX)
         $.ajax({
-            url: "/order-item-details/"+ssorderitemmapkey, // Route for fetching details
+            url: "/order-item-details/" + ssorderitemmapkey , // Route for fetching details
             type: "GET",
+            data: { ordertype: ordertype },
             success: function (response) {
                 if (response.status === 'success') {
                     let item = response.orderItems[0];
@@ -531,26 +533,26 @@
                     // Populate the input fields
 
 
-                    $("#urgent").prop('checked', item.isurgent == 1);
-                    $("#comments").val(item.remarks).change();
+                    $("#urgent").prop('checked', item.order.isurgent == 1);
+                    $("#comments").val(item.order.remarks).change();
 
-                    $("#discount").val(item.discount);
+                    $("#discount").val(item.order.discount);
                     $("#hcopy").val(item.hardcopyquantity);
                     $("#scopy").val(item.softcopyquantity);
                     $("#paidamount").val(item.order.paidcost);
-                    let deliveryDate = item.deliverydate.split(" ")[0]; // Extracts "2025-02-26"
+                    let deliveryDate = item.order.deliverydate.split(" ")[0]; // Extracts "2025-02-26"
                     $("#deldate").val(deliveryDate).change();
                     if ($("#sittingitem option[value='" + item.ordertypeitemkey + "']").length === 0) {
-                        $("#sittingitem").append(`<option value="${item.ordertypeitemkey}">${item.itemname}</option>`);
+                        $("#sittingitem").append(`<option value="${item.ordertypeitemkey}">${item.order_type_item.itemname}</option>`);
                     }
                     $("#sittingitem").val(item.ordertypeitemkey).change();
                     if ($("#edittype option[value='" + item.edittypekey + "']").length === 0) {
-                        $("#edittype").append(`<option value="${item.edittypekey}">${item.edittype}</option>`);
+                        $("#edittype").append(`<option value="${item.edittypekey}">${item.edit_type?.edittype || ''}</option>`);
                     }
                     $("#edittype").val(item.edittypekey).change();
 
                     // Store the ID for updating later
-                    $("#ssorderitemmapkey").val(item.ssorderitemmapkey);
+                    $("#ssorderitemmapkey").val(ssorderitemmapkey);
                 }
             },
             error: function (xhr) {
@@ -811,11 +813,11 @@
                         paidAmount = parseFloat(item.order.paidcost) || 0;
 
                         orderSummaryHtml += `
-                            <tr data-ssorderitemmapkey="${item.ssorderitemmapkey}">
+                            <tr data-ssorderitemmapkey="${item.meorderitemmapkey}">
                                 <td>${item.order.order_type.ordertype}</td>
                                 <td>${item.order_type_item.itemname}</td>
-                                <td>${item.edit_type.edittype}</td>
-                                <td>${item.lamtype}</td>
+                                <td>${item.edit_type?.edittype || ''}</td>
+                                <td>${item.lam_type?.laminatetype || ''}</td>
                                 <td>${item.softcopyquantity}</td>
                                 <td>${item.hardcopyquantity}</td>
                                 <td>${item.order.deliverydate}</td>
@@ -824,7 +826,7 @@
                                 <td>${item.order.remarks}</td>
                                 <td class="order-actions">
                                     <button class="btn btn-edit edit-order"><i class="fas fa-edit"></i></button>
-                                    <button class="btn btn-delete remove-order" data-orderid="${item.orderkey}" data-id="${item.ssorderitemmapkey}"><i class="fas fa-trash"></i></button>
+                                    <button class="btn btn-delete remove-order" data-orderid="${item.orderkey}" data-id="${item.meorderitemmapkey}"><i class="fas fa-trash"></i></button>
                                 </td>
                             </tr>`;
                     });

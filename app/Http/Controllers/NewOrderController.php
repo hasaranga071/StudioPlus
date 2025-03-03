@@ -6,6 +6,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\StudioOrder;
 use App\Models\StudioOrderItemMapSS;
+use App\Models\StudioOrderItemMapEC;
+use App\Models\StudioOrderItemMapME;
+use App\Models\StudioOrderItemMapFR;
 use Illuminate\Support\Facades\Session;
 use App\Models\StudioOrderType;
 use App\Models\StudioOrderTypeItemMap;
@@ -169,7 +172,7 @@ class NewOrderController extends Controller
     else if ($ordertype=='Extra Copy')
     {
         // Search order items based on orderkey
-        $orderitems = StudioOrderItemMapEC::with('editType','lamType','orderTypeItem','order') // Assuming 'itemType' is the relationship method
+        $orderitems = StudioOrderItemMapEC::with('editType','lamType','orderTypeItem','order.orderType') // Assuming 'itemType' is the relationship method
         ->when(!empty($orderkey), function ($query) use ($orderkey) {
             $query->where('StudioOrderItemMapEC.orderkey', $orderkey);
         })
@@ -179,6 +182,98 @@ class NewOrderController extends Controller
             'orderItems' => $orderitems
         ]);
     }
+
+    else if ($ordertype=='Media')
+    {
+        // Search order items based on orderkey
+        $orderitems = StudioOrderItemMapME::with('editType','lamType','orderTypeItem','order.orderType') // Assuming 'itemType' is the relationship method
+        ->when(!empty($orderkey), function ($query) use ($orderkey) {
+            $query->where('StudioOrderItemMapME.orderkey', $orderkey);
+        })
+        ->get();
+        return response()->json([
+            'status' => 'success',
+            'orderItems' => $orderitems
+        ]);
+    }
+
+    else
+    {
+        // Search order items based on orderkey
+        $orderitems = StudioOrderItemMapFR::with('editType','lamType','orderTypeItem','order.orderType') // Assuming 'itemType' is the relationship method
+        ->when(!empty($orderkey), function ($query) use ($orderkey) {
+            $query->where('StudioOrderItemMapFR.orderkey', $orderkey);
+        })
+        ->get();
+        return response()->json([
+            'status' => 'success',
+            'orderItems' => $orderitems
+        ]);
+    }
+
+
+  }
+
+  public function getOrderItemDetails($orderitemmapkey,Request $request)
+  {
+
+    $ordertype = $request->query('ordertype');
+    if ($ordertype=='Studio Sittings')
+    {
+        // Search order items based on orderkey
+        $orderitems = StudioOrderItemMapSS::with('editType','lamType','orderTypeItem','order.orderType','order') // Assuming 'itemType' is the relationship method
+        ->when(!empty($orderitemmapkey), function ($query) use ($orderitemmapkey) {
+            $query->where('StudioOrderItemMapSS.ssorderitemmapkey', $orderitemmapkey);
+        })
+        ->get();
+        return response()->json([
+            'status' => 'success',
+            'orderItems' => $orderitems
+        ]);
+    }
+
+    else if ($ordertype=='Extra Copy')
+    {
+        // Search order items based on orderkey
+        $orderitems = StudioOrderItemMapEC::with('editType','lamType','orderTypeItem','order.orderType','order') // Assuming 'itemType' is the relationship method
+        ->when(!empty($orderitemmapkey), function ($query) use ($orderitemmapkey) {
+            $query->where('StudioOrderItemMapEC.ecorderitemmapkey', $orderitemmapkey);
+        })
+        ->get();
+        return response()->json([
+            'status' => 'success',
+            'orderItems' => $orderitems
+        ]);
+    }
+
+    else if ($ordertype=='Media')
+    {
+        // Search order items based on orderkey
+        $orderitems = StudioOrderItemMapME::with('editType','lamType','orderTypeItem','order.orderType','order') // Assuming 'itemType' is the relationship method
+        ->when(!empty($orderitemmapkey), function ($query) use ($orderitemmapkey) {
+            $query->where('StudioOrderItemMapME.meorderitemmapkey', $orderitemmapkey);
+        })
+        ->get();
+        return response()->json([
+            'status' => 'success',
+            'orderItems' => $orderitems
+        ]);
+    }
+
+    else
+    {
+        // Search order items based on orderkey
+        $orderitems = StudioOrderItemMapFR::with('editType','lamType','orderTypeItem','order.orderType','order') // Assuming 'itemType' is the relationship method
+        ->when(!empty($orderitemmapkey), function ($query) use ($orderitemmapkey) {
+            $query->where('StudioOrderItemMapFR.frorderitemmapkey', $orderitemmapkey);
+        })
+        ->get();
+        return response()->json([
+            'status' => 'success',
+            'orderItems' => $orderitems
+        ]);
+    }
+
 
   }
 

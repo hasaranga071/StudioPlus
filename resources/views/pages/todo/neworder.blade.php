@@ -596,7 +596,7 @@
             return false;
         }
 
-        if(!ordertypeitemkey){
+        if(!ordertypeitemkey && ordertype!='Frames'){
             flashpopup('Please select the order item');
             return false;
         }
@@ -605,11 +605,43 @@
             return false;
         }
 
-
-        $.ajax({
-            url: "{{ route('storeOrder_ss') }}",
-            type: "POST",
-            data: {
+        var dataarray = {};
+        var routename = "";
+        if (ordertype=='Frames')
+        {
+            var frametypekey = $("#frametype option:selected").val();
+            var framesizekey = $("#framesize option:selected").val();
+            var subframesizekey = $("#subframesize option:selected").val();
+            var framesubtypekey = $("#subframetype option:selected").val();
+            routename = "{{ route('storeOrder_fr') }}";
+            if(!frametypekey)
+                {
+                    flashpopup('Please select the Frame type !');
+                    return false;
+                }
+            dataarray = {
+                studiokey: studiokey,
+                orderid: $("#order-id").text(),
+                ordertypekey: ordertypekey,
+                ordertype: ordertype,
+                customerkey: customerkey,
+                isurgent: isurgent,
+                discount: discount,
+                paidcost: paidcost,
+                deliverydate: $("#deldate").val(),
+                remarks: comments,
+                iscompleted:0,
+                frametypekey : frametypekey,
+                framesizekey : framesizekey,
+                subframesizekey : subframesizekey,
+                framesubtypekey : framesubtypekey,
+                _token: "{{ csrf_token() }}" // Required for Laravel AJAX requests
+            }
+        }
+        else
+        {
+            routename = "{{ route('storeOrder_ss') }}";
+            dataarray = {
                 studiokey: studiokey,
                 orderid: $("#order-id").text(),
                 ordertypekey: ordertypekey,
@@ -627,7 +659,13 @@
                 remarks: comments,
                 iscompleted:0,
                 _token: "{{ csrf_token() }}" // Required for Laravel AJAX requests
-            },
+            }
+        }
+
+        $.ajax({
+            url: routename,
+            type: "POST",
+            data: dataarray,
             success: function (response) {
                 console.log("Order Created Successfully:", response);
                 // render table

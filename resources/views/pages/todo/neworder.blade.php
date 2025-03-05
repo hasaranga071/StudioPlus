@@ -216,6 +216,7 @@
                     </div>
 
                 </div>
+
                 <div class="form-group" style="display:flex;gap: 50px">
                     <div class="col-md-4">
                         <label class="col-md-4 control-label">Paid Amount</label>
@@ -225,6 +226,12 @@
                         <label class="col-md-4 control-label">Discount</label>
                         <input id="discount" name="discount" type="text" class="form-control input-md" required="">
                     </div>
+
+
+                </div>
+                <div class="col-md-4" id="fquantitymain">
+                    <label class="col-md-4 control-label">Quantity</label>
+                    <input id="fquantity" name="fquantity" type="text" class="form-control input-md" required="">
                 </div>
                 <div class="col-md-4">
                     <label class="col-md-4 control-label">Comments</label><br>
@@ -299,7 +306,7 @@
             var selectedOrderType = $("#otype option:selected").text();
             var selectedFrameType = $("#frametype option:selected").text();
 
-            $('#frametypemain, #framesizemain, #subframesizemain, #subframetypemain').toggle(selectedOrderType === "Frames");
+            $('#frametypemain, #framesizemain, #subframesizemain, #subframetypemain, #fquantitymain').toggle(selectedOrderType === "Frames");
             $('#lamtypemain').toggle(selectedOrderType === "Media");
             $('#Sittings, #edittypemain, #hcopymain, #scopymain').toggle(selectedOrderType !== "Frames");
             $('#subframesizemain, #subframetypemain').toggle(selectedFrameType === "Fiber Frame");
@@ -551,6 +558,13 @@
                     }
                     $("#edittype").val(item.edittypekey).change();
 
+                    if(ordertype=='Frames'){
+                        if ($("#frametype option[value='" + item.frametypekey + "']").length === 0) {
+                        $("#frametype").append(`<option value="${item.frametypekey}">${item.frame_type?.frametype || ''}</option>`);
+                        }
+                         $("#frametype").val(item.frametypekey).change();
+                    }
+
                     // Store the ID for updating later
                     $("#ssorderitemmapkey").val(ssorderitemmapkey);
                 }
@@ -613,6 +627,7 @@
             var framesizekey = $("#framesize option:selected").val();
             var subframesizekey = $("#subframesize option:selected").val();
             var framesubtypekey = $("#subframetype option:selected").val();
+            var quantity = $("#fquantity").val() || 1;
             routename = "{{ route('storeOrder_fr') }}";
             if(!frametypekey)
                 {
@@ -634,7 +649,8 @@
                 frametypekey : frametypekey,
                 framesizekey : framesizekey,
                 subframesizekey : subframesizekey,
-                framesubtypekey : framesubtypekey,
+                subframetypekey : framesubtypekey,
+                quantity:quantity,
                 _token: "{{ csrf_token() }}" // Required for Laravel AJAX requests
             }
         }
@@ -941,12 +957,12 @@
                         paidAmount = parseFloat(item.order.paidcost) || 0;
 
                         orderSummaryHtml += `
-                            <tr data-frorderitemmapkey="${item.frorderitemmapkey}">
+                            <tr data-ssorderitemmapkey="${item.frorderitemmapkey}">
                                 <td>${item.order.order_type.ordertype}</td>
                                 <td>${item.frame_type.frametype}</td>
-                                <td>${item.size}</td>
-                                <td>${item.framesize}</td>
-                                <td>${item.subframetype}</td>
+                                <td>${item.frame_size.size}</td>
+                                <td>${item.subframe_size.framesize}</td>
+                                <td>${item.subframe_type.subframetype}</td>
                                 <td>${item.order.deliverydate}</td>
                                 <td>${item.order.isurgent == 1 ? 'Yes' : 'No'}</td>
                                 <td>Rs ${item.order.totalcost}</td>

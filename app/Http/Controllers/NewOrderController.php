@@ -200,7 +200,7 @@ class NewOrderController extends Controller
     else
     {
         // Search order items based on orderkey
-        $orderitems = StudioOrderItemMapFR::with('editType','lamType','orderTypeItem','order.orderType') // Assuming 'itemType' is the relationship method
+        $orderitems = StudioOrderItemMapFR::with('frameSize','subframeType','frameType','subframeSize','order.orderType') // Assuming 'itemType' is the relationship method
         ->when(!empty($orderkey), function ($query) use ($orderkey) {
             $query->where('StudioOrderItemMapFR.orderkey', $orderkey);
         })
@@ -263,7 +263,7 @@ class NewOrderController extends Controller
     else
     {
         // Search order items based on orderkey
-        $orderitems = StudioOrderItemMapFR::with('editType','lamType','orderTypeItem','order.orderType','order') // Assuming 'itemType' is the relationship method
+        $orderitems = StudioOrderItemMapFR::with('frameSize','subframeType','frameType','subframeSize','order.orderType','order') // Assuming 'itemType' is the relationship method
         ->when(!empty($orderitemmapkey), function ($query) use ($orderitemmapkey) {
             $query->where('StudioOrderItemMapFR.frorderitemmapkey', $orderitemmapkey);
         })

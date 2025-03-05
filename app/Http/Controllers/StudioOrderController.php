@@ -12,6 +12,10 @@ use App\Models\StudioOrderItemMapSS;
 use App\Models\StudioOrderItemMapEC;
 use App\Models\StudioOrderItemMapME;
 use App\Models\StudioOrderItemMapFR;
+use App\Models\StudioFramesize;
+use App\Models\StudioFrametype;
+use App\Models\StudioSubframetype;
+use App\Models\StudioSubframesize;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
@@ -335,8 +339,8 @@ class StudioOrderController extends Controller
                     'discount' => 'required|integer',
                     'deliverydate' => 'nullable|date',
                     'remarks' => 'nullable|string',
-                    'framesizekey ' => 'required|integer',
-                    'frametypekey ' => 'required|integer',
+                    'quantity' => 'required|integer',
+
                 ]);
 
                 // Check if customer session exists
@@ -370,14 +374,16 @@ class StudioOrderController extends Controller
                     if ($subframesizekey > 0)
                     {
                         // Fetch the UnitCost from framesize table
-                        $subfrunitCost = StudioFramesize::where('subframesizekey', $subframesizekey)->value('unitprice');
+                        $subfrunitCost = StudioSubframesize::where('subframesizekey', $subframesizekey)->value('unitprice');
 
                         if ($subfrunitCost === null) {
                             return response()->json(['status' => 'error', 'message' => "Unit price is not configured for this sub frame size !"], 400);
                         }
                     }
+                    $fquantity = $request->quantity;
+                    if(!$fquantity){$fquantity =1;}
 
-                    $totalcost= $frunitCost + $subfrunitCost;
+                    $totalcost= ($frunitCost * $fquantity)  + ($subfrunitCost * $fquantity);
 
                     $discount = $request->discount;
                     $discountAmount = ($totalcost * $discount) / 100;
@@ -408,10 +414,11 @@ class StudioOrderController extends Controller
                             'frametypekey' => $request->frametypekey,
                             'subframesizekey' => $request->subframesizekey,
                             'subframetypekey' => $request->subframetypekey,
-                            'subtotal' => $totalcost,
+                            'totalcost' => $totalcost,
+                            'quantity' => $request->quantity,
                         ]
                     );
-                    $totalitemCost = StudioOrderItemMapFR::where('orderkey', $sorderkey)->sum('subtotal');
+                    $totalitemCost = StudioOrderItemMapFR::where('orderkey', $sorderkey)->sum('totalcost');
 
 
 
@@ -470,14 +477,16 @@ class StudioOrderController extends Controller
                     if ($subframesizekey > 0)
                     {
                         // Fetch the UnitCost from framesize table
-                        $subfrunitCost = StudioFramesize::where('subframesizekey', $subframesizekey)->value('unitprice');
+                        $subfrunitCost = StudioSubframesize::where('subframesizekey', $subframesizekey)->value('unitprice');
 
                         if ($subfrunitCost === null) {
                             return response()->json(['status' => 'error', 'message' => "Unit price is not configured for this sub frame size !"], 400);
                         }
                     }
+                    $fquantity = $request->quantity;
+                    if(!$fquantity){$fquantity =1;}
 
-                    $totalcost= $frunitCost + $subfrunitCost;
+                    $totalcost= ($frunitCost * $fquantity)  + ($subfrunitCost * $fquantity);
 
                     $discount = $request->discount;
                     $discountAmount = ($totalcost * $discount) / 100;
@@ -492,10 +501,11 @@ class StudioOrderController extends Controller
                             'frametypekey' => $request->frametypekey,
                             'subframesizekey' => $request->subframesizekey,
                             'subframetypekey' => $request->subframetypekey,
-                            'subtotal' => $totalcost,
+                            'quantity' => $request->quantity,
+                            'totalcost' => $totalcost,
                         ]
                     );
-                    $totalitemCost = StudioOrderItemMapFR::where('orderkey', $sorderkey)->sum('subtotal');
+                    $totalitemCost = StudioOrderItemMapFR::where('orderkey', $sorderkey)->sum('totalcost');
 
                     $message = 'Order Created Successfully!';
 

@@ -25,7 +25,8 @@ class StudioOrderItemMapFR extends Model
         'framesizekey',
         'subframesizekey',
         'subframetypekey',
-        'subtotal',
+        'totalcost',
+        'quantity',
     ];
 
     public function order()

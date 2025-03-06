@@ -77,10 +77,10 @@ class StudioOrderController extends Controller
                 ]);
 
                 // Check if customer session exists
-                $customerKey = Session::get('customer_key');
-                if (!$customerKey) {
-                    return response()->json(['status' => 'error', 'message' => 'Customer not selected!'], 400);
-                }
+                // $customerKey = Session::get('customer_key');
+                // if (!$customerKey) {
+                //     return response()->json(['status' => 'error', 'message' => 'Customer not selected!'], 400);
+                // }
 
                 $totalCost = 0;
                 $ssitemCost = 0;
@@ -344,13 +344,15 @@ class StudioOrderController extends Controller
                 ]);
 
                 // Check if customer session exists
-                $customerKey = Session::get('customer_key');
-                if (!$customerKey) {
-                    return response()->json(['status' => 'error', 'message' => 'Customer not selected!'], 400);
-                }
+                // $customerKey = Session::get('customer_key');
+                // if (!$customerKey) {
+                //     return response()->json(['status' => 'error', 'message' => 'Customer not selected!'], 400);
+                // }
 
                 $totalCost = 0;
                 $ssitemCost = 0;
+                $frunitCost = 0;
+                $subfrunitCost = 0;
                 // \Log::info('Request Data:', $request->all());
 
 
@@ -362,6 +364,10 @@ class StudioOrderController extends Controller
 
                     $framesizekey = $request->framesizekey;
                     $subframesizekey = $request->subframesizekey;
+                    $fquantity = $request->quantity;
+                    if(!$fquantity){$fquantity =1;}
+
+
                     if ($framesizekey > 0)
                     {
                         // Fetch the UnitCost from framesize table
@@ -380,8 +386,6 @@ class StudioOrderController extends Controller
                             return response()->json(['status' => 'error', 'message' => "Unit price is not configured for this sub frame size !"], 400);
                         }
                     }
-                    $fquantity = $request->quantity;
-                    if(!$fquantity){$fquantity =1;}
 
                     $totalcost= ($frunitCost * $fquantity)  + ($subfrunitCost * $fquantity);
 
@@ -407,7 +411,9 @@ class StudioOrderController extends Controller
 
                      StudioOrderItemMapFR::updateOrCreate(
                         [
-                            'orderkey' =>  $sorderkey
+                            'orderkey' =>  $sorderkey,
+                            'frametypekey' => $request->frametypekey,
+                            'framesizekey' => $request->framesizekey
                         ],
                         [
                             'framesizekey' => $request->framesizekey,
@@ -465,6 +471,8 @@ class StudioOrderController extends Controller
 
                     $framesizekey = $request->framesizekey;
                     $subframesizekey = $request->subframesizekey;
+                    $fquantity = $request->quantity;
+                    if(!$fquantity){$fquantity =1;}
                     if ($framesizekey > 0)
                     {
                         // Fetch the UnitCost from framesize table
@@ -482,11 +490,9 @@ class StudioOrderController extends Controller
                         if ($subfrunitCost === null) {
                             return response()->json(['status' => 'error', 'message' => "Unit price is not configured for this sub frame size !"], 400);
                         }
-                    }
-                    $fquantity = $request->quantity;
-                    if(!$fquantity){$fquantity =1;}
 
-                    $totalcost= ($frunitCost * $fquantity)  + ($subfrunitCost * $fquantity);
+                        $totalcost= ($frunitCost * $fquantity)  + ($subfrunitCost * $fquantity);
+                    }
 
                     $discount = $request->discount;
                     $discountAmount = ($totalcost * $discount) / 100;
@@ -494,7 +500,9 @@ class StudioOrderController extends Controller
 
                     StudioOrderItemMapFR::updateOrCreate(
                         [
-                            'orderkey' =>  $sorderkey
+                            'orderkey' =>  $sorderkey,
+                            'frametypekey' => $request->frametypekey,
+                            'framesizekey' => $request->framesizekey
                         ],
                         [
                             'framesizekey' => $request->framesizekey,
@@ -521,9 +529,26 @@ class StudioOrderController extends Controller
             }
         }
 
-        public function deleteOrderItem($id) {
-            // Find and delete the order item
-            $orderItem = DB::table('studioorderitemmapss')->where('ssorderitemmapkey', $id)->delete();
+        public function deleteOrderItem($id,Request $request) {
+            $order = StudioOrder::where('orderkey', $request->query('orderkey'))
+            ->with('orderType') // Eager load the StudioOrderType relationship
+            ->first();
+            $ordertype = $order->orderType->ordertype ?? 'N/A';
+            $orderItem = '';
+            if($ordertype='Studio Sittings'){
+                $orderItem = DB::table('studioorderitemmapss')->where('ssorderitemmapkey', $id)->delete();
+            }
+            if($ordertype='Extra Copy'){
+                $orderItem = DB::table('studioorderitemmapec')->where('ecorderitemmapkey', $id)->delete();
+            }
+            if($ordertype='Media'){
+                $orderItem = DB::table('studioorderitemmapme')->where('meorderitemmapkey', $id)->delete();
+            }
+            if($ordertype='Frames'){
+                $orderItem = DB::table('studioorderitemmapfr')->where('frorderitemmapkey', $id)->delete();
+            }
+
+
 
             if ($orderItem) {
                // $this->storeOrder_ss(); // Call storeOrder_ss function after deletion

@@ -160,7 +160,7 @@ function loaddata()
            
             html += `
                 <tr>
-                    <td>${order.orderno}</td>
+                    <td>${order.orderid}</td>
                     <td>${order.ordertype}</td>
                     <td>${order.createdtime}</td>
                     <td>${order.username}</td>
@@ -170,7 +170,7 @@ function loaddata()
                     <td>${order.paidcost}</td>
                     <td>${order.salestatus}</td>
                     <td>
-                        <button onClick="vieworder(${order.orderkey},'${order.orderno}','${order.createdtime}','${order.username}','${order.totalcost}','${order.discount}','${order.paidcost}','${order.urgent_flag === 1 ? 'Yes' : 'No'}','${order.salestatus}')" id="vieword" _data-orderkey="${order.orderkey}" type="button" class="btn btn-primary view-order"  >
+                        <button onClick="vieworder(${order.orderkey},'${order.orderid}','${order.createdtime}','${order.username}','${order.totalcost}','${order.discount}','${order.paidcost}','${order.urgent_flag === 1 ? 'Yes' : 'No'}','${order.salestatus}',${order.ordertypekey})" id="vieword" _data-orderkey="${order.orderkey}" type="button" class="btn btn-primary view-order"  >
                         View
                         </button>
                     </td>
@@ -252,14 +252,13 @@ function loaddata()
                             }
  
          let html = `
-             <table class="table table-bordered">
+             <table id="itemtable" class="table table-bordered">
                  <thead>
                      <tr>
                          <th>Item Type</th>
                          <th>Hard Copied</th>
                          <th>Soft Copies</th>
                          <th>Edit Type</th>
-                         <th>Laminate Type</th>
                          <th>Cost (LKR)</th>
                          <th>Status</th>
                      </tr>
@@ -270,21 +269,23 @@ function loaddata()
          orderitems.forEach(function(orderitem) {
             
              html += `
-                 <tr>
-                     <td>${orderitem.order_type_item.itemname}</td>
-                     <td>${orderitem.hardcopyquantity}</td>
-                     <td>${orderitem.softcopyquantity}</td>
-                     <td>${orderitem.edit_type.edittype}</td>
-                     <td>${orderitem.lam_type.laminatetype}</td>
+                 <tr data-id="${orderitem.ssorderitemmapkey}">
+                     <td id="name_${orderitem.ssorderitemmapkey}">${orderitem.order_type_item.itemname}</td>
+                     <td id="hcopy_${orderitem.ssorderitemmapkey}">${orderitem.hardcopyquantity}</td>
+                     <td id="scopy_${orderitem.ssorderitemmapkey}">${orderitem.softcopyquantity}</td>
+                     <td id="edittype_${orderitem.ssorderitemmapkey}">${orderitem.edit_type.edittype}</td>
                      <td>${orderitem.totalcost}</td>
                      <td>Inprogress</td>
                  
 
                      <td>
                    
-                         <button type="button" class="btn btn-primary" >
-                         Edit
-                            </button>
+                        <button id="editBtn_${orderitem.ssorderitemmapkey}" type="button" class="btn btn-primary" onClick="edititem(${orderitem.ssorderitemmapkey},${orderitem.hardcopyquantity},${orderitem.softcopyquantity},'${orderitem.edit_type.edittype}')">
+                         Edit 
+                        </button>
+                        <button style="display:none" id="saveBtn_${orderitem.ssorderitemmapkey}" type="button" class="btn btn-primary" onClick="edititem(${orderitem.ssorderitemmapkey},${orderitem.hardcopyquantity},${orderitem.softcopyquantity},'${orderitem.edit_type.edittype}')">
+                         Save 
+                        </button>
                      </td>
  
                  </tr>
@@ -296,14 +297,62 @@ function loaddata()
      }
              
 
+     function addnew(){
+            // Get the table body
+            let table = document.getElementById("itemtable").getElementsByTagName('tbody')[0];
+
+            // Create a new row
+            let newRow = table.insertRow();
+            newRow.style.backgroundColor = "lightblue";
+
+            // Insert cells into the row
+            let itemcell = newRow.insertCell(0);
+            let hcopycell = newRow.insertCell(1);
+            let scopycell = newRow.insertCell(2);
+            let edittypecell = newRow.insertCell(3);
+            let costcell = newRow.insertCell(4);
+            let statuscell = newRow.insertCell(5);
+            let actioncell = newRow.insertCell(6);
 
 
+            // Add content to the new cells
+            var otk=document.getElementById("otk").value;
+            itemcell.innerHTML = '<div style="width:150px;border-color: blue;border-width: 2px;" class="col-md-4" id="Sittings"> <select id="sittingitem" name="item" class="form-control" _style="width: 57%;"> <option value="">Select Item Type</option></select> </div>';
+            setTimeout(loadOrderTypeItems(otk), 3000)
+            hcopycell.innerHTML ='<div class="col-md-4" id="hcopymain"> <input id="hcopy" name="hcopy" type="text" class="form-control input-md" required=""> </div>'
+            scopycell.innerHTML ='<div class="col-md-4" id="scopymain"> <input id="scopy" name="scopy" type="text" class="form-control input-md" required=""> </div>'
+            edittypecell.innerHTML='<div class="col-md-4" id="edittypemain"><select  style="width:150px;" id="edittype" name="edittype" class="form-control"> @foreach ($editTypes as $editType) <option value="">Select Edit Type</option><option value="{{ $editType->edittypekey }}">{{ $editType->edittype }}</option> @endforeach </select> </div>'
+            costcell.innerHTML=''
+            statuscell.innerHTML=''
+            actioncell.innerHTML='<button id="addBtn" type="button" class="btn btn-primary" onClick="">Add</button>'
+        
+        
+        }
 
-function vieworder(key,no,odate,customer,total,discount,paid,urgent,status) {
+        function loadOrderTypeItems(otk) {
+            var ordertypekey = otk;
+            if (ordertypekey) {
+                $.ajax({
+                    url: '/ordertypeitem/' + ordertypekey,
+                    type: 'GET',
+                    success: function (data) {
+                        console.log('aaaaaaa='+data)
+                        $('#sittingitem').empty().append('<option value="">Select an Item</option>');
+                        $.each(data, function (key, item) {
+                            $('#sittingitem').append('<option value="' + item.ordertypeitemkey + '">' + item.itemname + '</option>');
+                        });
+                    },
+                    error: function () {
+                        alert('Failed to fetch items. Please try again.');
+                    }
+                });
+            }
+        }
+function vieworder(key,no,odate,customer,total,discount,paid,urgent,status,otk) {
         event.preventDefault(); // Prevent default form submission
         let orderkey = $(this).data("orderkey"); // Get Order ID from button
         //alert("orderkey  no ="+key+":"+no)
-
+        document.getElementById("otk").value=otk
         // Clear previous data and show loading placeholders
         $("#order-id").text("Loading...");
         $("#customer-name").text("Loading...");

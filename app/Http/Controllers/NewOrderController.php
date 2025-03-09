@@ -53,7 +53,8 @@ class NewOrderController extends Controller
   {
     // Fetch all order types from the database
     $orderTypes = StudioOrderType::all();
-    return view ('pages.todo.orders', compact('orderTypes'));
+    $editTypes = StudioEdittype::all();
+    return view ('pages.todo.orders', compact('orderTypes','editTypes'));
   }
 
   public function ordertypeitems($ordertypekey)
@@ -85,21 +86,14 @@ class NewOrderController extends Controller
 
         // Search orders based on multiple criteria
         $orders = StudioOrder::where(function ($q) use ($query,$otype) {
-            // if (!empty($query)) {
-            //     $q->where('ordertypekey','=', $otype)
-            //       ->orWhere('orderno', 'LIKE', '%' . $query . '%')
-            //     // Order number search
-            //       ->orWhereHas('customer', function ($q) use ($query) { // Search in customer table
-            //           $q->where('username', 'LIKE', '%' . $query . '%')
-            //             ->orWhere('phonenumber', 'LIKE', '%' . $query . '%');
-            //       });
-            // }
+
             if (!empty($otype)) {
               $q->where('studioorders.ordertypekey', $otype);
             }
       
             if (!empty($query)) {
-              $q->Where('orderno', 'LIKE', '%' . $query . '%');
+              $q->Where('orderid', 'LIKE', '%' . $query . '%')
+              ->orWhere('studiocustomers.username', 'LIKE', '%' . $query . '%');
             }
         })
         ->when(!empty($start_date) && !empty($end_date), function ($q) use ($start_date, $end_date) {
@@ -107,7 +101,8 @@ class NewOrderController extends Controller
         })
         ->join('studioordertypes', 'studioorders.ordertypekey', '=', 'studioordertypes.ordertypekey') // Join order types
         ->join('studiocustomers', 'studioorders.customerkey', '=', 'studiocustomers.customerkey') 
-        //->select('studioorders.ordertypekey','studioorders.orderno', 'studioordertypes.ordertype') // Select required fields
+        
+   
         ->get();
 
         return response()->json($orders);
@@ -136,7 +131,7 @@ class NewOrderController extends Controller
     $orderkey = $request->input('orderkey');
 
     // Search order items based on orderkey and include item type from related model
-    $orderitems = StudioOrderItemMapSS::with('editType','lamType','orderTypeItem') // Assuming 'itemType' is the relationship method
+    $orderitems = StudioOrderItemMapSS::with('editType','orderTypeItem') // Assuming 'itemType' is the relationship method
         ->when(!empty($orderkey), function ($query) use ($orderkey) {
             $query->where('StudioOrderItemMapSS.orderkey', $orderkey);
         })

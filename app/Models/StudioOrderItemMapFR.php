@@ -21,10 +21,12 @@ class StudioOrderItemMapFR extends Model
     // Allow mass assignment for the following fields
     protected $fillable = [
         'orderkey',
+        'frametypekey',
         'framesizekey',
-        'edittypekey',
+        'subframesizekey',
+        'subframetypekey',
+        'totalcost',
         'quantity',
-        'lamtypekey',
     ];
 
     public function order()
@@ -37,14 +39,19 @@ class StudioOrderItemMapFR extends Model
         return $this->belongsTo(StudioFramesize::class, 'framesizekey');
     }
 
-    public function editType()
+    public function frameType()
     {
-        return $this->belongsTo(StudioEdittype::class, 'edittypekey');
+        return $this->belongsTo(StudioFrametype::class, 'frametypekey');
     }
 
-    public function lamType()
+    public function subframeSize()
     {
-        return $this->belongsTo(StudioLaminatingtype::class, 'lamtypekey');
+        return $this->belongsTo(StudioSubframesize::class, 'subframesizekey');
+    }
+
+    public function subframeType()
+    {
+        return $this->belongsTo(StudioSubframetype::class, 'subframetypekey');
     }
 
 }

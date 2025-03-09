@@ -73,7 +73,7 @@
             padding: 5px;
         }
         .highlighted-row {
-            background-color: #777a7b !important; /* Light blue background */
+            background-color: #737575 !important; /* Light blue background */
             transition: background-color 0.3s ease-in-out;
         }
         /* Improved table styling */

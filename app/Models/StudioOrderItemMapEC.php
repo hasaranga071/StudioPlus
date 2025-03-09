@@ -25,7 +25,10 @@ class StudioOrderItemMapEC extends Model
         'ordertypeitemkey',
         'edittypekey',
         'lamtypekey',
-        'quantity',
+        'softcopyquantity',
+        'hardcopyquantity',
+        'totalcost',
+        'iscompleted',
     ];
 
     public function order()

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\StudioOrder;
 use App\Models\StudioOrderTypeItemMap;
+use App\Models\StudioOrderType;
 use App\Models\StudioAppConfig;
 use App\Models\StudioEdittype;
 use App\Models\StudioLaminatingtype;
@@ -529,35 +530,73 @@ class StudioOrderController extends Controller
             }
         }
 
-        public function deleteOrderItem($id,Request $request) {
-            $order = StudioOrder::where('orderkey', $request->query('orderkey'))
-            ->with('orderType') // Eager load the StudioOrderType relationship
-            ->first();
-            $ordertype = $order->orderType->ordertype ?? 'N/A';
-            $orderItem = '';
-            if($ordertype='Studio Sittings'){
+        public function deleteOrderItem($id, Request $request) {
+
+            $orderkey = $request->input('orderkey');
+
+            $ordertypekey = StudioOrder::where('orderkey',  $orderkey)->value('ordertypekey');
+            $ordertype = StudioOrderType::where('ordertypekey',  $ordertypekey)->value('ordertype');
+
+            $orderItem = false; // Default to false in case no delete query runs
+           // \Log::info('Order Type:', ['ordertype' => $orderkey]);
+
+            if ($ordertype == 'Studio Sittings') {
                 $orderItem = DB::table('studioorderitemmapss')->where('ssorderitemmapkey', $id)->delete();
             }
-            if($ordertype='Extra Copy'){
+            if ($ordertype == 'Extra Copy') {
                 $orderItem = DB::table('studioorderitemmapec')->where('ecorderitemmapkey', $id)->delete();
             }
-            if($ordertype='Media'){
+            if ($ordertype == 'Media') {
                 $orderItem = DB::table('studioorderitemmapme')->where('meorderitemmapkey', $id)->delete();
             }
-            if($ordertype='Frames'){
+            if ($ordertype == 'Frames') {
                 $orderItem = DB::table('studioorderitemmapfr')->where('frorderitemmapkey', $id)->delete();
             }
 
-
+            $this->updateordertotal($orderkey);
 
             if ($orderItem) {
-               // $this->storeOrder_ss(); // Call storeOrder_ss function after deletion
-               session()->flash('success', 'The order item has been deleted successfully.');
-               return response()->json(['success' => true]);
+                session()->flash('success', 'The order item has been deleted successfully.');
+                return response()->json(['success' => true]);
             }
 
             return response()->json(['error' => 'Failed to delete order item'], 500);
         }
+
+        public function updateordertotal($orderkey)
+        {
+            $order = StudioOrder::where('orderkey',  $orderkey);
+            $ordertypekey = StudioOrder::where('orderkey',  $orderkey)->value('ordertypekey');
+            $discount = StudioOrder::where('orderkey',  $orderkey)->value('discount');
+            $ordertype = StudioOrderType::where('ordertypekey',  $ordertypekey)->value('ordertype');
+            $totalcost = 0;
+            $orderitemtotal = 0;
+            if ($ordertype == 'Studio Sittings') {
+                $orderitemtotal = StudioOrderItemMapSS::where('orderkey', $orderkey)->sum('totalcost');
+            }
+            if ($ordertype == 'Extra Copy') {
+                $orderitemtotal = StudioOrderItemMapEC::where('orderkey', $orderkey)->sum('totalcost');
+            }
+            if ($ordertype == 'Media') {
+                $orderitemtotal = StudioOrderItemMapME::where('orderkey', $orderkey)->sum('totalcost');
+            }
+            if ($ordertype == 'Frames') {
+                $orderitemtotal = StudioOrderItemMapFR::where('orderkey', $orderkey)->sum('totalcost');
+            }
+
+            $discountAmount = ($orderitemtotal * $discount) / 100;
+            $totalCost = $orderitemtotal - $discountAmount;
+
+            $order->update([
+                'updatedtime' => now(),
+                'updateduserkey' => auth()->id(),
+                'updatedtime' => now(),
+                'totalcost' => $totalCost
+            ]);
+
+
+        }
+
 
     /**
      * Display the specified order.

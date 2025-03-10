@@ -417,6 +417,7 @@
                         },
                         error: function() {
                             Swal.fire("Error!", "Something went wrong.", "error");
+                            ordersummarytable(orderkey);
                         }
                     });
                 }

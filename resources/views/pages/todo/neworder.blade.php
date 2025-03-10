@@ -800,7 +800,7 @@
                                 <td>${item.edit_type?.edittype || ''}</td>
                                 <td>${item.softcopyquantity}</td>
                                 <td>${item.hardcopyquantity}</td>
-                                <td>${item.order.deliverydate}</td>
+                                <td>${item.order.deliverydate.split(' ')[0]}</td>
                                 <td>${item.order.isurgent == 1 ? 'Yes' : 'No'}</td>
                                 <td>Rs ${item.totalcost}</td>
                                 <td>${item.order.remarks}</td>
@@ -891,7 +891,7 @@
                                 <td>${item.lam_type?.laminatetype || ''}</td>
                                 <td>${item.softcopyquantity}</td>
                                 <td>${item.hardcopyquantity}</td>
-                                <td>${item.order.deliverydate}</td>
+                                <td>${item.order.deliverydate.split(' ')[0]}</td>
                                 <td>${item.order.isurgent == 1 ? 'Yes' : 'No'}</td>
                                 <td>Rs ${item.totalcost}</td>
                                 <td>${item.order.remarks}</td>
@@ -982,7 +982,7 @@
                                 <td>${item.subframe_size?.framesize || ''}</td>
                                 <td>${item.subframe_type?.subframetype || ''}</td>
                                 <td>${item.quantity}</td>
-                                <td>${item.order.deliverydate}</td>
+                                <td>${item.order.deliverydate.split(' ')[0]}</td>
                                 <td>${item.order.isurgent == 1 ? 'Yes' : 'No'}</td>
                                 <td>Rs ${item.totalcost}</td>
                                 <td>${item.order.remarks}</td>

@@ -1,5 +1,6 @@
 @extends('layouts.app')
-
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 @section('content')
 <div class='s-page-title'>Place New Order</div>
 <div style='background-color: lightgrey; width: 90%; border: 2px solid green;padding-left:1%; margin-top: 1%; margin-right: 5%;margin-left: 5%;'>
@@ -133,6 +134,38 @@
         </div></br></br>
         <div class="row">
             <div class="column2" style="background-color:#bbb;">
+                <div class="form-group" style="display:flex;gap: 50px">
+                    <div class="col-md-4">
+                        <label _class="col-md-4 control-label" for="phone">Original Order No. </label>
+                    </div>
+                    {{-- <div class="col-md-4">
+                        <a id="extracopyorder" class="col-md-4 control-label" style="text-decoration: none; color: rgb(60, 60, 62);">
+                            Select Order
+                        </a><br>
+                    </div> --}}
+                    <div class="col-md-4">
+                        <a href="#" class="col-md-4 control-label"
+                           style="text-decoration: none; color: blue; cursor: pointer;"
+                           data-bs-toggle="modal" data-bs-target="#orderSelectModal">
+                            Select Order
+                        </a><br>
+                    </div>
+                </div>
+                <!-- Bootstrap Modal -->
+                <div class="modal fade" id="orderSelectModal" tabindex="-1" aria-labelledby="orderSelectModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-fullscreen"> <!-- Fullscreen Modal -->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="orderSelectModalLabel">Select an Order</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body p-0"> <!-- Remove padding for full iframe usage -->
+                                <iframe id="orderFrame" src="" width="100%" height="100%" style="border: none;"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="form-group" style="display:flex;gap: 50px">
                     <div class="col-md-4" id="Sittings">
                         <label class="col-md-4 control-label" for="item">Item (*)</label>
@@ -1049,6 +1082,16 @@
             $("#paidamount").val("");
 
         }
+
+        document.querySelector("[data-bs-target='#orderSelectModal']").addEventListener("click", function () {
+            let customername = $("#customer-name").text();
+        let customerKey = $("#customerkey").val();
+
+        let url = "/orderssearch?customername=" + encodeURIComponent(customername) +
+                  "&customerkey=" + encodeURIComponent(customerKey);
+
+        document.getElementById("orderFrame").src = url;
+            });
 
 
 </script>

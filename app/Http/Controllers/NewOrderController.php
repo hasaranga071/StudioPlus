@@ -61,6 +61,14 @@ class NewOrderController extends Controller
     return view ('pages.todo.orders', compact('orderTypes','editTypes'));
   }
 
+  public function orderssearch()
+  {
+    // Fetch all order types from the database
+    $orderTypes = StudioOrderType::all();
+    $editTypes = StudioEdittype::all();
+    return view ('pages.todo.orderssearch', compact('orderTypes','editTypes'));
+  }
+
   public function ordertypeitems($ordertypekey)
   {
       // Fetch items where the ordertypekey matches
@@ -104,9 +112,9 @@ class NewOrderController extends Controller
             $q->whereBetween('studioorders.createdtime', [$start_date, $end_date]);
         })
         ->join('studioordertypes', 'studioorders.ordertypekey', '=', 'studioordertypes.ordertypekey') // Join order types
-        ->join('studiocustomers', 'studioorders.customerkey', '=', 'studiocustomers.customerkey') 
-        
-   
+        ->join('studiocustomers', 'studioorders.customerkey', '=', 'studiocustomers.customerkey')
+
+
         ->get();
 
         return response()->json($orders);

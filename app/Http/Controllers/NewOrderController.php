@@ -175,7 +175,7 @@ class NewOrderController extends Controller
     else if ($ordertype=='Extra Copy')
     {
         // Search order items based on orderkey
-        $orderitems = StudioOrderItemMapEC::with('editType','lamType','orderTypeItem','order.orderType') // Assuming 'itemType' is the relationship method
+        $orderitems = StudioOrderItemMapEC::with('editType','lamType','orderTypeItem','order.orderType','originalOrder') // Assuming 'itemType' is the relationship method
         ->when(!empty($orderkey), function ($query) use ($orderkey) {
             $query->where('StudioOrderItemMapEC.orderkey', $orderkey);
         })

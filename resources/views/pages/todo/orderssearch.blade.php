@@ -1,6 +1,5 @@
 @extends('layouts.apppopup')
 @include('components.orderviewmodalpopup_SS')
-@include('components.orderviewmodal_EC')
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 @section('content')
@@ -16,45 +15,40 @@
             <div class="section_logo"><img width="30px" height="30px" src="{{ asset('images/order.png') }}"/></div>
             <div class="section_title">Order Information</div>
         </div>
-        <div style="display:inline-flex;padding-top: 15px;">
-            <form id="order_search">
-                <div class="col-md-4">
+        <div class="search-container">
+            <form id="order_search" class="row">
+                <!-- Order Type (Hidden) -->
+                <div class="form-group" style="display: none;">
                     <label class="form-label" for="otype">Order Type (*)</label>
-                    <select id="search-otype" name="search-otype" value="1" class="form-control">
-
+                    <select id="search-otype" name="search-otype" class="form-control">
                         @foreach ($orderTypes as $orderType)
                             <option value="{{ $orderType->ordertypekey }}">{{ $orderType->ordertype }}</option>
                         @endforeach
                     </select>
                 </div>
-                <!-- <div class="col-md-4" id="Sittings">
-                    <label class="col-md-4 control-label" >Item</label>
-                    <select id="sitting_item" name="item" class="form-control" style="width: 80%;">
-                        <option value="0">ALL ITEMS</option>
-                        <option value="1">Passport</option>
-                        <option value="2">NIC</option>
-                        <option value="3">Stamp</option>
-                    </select>
-                </div> -->
-                <div class="col-md-4" id="cname">
-                        <label class="col-md-4 control-label" for="name">Customer Name,Phone or Order No.</label>
-                        <input id="search-term" name="username" style="width: 80%;" type="text" class="form-control input-md">
-                        <span class="error-message text-danger" id="username-error"></span>
 
+                <!-- Customer Name, Phone, or Order No. -->
+                <div class="form-group">
+                    <label class="form-label" for="name">Customer Name, Phone, or Order No.</label>
+                    <input id="search-term" name="username" type="text" class="form-control">
+                    <span class="error-message text-danger" id="username-error"></span>
                 </div>
-                <div class="col-md-4">
-                    <label _class="col-md-4 control-label">Delivery date-within</label>
-                    <input class="form-control input-md" type="date" id="search-stdate" name="search-stdate" value="">
-                    <input class="form-control input-md" type="date" id="search-enddate" name="search-enddate">
+
+                <!-- Delivery Date Within -->
+                <div class="form-group">
+                    <label class="form-label">Delivery Date (Within)</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input class="form-control" type="date" id="search-stdate" name="search-stdate">
+                        <input class="form-control" type="date" id="search-enddate" name="search-enddate">
+                    </div>
                 </div>
-                <div class="col-md-4" style="padding-top: 30px;">
+
+                <!-- Search Button -->
+                <div class="search-btn-container">
                     <button type="submit" onClick="loaddata()" id="searchBtn" class="btn btn-primary">Search</button>
                 </div>
-
-            </Form>
-
-        </div></br></br>
-        <div>
+            </form>
+        </div>
             <div style="background-color:#aaa;" id="orderResults">
                 <table class="table table-bordered">
                     <thead>
@@ -219,7 +213,7 @@ function loaditemdata_EC(okey){
 
 }
 function displayOrderitemSearchResults(orderitems) {
-
+console.log('displayresults',orderitems);
                 if (!orderitems.length) {
                         $('#orderitemResults').html(
                             '<div class="alert alert-info">No Order Items found.</div>'
@@ -260,7 +254,7 @@ function displayOrderitemSearchResults(orderitems) {
                         type="button"
                         class="btn btn-primary btn-sm"
                         style="font-size: 12px; padding: 2px 6px;"
-                        onClick="selectitem(${orderitem.ssorderitemmapkey})">
+                        onClick="selectitem(${orderitem.ssorderitemmapkey},${orderitem.orderkey},${orderitem.order_type_item.ordertypeitemkey},'${orderitem.order_type_item.itemname}')">
                     Select
                 </button>
 
@@ -272,6 +266,8 @@ function displayOrderitemSearchResults(orderitems) {
 
     html += '</tbody></table>';
     $('#orderitemResults').html(html);
+    // close modal
+
 }
 
 function addnew(){
@@ -342,7 +338,7 @@ function vieworder(key,no,odate,customer,total,discount,paid,urgent,status,otk,o
 
         if (ot=='Studio Sittings')
         {
-        $("#orderModal_SS").modal("show");
+        $("#orderModalpopup_SS").modal("show");
         $("#onum").text(no);
         $("#odate").text(odate);
         $("#customer").text(customer);
@@ -387,7 +383,18 @@ function vieworder(key,no,odate,customer,total,discount,paid,urgent,status,otk,o
             document.getElementById("search-term").value = decodeURIComponent(customerName);
         }
     });
+   //document.getElementById("editBtn").addEventListener("click", function () {
+    function selectitem(ssorderitemmapkey,orderkey,itemkey,itemname){
+        // Send data to the parent window
+        window.parent.postMessage(
+            {
+                ordertypeitemkey: itemkey,orderkey:orderkey,orderid:$("#onum").text(),itemname:itemname
 
+            },
+            "*"
+        );
+
+        }
 
 </script>
 @endpush

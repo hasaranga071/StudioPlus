@@ -1,5 +1,5 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<div class="modal fade" id="orderModal_SS" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+<div class="modal fade" id="orderModalpopup_SS" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
     <div class="modal-dialog  modal-xl">
     <input type="hidden" id="otk" name="otk" value="edititem">
         <div class="modal-content">
@@ -62,24 +62,4 @@
             background-color:rgb(188, 24, 139);
         }
     </style>
-<script>
-        //document.getElementById("editBtn").addEventListener("click", function () {
-        function selectitem(ssorderitemmapkey){
-            closeAllModals();
 
-        }
-
-        function closeAllModals() {
-        document.querySelectorAll(".modal").forEach(modal => {
-            let modalInstance = bootstrap.Modal.getInstance(modal);
-            if (modalInstance) {
-                modalInstance.hide();
-            }
-        });
-    }
-
-
-
-
-
-    </script>

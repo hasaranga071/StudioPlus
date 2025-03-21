@@ -1,5 +1,6 @@
 @extends('layouts.app')
-
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 @section('content')
 <div class='s-page-title'>Place New Order</div>
 <div style='background-color: lightgrey; width: 90%; border: 2px solid green;padding-left:1%; margin-top: 1%; margin-right: 5%;margin-left: 5%;'>
@@ -54,6 +55,7 @@
                         <span class="error-message text-danger" id="address-error"></span>
                         <input type="hidden" name="address_text" id="address_text">
                         <input type="hidden" name="studiokeynew" id="studiokeynew">
+                        <input type="hidden" name="ecorignalorderkey" id="ecorignalorderkey">
 
 
                     </div>
@@ -133,6 +135,37 @@
         </div></br></br>
         <div class="row">
             <div class="column2" style="background-color:#bbb;">
+                <div class="form-group" style="display: flex; gap: 20px; align-items: center;" id="ecordersection">
+                    <!-- Original Order No. Input Field -->
+                    <div class="col-md-4" >
+                        <label class="control-label" for="ecordernum">Original Order No.</label>
+                        <input id="ecorderid" name="ecorderid" type="text" class="form-control input-md" required="" readonly>
+                    </div>
+
+                    <!-- Select Order Button -->
+                    <div class="col-md-4" style="display: flex; align-items: center;">
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#orderSelectModal"
+                        style="font-size: 12px; padding: 4px 8px; height: 30px;">
+                            Select Order
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bootstrap Modal -->
+                <div class="modal fade" id="orderSelectModal" tabindex="-1" aria-labelledby="orderSelectModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-90"> <!-- Custom class for 90% width & height -->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="orderSelectModalLabel">Select an Order</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body p-0">
+                                <iframe id="orderFrame" src="" width="100%" height="100%" style="border: none;"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="form-group" style="display:flex;gap: 50px">
                     <div class="col-md-4" id="Sittings">
                         <label class="col-md-4 control-label" for="item">Item (*)</label>
@@ -308,6 +341,7 @@
 
             $('#frametypemain, #framesizemain, #subframesizemain, #subframetypemain, #fquantitymain').toggle(selectedOrderType === "Frames");
             $('#lamtypemain').toggle(selectedOrderType === "Media");
+            $('#ecordersection').toggle(selectedOrderType === "Extra Copy");
             $('#Sittings, #edittypemain, #hcopymain, #scopymain').toggle(selectedOrderType !== "Frames");
             $('#subframesizemain, #subframetypemain').toggle(selectedFrameType === "Fiber Frame");
         }
@@ -615,6 +649,7 @@
         var customerkey = $("#customerkey").text();
         var customername = $('#customer-name').text();
         var deliverydate = $("#deldate").val();
+        var ecorderkey = $('#ecorignalorderkey').val();
         if (customername === '  Not set') {
 
             flashpopup('Please select a customer before adding an order.');
@@ -692,6 +727,7 @@
                 deliverydate: $("#deldate").val(),
                 remarks: comments,
                 iscompleted:0,
+                originalorderkey:ecorderkey,
                 _token: "{{ csrf_token() }}" // Required for Laravel AJAX requests
             }
         }
@@ -808,6 +844,95 @@
                                 <td class="order-actions">
                                     <button class="btn btn-edit edit-order"><i class="fas fa-edit"></i></button>
                                     <button class="btn btn-delete remove-order" data-orderid="${item.orderkey}" data-id="${item.ssorderitemmapkey}"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>`;
+                    });
+
+                    discountAmount = (orderTotalCost * orderDiscount) / 100;
+                    let balanceDue = (orderTotalCost - discountAmount) - paidAmount;
+
+                    orderSummaryTotalHtml = `
+                        <tr>
+                            <th style="width: 50%;">Total Cost</th>
+                            <td><span id="total-cost">Rs ${orderTotalCost.toFixed(2)}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Discount (${orderDiscount}%)</th>
+                            <td><span id="total-cost">Rs ${discountAmount.toFixed(2)}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Paid Amount</th>
+                            <td><span id="total-cost">Rs ${paidAmount.toFixed(2)}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Balance Due</th>
+                            <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
+                        </tr>`;
+
+                    $("#ordermaintable").html(orderMainTable);
+                    $("#order-summary").html(orderSummaryHtml);
+                    $("#order-summary-total").html(orderSummaryTotalHtml);
+                }
+            },
+            error: function (xhr) {
+                console.error("Error fetching order summary:", xhr);
+            }
+        });
+    }
+
+    function orderSummaryTableEC(orderKey){
+        $.ajax({
+            url: "/order-itemsummary/" + orderKey,
+            type: "GET",
+            success: function (response) {
+                if (response.status === "success") {
+                    let orderMainTable = `
+                        <table class="table table-bordered order-summary-table">
+                            <thead>
+                                <tr>
+                                    <th>Order Type</th>
+                                    <th>Original Order</th>
+                                    <th>Order Item</th>
+                                    <th>Edit Type</th>
+                                    <th>H-Copies</th>
+                                    <th>Delivery Date</th>
+                                    <th>Urgent</th>
+                                    <th>Total Cost</th>
+                                    <th>Comments</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="order-summary">
+                                <!-- Orders will be dynamically added here -->
+                            </tbody>
+                        </table>`;
+
+                    let orderSummaryHtml = "";
+                    let orderSummaryTotalHtml = "";
+                    let orderTotalCost = 0;
+                    let orderDiscount = 0;
+                    let discountAmount = 0;
+                    let paidAmount = 0;
+
+                    response.orderItems.forEach(item => {
+                        orderTotalCost += parseFloat(item.totalcost) || 0;
+                        orderDiscount = parseFloat(item.order.discount) || 0;
+                        paidAmount = parseFloat(item.order.paidcost) || 0;
+
+                        orderSummaryHtml += `
+                            <tr data-ssorderitemmapkey="${item.ecorderitemmapkey}">
+                                <td>${item.order.order_type.ordertype}</td>
+                                <td>${item.original_order.orderid}</td>
+                                <td>${item.order_type_item.itemname}</td>
+                                <td>${item.edit_type?.edittype || ''}</td>
+                                <td>${item.hardcopyquantity}</td>
+                                <td>${item.order.deliverydate.split(' ')[0]}</td>
+                                <td>${item.order.isurgent == 1 ? 'Yes' : 'No'}</td>
+                                <td>Rs ${item.totalcost}</td>
+                                <td>${item.order.remarks}</td>
+                                <td class="order-actions">
+                                    <button class="btn btn-edit edit-order"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-delete remove-order" data-orderid="${item.orderkey}" data-id="${item.ecorderitemmapkey}"><i class="fas fa-trash"></i></button>
                                 </td>
                             </tr>`;
                     });
@@ -1034,6 +1159,9 @@
         else if(orderType == 'Media'){
             orderSummaryTableME(orderKey)
         }
+        else if(orderType == 'Extra Copy'){
+            orderSummaryTableEC(orderKey)
+        }
         else{
             orderSummaryTableSS(orderKey)
         }
@@ -1049,6 +1177,49 @@
             $("#paidamount").val("");
 
         }
+
+
+
+        document.querySelector("[data-bs-target='#orderSelectModal']").addEventListener("click", function () {
+            let customername = $("#customer-name").text();
+        let customerKey = $("#customerkey").val();
+
+        let url = "/orderssearch?customername=" + encodeURIComponent(customername) +
+                  "&customerkey=" + encodeURIComponent(customerKey);
+
+        document.getElementById("orderFrame").src = url;
+            });
+
+            window.addEventListener("message", function(event) {
+                    if (event.data && event.data.ordertypeitemkey) {
+                        // Update parent page field with the selected item key
+                        console.log('EC----------ordermapkey',event.data.ordertypeitemkey);
+                        console.log('EC----------orderkey',event.data.orderkey);
+                        $("#ecorderid").val(event.data.orderid).prop("readonly", true);
+                        $('#ecorignalorderkey').val(event.data.orderkey);
+
+                        if ($("#sittingitem option[value='" + event.data.ordertypeitemkey + "']").length === 0) {
+                            $("#sittingitem").append(`<option value="${event.data.ordertypeitemkey}">${event.data.itemname}</option>`);
+                        }
+                        $("#sittingitem").val(event.data.ordertypeitemkey).change();
+
+                        // Close both modals
+                        closeAllModals();
+                    }
+                });
+
+                // Function to close both modals and remove iframe content
+                function closeAllModals() {
+                    let orderModal = bootstrap.Modal.getInstance(document.getElementById('orderSelectModal'));
+
+                    if (orderModal) {
+                        orderModal.hide();
+                    }
+
+                    // Reset iframe source (optional, to reload a fresh state)
+                    document.getElementById("orderFrame").src = "";
+                }
+
 
 
 </script>

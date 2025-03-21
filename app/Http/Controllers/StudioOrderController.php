@@ -210,8 +210,8 @@ class StudioOrderController extends Controller
                             ],
                             [
                                 'edittypekey' => $request->edittypekey,
-                                'softcopyquantity' => $request->softcopycount,
                                 'hardcopyquantity' => $request->hardcopycount,
+                                'originalorderkey' => $request->originalorderkey,
                                 'totalcost' => $ssitemCost,
                             ]
                         );
@@ -288,8 +288,8 @@ class StudioOrderController extends Controller
                             ],
                             [
                                 'edittypekey' => $request->edittypekey,
-                                'softcopyquantity' => $request->softcopycount,
                                 'hardcopyquantity' => $request->hardcopycount,
+                                'originalorderkey' => $request->originalorderkey,
                                 'totalcost' => $ssitemCost,
                                 'iscompleted' => $request->iscompleted,
                             ]

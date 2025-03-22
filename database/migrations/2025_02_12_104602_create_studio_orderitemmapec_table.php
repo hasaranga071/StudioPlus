@@ -15,7 +15,6 @@ class CreateStudioOrderItemMapECTable extends Migration
             $table->integer('ordertypeitemkey'); // Foreign key to order type items
             $table->integer('edittypekey'); // Foreign key to edit types
             $table->integer('lamtypekey'); // Foreign key to lamination types
-            $table->integer('softcopyquantity'); // Soft copy quantity
             $table->integer('hardcopyquantity'); // Hard copy quantity
             $table->decimal('totalcost'); // total cost
             $table->integer('iscompleted'); // total cost

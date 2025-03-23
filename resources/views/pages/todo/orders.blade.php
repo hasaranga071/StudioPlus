@@ -4,187 +4,199 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 @section('content')
-<div class='s-page-title'>Orders</div>
-    <div style='background-color: lightgrey; width: 90%; border: 2px solid green;padding-left:1%; margin-top: 1%; margin-right: 5%;margin-left: 5%;'>
-        <!-- Multiple Radios -->
-        <div class="customer-section">
-    </div>
-
-    <!-- Order Details Form -->
-    <form id="orderDetailsForm" class="form-horizontal" style="height: 600px;">
-        <fieldset>
-            <div style="display:flex">
-                <div class="section_logo"><img width="30px" height="30px" src="{{ asset('images/order.png') }}"/></div>
-                <div class="section_title">Order Information</div>
-            </div>
-            <div style="display:inline-flex;padding-top: 15px;">
-                <form id="order_search">
-                    <div class="col-md-4">
-                        <label class="form-label" for="otype">Order Type (*)</label>
-                        <select id="search-otype" name="search-otype" value="1" class="form-control">
-            
-                            @foreach ($orderTypes as $orderType)
-                                <option value="{{ $orderType->ordertypekey }}">{{ $orderType->ordertype }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <!-- <div class="col-md-4" id="Sittings">
-                        <label class="col-md-4 control-label" >Item</label>
-                        <select id="sitting_item" name="item" class="form-control" style="width: 80%;">
-                            <option value="0">ALL ITEMS</option>
-                            <option value="1">Passport</option>
-                            <option value="2">NIC</option>
-                            <option value="3">Stamp</option>
-                        </select>
-                    </div> -->
-                    <div class="col-md-4" id="cname">
-                            <label class="col-md-4 control-label" for="name">Customer Name,Phone or Order No.</label>
-                            <input id="search-term" name="username" style="width: 80%;" type="text" class="form-control input-md">
-                            <span class="error-message text-danger" id="username-error"></span>
-    
-                    </div>
-                    <div class="col-md-4">
-                        <label _class="col-md-4 control-label">Delivery date-within</label>
-                        <input class="form-control input-md" type="date" id="search-stdate" name="search-stdate" value="">
-                        <input class="form-control input-md" type="date" id="search-enddate" name="search-enddate">
-                    </div>
-                    <div class="col-md-4" style="padding-top: 30px;">
-                        <button type="submit" onClick="loaddata()" id="searchBtn" class="btn btn-primary">Search</button>
-                    </div>
-
-                </Form> 
-
-            </div></br></br>
-            <div>
-                <div style="background-color:#aaa;" id="orderResults">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Order No.</th>
-                                <th>Order Type</th>
-                                <th>Date Time</th>
-                                <th>Urgent</th>
-                                <th>Created At</th>
-                                <th>Total Cost (LKR)</th>
-                                <th>Total Paid (LKR)</th>
-                                <th>Comments</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="order-summary">
-                            <!-- Orders will be dynamically added here -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </fieldset>
-    </form>
+<!-- <div class='s-page-title'>Orders</div> -->
+<div style='background-color: lightgrey; width: 90%; border: 2px solid green;padding-left:1%; margin-top: 1%; margin-right: 5%;margin-left: 5%;'>
+    <!-- Multiple Radios -->
+    <div class="customer-section">
 </div>
 
-@push('scripts')
-<script>
-    window.onload = function() {
-        loaddata()
-    };
-    // Set default values
-    document.getElementById("search-stdate").value = getFormattedDate(-30); 
-    document.getElementById("search-enddate").value = getFormattedDate(+1); // Today
+<!-- Order Details Form -->
+<form id="orderDetailsForm" class="form-horizontal" style="height: 600px;">
+    <fieldset>
+        <div style="display:flex">
+            <div class="section_logo"><img width="30px" height="30px" src="{{ asset('images/order.png') }}"/></div>
+            <div class="section_title">Order Information</div>
+        </div>
+        <div style="display:inline-flex;padding-top: 15px;gap: 75px;">
+            <form id="order_search">
+                <div class="col-md-4">
+                    <label class="form-label" for="otype">Order Type (*)</label>
+                    <select style="margin-top: -7px;" id="search-otype" name="search-otype" value="1" class="form-control">
+           
+                        @foreach ($orderTypes as $orderType)
+                            <option value="{{ $orderType->ordertypekey }}">{{ $orderType->ordertype }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <!-- <div class="col-md-4" id="Sittings">
+                    <label class="col-md-4 control-label" >Item</label>
+                    <select id="sitting_item" name="item" class="form-control" style="width: 80%;">
+                        <option value="0">ALL ITEMS</option>
+                        <option value="1">Passport</option>
+                        <option value="2">NIC</option>
+                        <option value="3">Stamp</option>
+                    </select>
+                </div> -->
+                <div class="col-md-4" id="cname">
+                        <label class="col-md-4 control-label" for="name" >Search Text</label>
+                        <input id="search-term" name="username" style="width: 80%;" type="text" placeholder="Customer Name,Phone or Order No." class="form-control">
+                        <span class="error-message text-danger" id="username-error"></span>
+  
+                </div>
+                <!-- <div class="col-md-4">
+                    <label _class="col-md-4 control-label">Delivery date-within</label>
+                    <input class="form-control input-md" type="date" id="search-stdate" name="search-stdate" value="">
+                    <input class="form-control input-md" type="date" id="search-enddate" name="search-enddate">
+                </div> -->
+                <div class="form-group">
+                    <label class="form-label">Delivery Date (Within)</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input class="form-control" type="date" id="search-stdate" name="search-stdate">
+                        <input class="form-control" type="date" id="search-enddate" name="search-enddate">
+                    </div>
+                </div>
+                <div class="col-md-4" style="padding-top: 30px;">
+                    <button type="submit" onClick="loaddata()" id="searchBtn" class="btn btn-primary">Search</button>
+                </div>
 
+            </Form> 
 
-    function loaddata(){
-        let otype = $('#search-otype').val(); 
-        let query = $('#search-term').val(); 
-        let startDate = $('#search-stdate').val(); 
-        let endDate = $('#search-enddate').val();
-        event.preventDefault(); // Prevent default form submission
-        $('#orderResults').html("");
-        $.ajax({
-            url: "/orders/search",
-            type: "POST",
-            data: {
-                query: query,
-                otype: otype,
-                start_date: startDate,
-                end_date: endDate,
-                _token: "{{ csrf_token() }}" // CSRF Token for security
-            },
-            success: function (response) {
-                //if (response.status) {
-                    console.log('search result',response)
-                    displayOrderSearchResults(response);
-
-            }
-        });
-
-        setTimeout(function () {
-        loaddata();
-        }, 500); // 500ms delay ensures proper execution           
-                            
-    }
-
-    // Trigger button click on page load
-    function displayOrderSearchResults(orders) 
-    {
-        
-        if (!orders.length) {
-                $('#search-results').html(
-                    '<div class="alert alert-info">No Orders found.</div>'
-                );
-                return;
-            }
-
-            let html = `
+        </div></br></br>
+        <div>
+            <div><span id="ocount"></span> order(s)</div>
+            <div style="background-color:#aaa;height: 350px;overflow-y: auto;" id="orderResults">
                 <table class="table table-bordered">
                     <thead>
                         <tr>
                             <th>Order No.</th>
-                            <th>Type</th>
+                            <th>Order Type</th>
                             <th>Date Time</th>
-                            <th>Customer Name</th>
                             <th>Urgent</th>
+                            <th>Created At</th>
                             <th>Total Cost (LKR)</th>
-                            <th>Discount(%)</th>
-                            <th>Paid Amt (LKR)</th>
+                            <th>Total Paid (LKR)</th>
+                            <th>Comments</th>
                             <th>Status</th>
-                            <th></th>
                         </tr>
                     </thead>
-                    <tbody>
-            `;
+                    <tbody id="order-summary">
+                        <!-- Orders will be dynamically added here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </fieldset>
+</form>
+</div>
 
-            orders.forEach(function(order) {
-            
-                html += `
-                    <tr>
-                        <td>${order.orderid}</td>
-                        <td>${order.ordertype}</td>
-                        <td>${order.createdtime}</td>
-                        <td>${order.username}</td>
-                        <td>${order.urgent_flag === 1 ? 'Yes' : 'No'}</td>
-                        <td>${order.totalcost}</td>
-                        <th>${order.discount}</th>
-                        <td>${order.paidcost}</td>
-                        <td>${order.salestatus}</td>
-                        <td>
-                            <button onClick="vieworder(${order.orderkey},'${order.orderid}','${order.createdtime}','${order.username}','${order.totalcost}','${order.discount}','${order.paidcost}','${order.urgent_flag === 1 ? 'Yes' : 'No'}','${order.salestatus}',${order.ordertypekey},'${order.ordertype}')" id="vieword" _data-orderkey="${order.orderkey}" type="button" class="btn btn-primary view-order"  >
-                            View
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            });
+@push('scripts')
+<script>
 
-            html += '</tbody></table>';
-            $('#orderResults').html(html);
+window.onload = function() {
+    loaddata()
+};
+// Set default values
+document.getElementById("search-stdate").value = getFormattedDate(-30); 
+document.getElementById("search-enddate").value = getFormattedDate(+1); // Today
+
+
+function loaddata()
+{
+    //document.getElementById('ocount').innerHTML='loading...'
+    let otype = $('#search-otype').val(); 
+    let query = $('#search-term').val(); 
+    let startDate = $('#search-stdate').val(); 
+    let endDate = $('#search-enddate').val();
+    event.preventDefault(); // Prevent default form submission
+    $('#orderResults').html("");
+    $.ajax({
+        url: "/orders/search",
+        type: "POST",
+        data: {
+            query: query,
+            otype: otype,
+            start_date: startDate,
+            end_date: endDate,
+            _token: "{{ csrf_token() }}" // CSRF Token for security
+        },
+        success: function (response) {
+            //if (response.status) {
+                console.log('search result',response)
+                displayOrderSearchResults(response);
+
         }
+    });
 
-        function getFormattedDate(offset = 0) {
-        let date = new Date();
-        date.setDate(date.getDate() + offset); // Add offset days
-        return date.toISOString().split('T')[0]; // Convert to YYYY-MM-DD
+    setTimeout(function () {
+    loaddata();
+    }, 500); // 500ms delay ensures proper execution           // Trigger button click on page load
+                        
+}
+ 
+function displayOrderSearchResults(orders) 
+{
+       
+      if (!orders.length) {
+            $('#orderResults').html(
+                '<div class="alert alert-info">No Orders found.</div>'
+            );
+            document.getElementById('ocount').innerHTML=0
+            return;
+        }
+        document.getElementById('ocount').innerHTML=orders.length
+
+        let html = `
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Order No.</th>
+                        <th>Type</th>
+                        <th>Date Time</th>
+                        <th>Customer Name</th>
+                        <th>Urgent</th>
+                        <th>Total Cost (LKR)</th>
+                        <th>Discount(%)</th>
+                        <th>Paid Amt (LKR)</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        orders.forEach(function(order) {
+           
+            html += `
+                <tr>
+                    <td>${order.orderid}</td>
+                    <td>${order.ordertype}</td>
+                    <td>${order.createdtime}</td>
+                    <td>${order.username}</td>
+                    <td>${order.urgent_flag === 1 ? 'Yes' : 'No'}</td>
+                    <td>${order.totalcost}</td>
+                    <th>${order.discount}</th>
+                    <td>${order.paidcost}</td>
+                    <td>${order.salestatus}</td>
+                    <td>
+                        <button onClick="vieworder(${order.orderkey},'${order.orderid}','${order.createdtime}','${order.username}','${order.totalcost}','${order.discount}','${order.paidcost}','${order.urgent_flag === 1 ? 'Yes' : 'No'}','${order.salestatus}',${order.ordertypekey},'${order.ordertype}')" id="vieword" _data-orderkey="${order.orderkey}" type="button" class="btn btn-primary view-order"  >
+                        View
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        html += '</tbody></table>';
+        $('#orderResults').html(html);
     }
 
-    function loaditemdata_SS(okey){
+    function getFormattedDate(offset = 0) {
+    let date = new Date();
+    date.setDate(date.getDate() + offset); // Add offset days
+    return date.toISOString().split('T')[0]; // Convert to YYYY-MM-DD
+  }
+
+  function loaditemdata_SS(okey){
         let orderkey = okey;
         $.ajax({
             url: "/order-itemsummary/" + orderkey,
@@ -205,27 +217,27 @@
         });
                         
     }
-    function loaditemdata_EC(okey){
-        let orderkey = okey;
-        $.ajax({
-            url: "/order-itemsummary/" + orderkey,
-            type: "GET",
-            data: {
-                orderkey: orderkey,
-                _token: "{{ csrf_token() }}" // CSRF Token for security
-            },
-            success: function (response) {
-                    console.log('Itemsearch result EC',response)
-                    displayOrderitemSearchResults_EC(response);
+function loaditemdata_EC(okey){
+    let orderkey = okey;
+    $.ajax({
+        url: "/order-itemsummary/" + orderkey,
+        type: "GET",
+        data: {
+            orderkey: orderkey,
+            _token: "{{ csrf_token() }}" // CSRF Token for security
+        },
+        success: function (response) {
+                console.log('Itemsearch result EC',response)
+                displayOrderitemSearchResults_EC(response);
 
-            }
-        });
-                        
-    }
-    function displayOrderitemSearchResults(orderitems) {
+        }
+    });
+                    
+}
+function displayOrderitemSearchResults(orderitems) {
         if (!orderitems.orderItems.length) {
             $('#orderitemResults').html(
-                '<div class="alert alert-info">No Order Items foundxssssssss.</div>'
+                '<div class="alert alert-info">No Order Items found.</div>'
             );
             return;
         }
@@ -277,52 +289,173 @@
         $('#orderitemResults').html(html);
     }
 
+function displayOrderitemSearchResults_EC(orderitems) {
+       
+    if (!orderitems.orderItems.length) {
+               $('#orderitemResults_EC').html(
+                   '<div class="alert alert-info">No Order Items found.</div>'
+               );
+               return;
+           }
 
-    function edititem(ssorderitemmapkey) {
-        // Get latest values from the table before editing
-        let hcopyElement = document.getElementById(`hcopy_${ssorderitemmapkey}`);
-        let scopyElement = document.getElementById(`scopy_${ssorderitemmapkey}`);
-        let edittypeElement = document.getElementById(`edittype_${ssorderitemmapkey}`);
+let html = `
+<table id="itemtable_EC" class="table table-bordered">
+   <thead>
+       <tr>
+           <th>Item Type</th>
+           <th>Original Order</th>
+           <th>Hard Copied</th>
+           <th>Edit Type</th>
+           <th>Cost (LKR)</th>
+           <th>Status</th>
+       </tr>
+   </thead>
+   <tbody>
+`;
 
-        // Ensure elements exist before accessing properties
-        if (!hcopyElement || !scopyElement || !edittypeElement) {
-            console.error(`Error: One or more elements missing for item ${ssorderitemmapkey}`);
-            return;
-        }
+orderitems.orderItems.forEach(function(orderitem) {
 
-        let hcopy = hcopyElement.textContent.trim();
-        let scopy = scopyElement.textContent.trim();
-        let edittype = edittypeElement.textContent.trim(); // Get displayed edit type text
+html += `
+   <tr data-id="${orderitem.ecorderitemmapkey}_EC">
+       <td id="name_${orderitem.ecorderitemmapkey}_EC">${orderitem.order_type_item.itemname}</td>
+       <td id="orionum_${orderitem.ecorderitemmapkey}_EC">${orderitem.original_order.orderid}</td>
+       <td id="hcopy_${orderitem.ecorderitemmapkey}_EC">${orderitem.quantity}</td>
+       <td id="edittype_${orderitem.ecorderitemmapkey}_EC">${orderitem.edit_type.edittype}</td>
+       <td>${orderitem.totalcost}</td>
+       <td>Inprogress</td>
+   
 
-        // Hide Edit Button, Show Save Button
-        document.getElementById(`editBtn_${ssorderitemmapkey}`).style.display = "none";
-        document.getElementById(`saveBtn_${ssorderitemmapkey}`).style.display = "inline-block";
+       <td>
+   
+       <button id="editBtn_${orderitem.ecorderitemmapkey}_EC" type="button" class="btn btn-primary" onClick="edititem_EC(${orderitem.ecorderitemmapkey},${orderitem.quantity},0,'${orderitem.edit_type.edittype}','${orderitem.original_order.orderid}','${orderitem.original_order.orderkey}')">
+           Edit 
+       </button>
+       <button style="display:none" id="saveBtn_${orderitem.ecorderitemmapkey}_EC" type="button" class="btn btn-primary" onClick="saveitem(${orderitem.ecorderitemmapkey},${orderitem.hardcopyquantity},${orderitem.softcopyquantity},'${orderitem.edit_type.edittype}')">
+           Save 
+       </button>
+       <button class="btn btn-delete remove-order" data-id="${orderitem.ecorderitemmapkey}_EC"><i class="fas fa-trash"></i></button>
+       </td>
 
-        // Convert Hard Copy to Input Field
-        hcopyElement.innerHTML =
-            `<div class="col-md-4">
-                <input style="border-color: orange;" id="input_hcopy_${ssorderitemmapkey}" value="${hcopy}" name="hcopy" type="text" class="form-control input-md" required="">
-            </div>`;
+   </tr>
+`;
+});
 
-        // Convert Soft Copy to Input Field
-        scopyElement.innerHTML =
-            `<div class="col-md-4">
-                <input style="border-color: orange;" id="input_scopy_${ssorderitemmapkey}" value="${scopy}" name="scopy" type="text" class="form-control input-md" required="">
-            </div>`;
+html += '</tbody></table>';
+$('#orderitemResults_EC').html(html);
+}
 
-        // Convert Edit Type to Dropdown
-        edittypeElement.innerHTML =
-            `<div class="col-md-4">
-                <select style="width:150px;border-color: orange;" id="input_edittype_${ssorderitemmapkey}" name="edittype" class="form-control">
-                    <option value="">Select Edit Type</option>
-                    @foreach ($editTypes as $editType) 
-                        <option value="{{ $editType->edittypekey }}" ${edittype === '{{ $editType->edittype }}' ? 'selected' : ''}>{{ $editType->edittype }}</option>
-                    @endforeach
-                </select>
-            </div>`;
+
+function addnew(){
+    // Get the table body
+    let table = document.getElementById("itemtable").getElementsByTagName('tbody')[0];
+
+    // Create a new row
+    let newRow = table.insertRow();
+    newRow.style.backgroundColor = "lightblue";
+
+    // Insert cells into the row
+    let itemcell = newRow.insertCell(0);
+    let hcopycell = newRow.insertCell(1);
+    let scopycell = newRow.insertCell(2);
+    let edittypecell = newRow.insertCell(3);
+    let costcell = newRow.insertCell(4);
+    let statuscell = newRow.insertCell(5);
+    let actioncell = newRow.insertCell(6);
+
+
+    // Add content to the new cells
+    var otk=document.getElementById("otk").value;
+    itemcell.innerHTML = '<div style="width:150px;border-color: blue;border-width: 2px;" class="col-md-4" id="Sittings"> <select id="sittingitem" name="item" class="form-control" _style="width: 57%;"> <option value="">Select Item Type</option></select> </div>';
+    setTimeout(loadOrderTypeItems(otk), 3000)
+    hcopycell.innerHTML ='<div class="col-md-4" id="hcopymain"> <input id="hcopy" name="hcopy" type="text" class="form-control input-md" required=""> </div>'
+    scopycell.innerHTML ='<div class="col-md-4" id="scopymain"> <input id="scopy" name="scopy" type="text" class="form-control input-md" required=""> </div>'
+    edittypecell.innerHTML='<div class="col-md-4" id="edittypemain"><select  style="width:150px;" id="edittype" name="edittype" class="form-control"> @foreach ($editTypes as $editType) <option value="">Select Edit Type</option><option value="{{ $editType->edittypekey }}">{{ $editType->edittype }}</option> @endforeach </select> </div>'
+    costcell.innerHTML=''
+    statuscell.innerHTML=''
+    actioncell.innerHTML='<button id="addBtn" type="button" class="btn btn-primary" onClick="">Add</button>'
+
+        
+}
+
+function loadOrderTypeItems(otk) {
+    var ordertypekey = otk;
+    if (ordertypekey) {
+        $.ajax({
+            url: '/ordertypeitem/' + ordertypekey,
+            type: 'GET',
+            success: function (data) {
+                console.log('aaaaaaa='+data)
+                $('#sittingitem').empty().append('<option value="">Select an Item</option>');
+                $.each(data, function (key, item) {
+                    $('#sittingitem').append('<option value="' + item.ordertypeitemkey + '">' + item.itemname + '</option>');
+                });
+            },
+            error: function () {
+                alert('Failed to fetch items. Please try again.');
+            }
+        });
     }
+}
 
-    function saveitem(ssorderitemmapkey, ordertype, ordertypekey, ordertypeitemkey, lamtypekey, customerkey, isurgent, discount, paidcost, studiokey, orderid, deliverydate, remarks) {
+function vieworder(key,no,odate,customer,total,discount,paid,urgent,status,otk,ot) {
+        event.preventDefault(); // Prevent default form submission
+        let orderkey = $(this).data("orderkey"); // Get Order ID from button
+        //alert("orderkey  no ="+key+":"+no)
+        document.getElementById("otk").value=otk
+        // Clear previous data and show loading placeholders
+        $("#order-id").text("Loading...");
+        $("#customer-name").text("Loading...");
+        $("#order-total").text("Loading...");
+        $("#order-items").html("<li>Loading items...</li>");
+
+        // Show the modal first
+
+
+        if (ot=='Studio Sittings') 
+        {        
+        $("#orderModal_SS").modal("show");
+        $("#onum").text(no);
+        $("#odate").text(odate);
+        $("#customer").text(customer);
+        $("#total").text(total);
+        $("#discount").text(discount);
+        $("#paid").text(paid);
+        $("#urgent").text(urgent);
+        $("#status").text(status);
+        loaditemdata_SS(key)
+    }
+        
+    if (ot=='Extra Copy') 
+    {
+        $("#orderModal_EC").modal("show");
+        $("#onum_EC").text(no);
+        $("#odate_EC").text(odate);
+        $("#customer_EC").text(customer);
+        $("#total_EC").text(total);
+        $("#discount_EC").text(discount);
+        $("#paid_EC").text(paid);
+        $("#urgent_EC").text(urgent);
+        $("#status_EC").text(status);
+        loaditemdata_EC(key)
+
+    }
+        
+
+        $(this).off("shown.bs.modal");
+
+}
+
+function edititem_EC(ecorderitemmapkey,hcopy,scopy,edittype,oriorde){
+
+document.getElementById("editBtn_"+ecorderitemmapkey+"_EC").style.display = "none";
+document.getElementById("saveBtn_"+ecorderitemmapkey+"_EC").style.display = "inline-block";
+
+document.getElementById("hcopy_"+ecorderitemmapkey+"_EC").innerHTML='<div class="col-md-4" id="scopymain"> <input style="border-color: orange;" id="hcopy" value="'+hcopy+'" name="hcopy" type="text" class="form-control input-md" required=""> </div>'
+document.getElementById("edittype_"+ecorderitemmapkey+"_EC").innerHTML=
+'<div class="col-md-4" id="edittypemain"><select  style="width:150px;border-color: orange;" id="edittype" name="edittype" class="form-control"> <option value="">'+edittype+'</option> @foreach ($editTypes as $editType) <option value="{{ $editType->edittypekey }}">{{ $editType->edittype }}</option> @endforeach </select> </div>'
+}
+
+function saveitem(ssorderitemmapkey, ordertype, ordertypekey, ordertypeitemkey, lamtypekey, customerkey, isurgent, discount, paidcost, studiokey, orderid, deliverydate, remarks) {
         dataarray=[]       
 
         setTimeout(() => {
@@ -425,12 +558,8 @@
                     }
                 }
             });
-        }, 300);
-        
-
-        
+        }, 300);        
     }
-             
     function addnew(){
         // Get the table body
         let table = document.getElementById("itemtable").getElementsByTagName('tbody')[0];
@@ -446,37 +575,38 @@
         let edittypecell = newRow.insertCell(3);
         let costcell = newRow.insertCell(4);
         let statuscell = newRow.insertCell(5);
-        let actioncell = newRow.insertCell(6);
+        let actioncell = newRow.insertCell(6); 
 
         // Get order type key
-        var otk = document.getElementById("otk").value;
+        var otk = document.getElementById("otk")?.value || "";
 
         // Add content to the new cells
         itemcell.innerHTML = `
-            <div style="width:150px;border-color: blue;border-width: 2px;" class="col-md-4" id="Sittings">
+            <div style="width:150px;border-color: blue;border-width: 2px;" class="col-md-4">
                 <select id="sittingitem" name="item" class="form-control">
                     <option value="">Select Item Type</option>
                 </select>
             </div>
         `;
         
-        setTimeout(loadOrderTypeItems(otk), 3000);
+        //  `loadOrderTypeItems` is called correctly
+        setTimeout(() => loadOrderTypeItems(otk), 3000);
 
         hcopycell.innerHTML = `
-            <div class="col-md-4" id="hcopymain">
+            <div class="col-md-4">
                 <input id="hcopy" name="hcopy" type="text" class="form-control input-md" required="">
             </div>
         `;
 
         scopycell.innerHTML = `
-            <div class="col-md-4" id="scopymain">
+            <div class="col-md-4">
                 <input id="scopy" name="scopy" type="text" class="form-control input-md" required="">
             </div>
         `;
 
-        
+        // Ensure "Select Edit Type" is only displayed once
         edittypecell.innerHTML = `
-            <div class="col-md-4" id="edittypemain">
+            <div class="col-md-4">
                 <select style="width:150px;" id="edittype" name="edittype" class="form-control">
                     <option value="">Select Edit Type</option>
                     @foreach ($editTypes as $editType)
@@ -488,79 +618,63 @@
 
         costcell.innerHTML = '';
         statuscell.innerHTML = '';
+
+        // Ensure button is being created
+        console.log("Adding 'Add' button...");
+
         actioncell.innerHTML = `
-            <button id="addBtn" type="button" class="btn btn-primary" onClick="">Add</button>
+            <button id="addBtn" type="button" class="btn btn-primary" onclick="saveitem(${orderitem.ssorderitemmapkey},'${orderitem.order.order_type.ordertype}',${orderitem.order.order_type.ordertypekey},${orderitem.order_type_item.ordertypeitemkey},'${orderitem.lam_type?.lamtypekey || ''}',${orderitem.order.customerkey},${orderitem.order.isurgent},'${orderitem.order.discount}','${orderitem.order.paidcost}',${orderitem.order.studiokey},'${orderitem.order.orderid}','${orderitem.order.deliverydate}','${orderitem.order.remarks}')">
+                Add
+            </button>
         `;
+
+        document.getElementById("addBtn").style.display = "inline-block";
+
+        console.log("Add button added successfully!");
     }
+    function edititem(ssorderitemmapkey) {
+        // Get latest values from the table before editing
+        let hcopyElement = document.getElementById(`hcopy_${ssorderitemmapkey}`);
+        let scopyElement = document.getElementById(`scopy_${ssorderitemmapkey}`);
+        let edittypeElement = document.getElementById(`edittype_${ssorderitemmapkey}`);
 
-
-    function loadOrderTypeItems(otk) {
-        var ordertypekey = otk;
-        if (ordertypekey) {
-            $.ajax({
-                url: '/ordertypeitem/' + ordertypekey,
-                type: 'GET',
-                success: function (data) {
-                    console.log('aaaaaaa='+data)
-                    $('#sittingitem').empty().append('<option value="">Select an Item</option>');
-                    $.each(data, function (key, item) {
-                        $('#sittingitem').append('<option value="' + item.ordertypeitemkey + '">' + item.itemname + '</option>');
-                    });
-                },
-                error: function () {
-                    alert('Failed to fetch items. Please try again.');
-                }
-            });
+        // Ensure elements exist before accessing properties
+        if (!hcopyElement || !scopyElement || !edittypeElement) {
+            console.error(`Error: One or more elements missing for item ${ssorderitemmapkey}`);
+            return;
         }
+
+        let hcopy = hcopyElement.textContent.trim();
+        let scopy = scopyElement.textContent.trim();
+        let edittype = edittypeElement.textContent.trim(); // Get displayed edit type text
+
+        // Hide Edit Button, Show Save Button
+        document.getElementById(`editBtn_${ssorderitemmapkey}`).style.display = "none";
+        document.getElementById(`saveBtn_${ssorderitemmapkey}`).style.display = "inline-block";
+
+        // Convert Hard Copy to Input Field
+        hcopyElement.innerHTML =
+            `<div class="col-md-4">
+                <input style="border-color: orange;" id="input_hcopy_${ssorderitemmapkey}" value="${hcopy}" name="hcopy" type="text" class="form-control input-md" required="">
+            </div>`;
+
+        // Convert Soft Copy to Input Field
+        scopyElement.innerHTML =
+            `<div class="col-md-4">
+                <input style="border-color: orange;" id="input_scopy_${ssorderitemmapkey}" value="${scopy}" name="scopy" type="text" class="form-control input-md" required="">
+            </div>`;
+
+        // Convert Edit Type to Dropdown
+        edittypeElement.innerHTML =
+            `<div class="col-md-4">
+                <select style="width:150px;border-color: orange;" id="input_edittype_${ssorderitemmapkey}" name="edittype" class="form-control">
+                    <option value="">Select Edit Type</option>
+                    @foreach ($editTypes as $editType) 
+                        <option value="{{ $editType->edittypekey }}" ${edittype === '{{ $editType->edittype }}' ? 'selected' : ''}>{{ $editType->edittype }}</option>
+                    @endforeach
+                </select>
+            </div>`;
     }
-
-    function vieworder(key,no,odate,customer,total,discount,paid,urgent,status,otk,ot) {
-        event.preventDefault(); // Prevent default form submission
-        let orderkey = $(this).data("orderkey"); // Get Order ID from button
-        //alert("orderkey  no ="+key+":"+no)
-        document.getElementById("otk").value=otk
-        // Clear previous data and show loading placeholders
-        $("#order-id").text("Loading...");
-        $("#customer-name").text("Loading...");
-        $("#order-total").text("Loading...");
-        $("#order-items").html("<li>Loading items...</li>");
-
-        // Show the modal first
-
-
-        if (ot=='Studio Sittings') 
-        {        
-            $("#orderModal_SS").modal("show");
-            $("#onum").text(no);
-            $("#odate").text(odate);
-            $("#customer").text(customer);
-            $("#total").text(total);
-            $("#discount").text(discount);
-            $("#paid").text(paid);
-            $("#urgent").text(urgent);
-            $("#status").text(status);
-            loaditemdata_SS(key)
-        }
-            
-        if (ot=='Extra Copy') 
-        {
-            $("#orderModal_EC").modal("show");
-            $("#onum").text(no);
-            $("#odate").text(odate);
-            $("#customer").text(customer);
-            $("#total").text(total);
-            $("#discount").text(discount);
-            $("#paid").text(paid);
-            $("#urgent").text(urgent);
-            $("#status").text(status);
-            loaditemdata_EC(key)
-
-        }            
-
-        $(this).off("shown.bs.modal");
-
-    }
-
 </script>
 @endpush
 @endsection

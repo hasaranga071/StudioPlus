@@ -344,6 +344,14 @@
             $('#ecordersection').toggle(selectedOrderType === "Extra Copy");
             $('#Sittings, #edittypemain, #hcopymain, #scopymain').toggle(selectedOrderType !== "Frames");
             $('#subframesizemain, #subframetypemain').toggle(selectedFrameType === "Fiber Frame");
+
+            if (selectedOrderType=="Extra Copy" || selectedOrderType=="Media" )
+            {
+                $("#scopy").val(0).prop("readonly", true);
+            }
+            else{
+                $("#scopy").val(0).prop("readonly", false);
+            }
         }
 
         function loadOrderTypeItems() {
@@ -835,8 +843,8 @@
                                 <td>${item.order.order_type.ordertype}</td>
                                 <td>${item.order_type_item.itemname}</td>
                                 <td>${item.edit_type?.edittype || ''}</td>
-                                <td>${item.softcopyquantity}</td>
                                 <td>${item.hardcopyquantity}</td>
+                                <td>${item.softcopyquantity}</td>
                                 <td>${item.order.deliverydate.split(' ')[0]}</td>
                                 <td>${item.order.isurgent == 1 ? 'Yes' : 'No'}</td>
                                 <td>Rs ${item.totalcost}</td>
@@ -1015,8 +1023,8 @@
                                 <td>${item.order_type_item.itemname}</td>
                                 <td>${item.edit_type?.edittype || ''}</td>
                                 <td>${item.lam_type?.laminatetype || ''}</td>
-                                <td>${item.softcopyquantity}</td>
                                 <td>${item.hardcopyquantity}</td>
+                                <td>${item.softcopyquantity}</td>
                                 <td>${item.order.deliverydate.split(' ')[0]}</td>
                                 <td>${item.order.isurgent == 1 ? 'Yes' : 'No'}</td>
                                 <td>Rs ${item.totalcost}</td>
@@ -1171,10 +1179,9 @@
 
         function clearOrderFields() {
             $("#order-form").find("input, select, textarea").val("");
-            $("#discount").val("");
             $("#hcopy").val("");
             $("#scopy").val("");
-            $("#paidamount").val("");
+
 
         }
 

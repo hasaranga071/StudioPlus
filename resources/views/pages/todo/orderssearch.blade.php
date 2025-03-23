@@ -213,7 +213,7 @@ function loaditemdata_EC(okey){
 
 }
 function displayOrderitemSearchResults(orderitems) {
-console.log('displayresults',orderitems);
+
                 if (!orderitems.length) {
                         $('#orderitemResults').html(
                             '<div class="alert alert-info">No Order Items found.</div>'

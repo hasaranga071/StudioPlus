@@ -43,10 +43,17 @@
                         <span class="error-message text-danger" id="username-error"></span>
   
                 </div>
-                <div class="col-md-4">
+                <!-- <div class="col-md-4">
                     <label _class="col-md-4 control-label">Delivery date-within</label>
                     <input class="form-control input-md" type="date" id="search-stdate" name="search-stdate" value="">
                     <input class="form-control input-md" type="date" id="search-enddate" name="search-enddate">
+                </div> -->
+                <div class="form-group">
+                    <label class="form-label">Delivery Date (Within)</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input class="form-control" type="date" id="search-stdate" name="search-stdate">
+                        <input class="form-control" type="date" id="search-enddate" name="search-enddate">
+                    </div>
                 </div>
                 <div class="col-md-4" style="padding-top: 30px;">
                     <button type="submit" onClick="loaddata()" id="searchBtn" class="btn btn-primary">Search</button>

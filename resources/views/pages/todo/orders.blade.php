@@ -4,7 +4,7 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 @section('content')
-<div class='s-page-title'>Orders</div>
+<!-- <div class='s-page-title'>Orders</div> -->
 <div style='background-color: lightgrey; width: 90%; border: 2px solid green;padding-left:1%; margin-top: 1%; margin-right: 5%;margin-left: 5%;'>
     <!-- Multiple Radios -->
     <div class="customer-section">
@@ -17,11 +17,11 @@
             <div class="section_logo"><img width="30px" height="30px" src="{{ asset('images/order.png') }}"/></div>
             <div class="section_title">Order Information</div>
         </div>
-        <div style="display:inline-flex;padding-top: 15px;">
+        <div style="display:inline-flex;padding-top: 15px;gap: 75px;">
             <form id="order_search">
                 <div class="col-md-4">
                     <label class="form-label" for="otype">Order Type (*)</label>
-                    <select id="search-otype" name="search-otype" value="1" class="form-control">
+                    <select style="margin-top: -7px;" id="search-otype" name="search-otype" value="1" class="form-control">
            
                         @foreach ($orderTypes as $orderType)
                             <option value="{{ $orderType->ordertypekey }}">{{ $orderType->ordertype }}</option>
@@ -38,8 +38,8 @@
                     </select>
                 </div> -->
                 <div class="col-md-4" id="cname">
-                        <label class="col-md-4 control-label" for="name">Customer Name,Phone or Order No.</label>
-                        <input id="search-term" name="username" style="width: 80%;" type="text" class="form-control input-md">
+                        <label class="col-md-4 control-label" for="name" >Search Text</label>
+                        <input id="search-term" name="username" style="width: 80%;" type="text" placeholder="Customer Name,Phone or Order No." class="form-control">
                         <span class="error-message text-danger" id="username-error"></span>
   
                 </div>
@@ -56,7 +56,8 @@
 
         </div></br></br>
         <div>
-            <div style="background-color:#aaa;" id="orderResults">
+            <div><span id="ocount"></span> order(s)</div>
+            <div style="background-color:#aaa;height: 350px;overflow-y: auto;" id="orderResults">
                 <table class="table table-bordered">
                     <thead>
                         <tr>
@@ -94,6 +95,7 @@ document.getElementById("search-enddate").value = getFormattedDate(+1); // Today
 
 function loaddata()
 {
+    //document.getElementById('ocount').innerHTML='loading...'
     let otype = $('#search-otype').val(); 
     let query = $('#search-term').val(); 
     let startDate = $('#search-stdate').val(); 
@@ -128,11 +130,13 @@ function displayOrderSearchResults(orders)
 {
        
       if (!orders.length) {
-            $('#search-results').html(
+            $('#orderResults').html(
                 '<div class="alert alert-info">No Orders found.</div>'
             );
+            document.getElementById('ocount').innerHTML=0
             return;
         }
+        document.getElementById('ocount').innerHTML=orders.length
 
         let html = `
             <table class="table table-bordered">
@@ -258,11 +262,12 @@ function displayOrderitemSearchResults(orderitems) {
                 <td>
             
                 <button id="editBtn_${orderitem.ssorderitemmapkey}" type="button" class="btn btn-primary" onClick="edititem(${orderitem.ssorderitemmapkey},${orderitem.hardcopyquantity},${orderitem.softcopyquantity},'${orderitem.edit_type.edittype}')">
-                    Edit 
+                    Edit
                 </button>
-                <button style="display:none" id="saveBtn_${orderitem.ssorderitemmapkey}" type="button" class="btn btn-primary" onClick="edititem(${orderitem.ssorderitemmapkey},${orderitem.hardcopyquantity},${orderitem.softcopyquantity},'${orderitem.edit_type.edittype}')">
+                <button style="display:none" id="saveBtn_${orderitem.ssorderitemmapkey}" type="button" class="btn btn-primary" onClick="saveitem(${orderitem.ssorderitemmapkey},${orderitem.hardcopyquantity},${orderitem.softcopyquantity},'${orderitem.edit_type.edittype}')">
                     Save 
                 </button>
+                <button class="btn btn-delete remove-order" data-id="${orderitem.ssorderitemmapkey}"><i class="fas fa-trash"></i></button>
                 </td>
 
             </tr>
@@ -272,7 +277,64 @@ function displayOrderitemSearchResults(orderitems) {
     html += '</tbody></table>';
     $('#orderitemResults').html(html);
 }
-             
+      
+
+function displayOrderitemSearchResults_EC(orderitems) {
+       
+       if (!orderitems.length) {
+               $('#orderitemResults_EC').html(
+                   '<div class="alert alert-info">No Order Items found.</div>'
+               );
+               return;
+           }
+
+let html = `
+<table id="itemtable_EC" class="table table-bordered">
+   <thead>
+       <tr>
+           <th>Item Type</th>
+           <th>Original Order</th>
+           <th>Hard Copied</th>
+           <th>Edit Type</th>
+           <th>Cost (LKR)</th>
+           <th>Status</th>
+       </tr>
+   </thead>
+   <tbody>
+`;
+
+orderitems.forEach(function(orderitem) {
+
+html += `
+   <tr data-id="${orderitem.ecorderitemmapkey}_EC">
+       <td id="name_${orderitem.ecorderitemmapkey}_EC">${orderitem.order_type_item.itemname}</td>
+       <td id="orionum_${orderitem.ecorderitemmapkey}_EC">${orderitem.original_order.orderid}</td>
+       <td id="hcopy_${orderitem.ecorderitemmapkey}_EC">${orderitem.quantity}</td>
+       <td id="edittype_${orderitem.ecorderitemmapkey}_EC">${orderitem.edit_type.edittype}</td>
+       <td>${orderitem.totalcost}</td>
+       <td>Inprogress</td>
+   
+
+       <td>
+   
+       <button id="editBtn_${orderitem.ecorderitemmapkey}_EC" type="button" class="btn btn-primary" onClick="edititem_EC(${orderitem.ecorderitemmapkey},${orderitem.quantity},0,'${orderitem.edit_type.edittype}','${orderitem.original_order.orderid}','${orderitem.original_order.orderkey}')">
+           Edit 
+       </button>
+       <button style="display:none" id="saveBtn_${orderitem.ecorderitemmapkey}_EC" type="button" class="btn btn-primary" onClick="saveitem(${orderitem.ecorderitemmapkey},${orderitem.hardcopyquantity},${orderitem.softcopyquantity},'${orderitem.edit_type.edittype}')">
+           Save 
+       </button>
+       <button class="btn btn-delete remove-order" data-id="${orderitem.ecorderitemmapkey}_EC"><i class="fas fa-trash"></i></button>
+       </td>
+
+   </tr>
+`;
+});
+
+html += '</tbody></table>';
+$('#orderitemResults_EC').html(html);
+}
+
+
 function addnew(){
     // Get the table body
     let table = document.getElementById("itemtable").getElementsByTagName('tbody')[0];
@@ -356,14 +418,14 @@ function vieworder(key,no,odate,customer,total,discount,paid,urgent,status,otk,o
     if (ot=='Extra Copy') 
     {
         $("#orderModal_EC").modal("show");
-        $("#onum").text(no);
-        $("#odate").text(odate);
-        $("#customer").text(customer);
-        $("#total").text(total);
-        $("#discount").text(discount);
-        $("#paid").text(paid);
-        $("#urgent").text(urgent);
-        $("#status").text(status);
+        $("#onum_EC").text(no);
+        $("#odate_EC").text(odate);
+        $("#customer_EC").text(customer);
+        $("#total_EC").text(total);
+        $("#discount_EC").text(discount);
+        $("#paid_EC").text(paid);
+        $("#urgent_EC").text(urgent);
+        $("#status_EC").text(status);
         loaditemdata_EC(key)
 
     }
@@ -372,7 +434,17 @@ function vieworder(key,no,odate,customer,total,discount,paid,urgent,status,otk,o
         $(this).off("shown.bs.modal");
 
 }
- 
+
+function edititem_EC(ecorderitemmapkey,hcopy,scopy,edittype,oriorde){
+
+document.getElementById("editBtn_"+ecorderitemmapkey+"_EC").style.display = "none";
+document.getElementById("saveBtn_"+ecorderitemmapkey+"_EC").style.display = "inline-block";
+
+document.getElementById("hcopy_"+ecorderitemmapkey+"_EC").innerHTML='<div class="col-md-4" id="scopymain"> <input style="border-color: orange;" id="hcopy" value="'+hcopy+'" name="hcopy" type="text" class="form-control input-md" required=""> </div>'
+document.getElementById("edittype_"+ecorderitemmapkey+"_EC").innerHTML=
+'<div class="col-md-4" id="edittypemain"><select  style="width:150px;border-color: orange;" id="edittype" name="edittype" class="form-control"> <option value="">'+edittype+'</option> @foreach ($editTypes as $editType) <option value="{{ $editType->edittypekey }}">{{ $editType->edittype }}</option> @endforeach </select> </div>'
+}
+
 
 </script>
 @endpush

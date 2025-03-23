@@ -1,10 +1,10 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<div class="modal fade" id="orderModal_SS" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+<div class="modal fade" id="orderModal_EC" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
     <div class="modal-dialog  modal-xl">
     <input type="hidden" id="otk" name="otk" value="edititem">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalTitle">Order Details | <span id="onum"></span></h5>
+                <h5 class="modal-title" id="modalTitle">Order Details | <span id="onum_EC"></span></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -12,34 +12,34 @@
                     <div class="bg-white rounded-lg shadow-md p-6" style="display:flex;gap:10%">
                         <div>
                             <p class="text-gray-600">Created Date</p>
-                            <span class="font-semibold" id="odate"></span>
+                            <span class="font-semibold" id="odate_EC"></span>
                         </div>
                         <div>
                             <p class="text-gray-600">Customer Name</p>
-                            <span class="font-semibold" id="customer"></span>
+                            <span class="font-semibold" id="customer_EC"></span>
                         </div>
                         <div>
                             <p class="text-gray-600">Total Amount</p>
-                            <span class="font-semibold" id="total"></span>
+                            <span class="font-semibold" id="total_EC"></span>
                         </div>
                         <div>
                             <p class="text-gray-600">Paid Amount</p>
-                            <span class="font-semibold" id="paid"></span>
+                            <span class="font-semibold" id="paid_EC"></span>
                         </div>
                         <div>
                             <p class="text-gray-600">Urgent</p>
-                            <span class="font-semibold" id="urgent"></span>
+                            <span class="font-semibold" id="urgent_EC"></span>
                         </div>
                         <div>
                             <p class="text-gray-600">Status</p>
-                            <span class="font-semibold" id="status"></span>
+                            <span class="font-semibold" id="status_EC"></span>
                         </div>
                     </div></br>
                     <button onClick="addnew()" type="button" style="float:left;font-size:15px" class="btn btn-info">+ Add Item</button></br></br>
                     
                    
 
-                    <div id="orderitemResults" class="overflow-x-auto">
+                    <div id="orderitemResults_EC" class="overflow-x-auto">
                        
                         </div>
                     </div>

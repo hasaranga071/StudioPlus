@@ -114,24 +114,6 @@ class NewOrderController extends Controller
   }
   public function itemsearch(Request $request)
   {
-
-        // Get input values
-    //     $orderkey      = $request->input('orderkey');
-
-
-    //     // Search order items based on orderkey
-    //     $orderitems = StudioOrderItemMapSS::where(function ($q) use ($orderkey) {
-
-    //         if (!empty($orderkey)) {
-    //           $q->where('StudioOrderItemMapSS.orderkey', $orderkey);
-
-    //         }
-
-    //     })
-    //  ->get();
-
-    //     return response()->json($orderitems);
-    // Get input values
     $orderkey = $request->input('orderkey');
 
     // Search order items based on orderkey and include item type from related model
@@ -143,7 +125,19 @@ class NewOrderController extends Controller
 
     return response()->json($orderitems);
   }
+  public function itemsearch_EC(Request $request)
+  {
+    $orderkey = $request->input('orderkey');
 
+    // Search order items based on orderkey and include item type from related model
+    $orderitems = StudioOrderItemMapEC::with('editType','orderTypeItem','originalOrder') // Assuming 'itemType' is the relationship method
+        ->when(!empty($orderkey), function ($query) use ($orderkey) {
+            $query->where('StudioOrderItemMapEC.orderkey', $orderkey);
+        })
+        ->get();
+
+    return response()->json($orderitems);
+  }
   public function getOrderItemSummary($orderkey)
   {
 

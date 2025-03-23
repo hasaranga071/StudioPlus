@@ -1220,6 +1220,19 @@
                     document.getElementById("orderFrame").src = "";
                 }
 
+                document.addEventListener("DOMContentLoaded", function () {
+                    let dateInput = document.getElementById("deldate");
+
+                    if (dateInput) {
+                        let today = new Date();
+                        today.setDate(today.getDate() + 3); // Add 3 days
+
+                        let formattedDate = today.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+                        dateInput.value = formattedDate;
+                    }
+                });
+
+
 
 
 </script>

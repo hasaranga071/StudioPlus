@@ -243,7 +243,7 @@ console.log('displayresults',orderitems);
                 <td id="name_${orderitem.ssorderitemmapkey}">${orderitem.order_type_item.itemname}</td>
                 <td id="hcopy_${orderitem.ssorderitemmapkey}">${orderitem.hardcopyquantity}</td>
                 <td id="scopy_${orderitem.ssorderitemmapkey}">${orderitem.softcopyquantity}</td>
-                <td id="edittype_${orderitem.ssorderitemmapkey}">${orderitem.edit_type.edittype}</td>
+                <td id="edittype_${orderitem.ssorderitemmapkey}">${orderitem.edit_type?.edittype || ''}</td>
                 <td>${orderitem.totalcost}</td>
                 <td>Inprogress</td>
 

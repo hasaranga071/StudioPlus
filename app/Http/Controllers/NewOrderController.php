@@ -95,17 +95,17 @@ class NewOrderController extends Controller
         $start_date = $request->input('start_date');
         $end_date   = $request->input('end_date');
 
-
         // Search orders based on multiple criteria
-        $orders = StudioOrder::where(function ($q) use ($query,$otype) {
-
+        $orders = StudioOrder::where(function ($q) use ($query, $otype) {
             if (!empty($otype)) {
-              $q->where('studioorders.ordertypekey', $otype);
+                $q->where('studioorders.ordertypekey', $otype);
             }
 
             if (!empty($query)) {
-              $q->Where('orderid', 'LIKE', '%' . $query . '%')
-              ->orWhere('studiocustomers.username', 'LIKE', '%' . $query . '%');
+                $q->where(function ($subQuery) use ($query) {
+                    $subQuery->where('studioorders.orderid', 'LIKE', '%' . $query . '%')
+                            ->orWhere('studiocustomers.username', 'LIKE', '%' . $query . '%');
+                });
             }
         })
         ->when(!empty($start_date) && !empty($end_date), function ($q) use ($start_date, $end_date) {
@@ -113,9 +113,8 @@ class NewOrderController extends Controller
         })
         ->join('studioordertypes', 'studioorders.ordertypekey', '=', 'studioordertypes.ordertypekey') // Join order types
         ->join('studiocustomers', 'studioorders.customerkey', '=', 'studiocustomers.customerkey')
-
-
         ->get();
+
 
         return response()->json($orders);
 

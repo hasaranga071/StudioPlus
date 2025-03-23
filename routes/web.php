@@ -30,6 +30,7 @@ Route::middleware('auth')->group(function () {
     // Orders
     Route::get('/neworder', [NewOrderController::class, "neworder"])->name('neworder');
     Route::get('/orders', [NewOrderController::class, "orders"])->name('orders');
+    Route::get('/orderssearch', [NewOrderController::class, "orderssearch"])->name('orderssearch');
     Route::get('/ordertypeitem/{ordertypekey}', [NewOrderController::class, "ordertypeitems"])->name('ordertypeitem');
     Route::post('/store-order-ss', [StudioOrderController::class, 'storeOrder_ss'])->name('storeOrder_ss');
     Route::post('/store-order-fr', [StudioOrderController::class, 'storeOrder_fr'])->name('storeOrder_fr');

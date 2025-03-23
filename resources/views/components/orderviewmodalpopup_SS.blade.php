@@ -1,5 +1,5 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<div class="modal fade" id="orderModal_SS" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+<div class="modal fade" id="orderModalpopup_SS" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
     <div class="modal-dialog  modal-xl">
     <input type="hidden" id="otk" name="otk" value="edititem">
         <div class="modal-content">
@@ -35,18 +35,13 @@
                             <span class="font-semibold" id="status"></span>
                         </div>
                     </div></br>
-                    <button onClick="addnew()" type="button" style="float:left;font-size:15px" class="btn btn-info">+ Add Item</button></br></br>
-                    
-                   
 
                     <div id="orderitemResults" class="overflow-x-auto">
-                       
+
                         </div>
                     </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
+
         </div>
     </div>
 </div>
@@ -67,3 +62,4 @@
             background-color:rgb(188, 24, 139);
         }
     </style>
+

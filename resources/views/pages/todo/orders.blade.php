@@ -291,7 +291,7 @@ function displayOrderitemSearchResults(orderitems) {
 
 function displayOrderitemSearchResults_EC(orderitems) {
        
-       if (!orderitems.length) {
+    if (!orderitems.orderItems.length) {
                $('#orderitemResults_EC').html(
                    '<div class="alert alert-info">No Order Items found.</div>'
                );
@@ -313,7 +313,7 @@ let html = `
    <tbody>
 `;
 
-orderitems.forEach(function(orderitem) {
+orderitems.orderItems.forEach(function(orderitem) {
 
 html += `
    <tr data-id="${orderitem.ecorderitemmapkey}_EC">

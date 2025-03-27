@@ -2,6 +2,7 @@
 <div class="modal fade" id="orderModal_SS" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
     <div class="modal-dialog  modal-xl">
     <input type="hidden" id="otk" name="otk" value="edititem">
+    <span id="okey" style="display:none;"></span>
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="modalTitle">Order Details | <span id="onum"></span></h5>
@@ -35,7 +36,7 @@
                             <span class="font-semibold" id="status"></span>
                         </div>
                     </div></br>
-                    <button onClick="addnew()" type="button" style="float:left;font-size:15px" class="btn btn-info">+ Add Item</button></br></br>
+                    <button onClick="addnew(document.getElementById('okey').textContent.trim())" type="button" style="float:left;font-size:15px" class="btn btn-info">+ Add Item</button></br></br>
                     
                    
 

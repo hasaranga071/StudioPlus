@@ -89,7 +89,7 @@
                         <button type="submit" class="btn btn-primary">Search</button>
                     </div>
                 </div>
-                <div id="search-results" style="width: 70%; margin: 20px 5px; padding: 20px; border: 2px dotted green;"></div>
+                <div id="search-results" style="width: 90%; margin: 20px 5px; padding: 20px; border: 2px dotted green;overflow-y:auto;"></div>
             </div>
         </form>
     </fieldset>
@@ -378,6 +378,7 @@
             e.preventDefault();
             $('.error-message').text('');
             $('#new-customer-message').hide();
+
             $("#address_text").val($("#town option:selected").text());
 
             $.ajax({
@@ -504,6 +505,7 @@
             });
             html += '</tbody></table>';
             $('#search-results').html(html);
+            $('#search-results').css('height', '400px');
         }
 
         $(document).on('click', '.select-customer', function () {

@@ -270,7 +270,7 @@
                     <label class="col-md-4 control-label">Comments</label><br>
                     <textarea id="comments" name="comments" rows="2" cols="50"></textarea>
                 </div>
-                <div class="col-md-4" style="padding-top: 30px;">
+                <div class="col-md-4" style="padding-top: 10px;">
 
                     <button id="add-order" class="btn btn-primary">Add</button>
                     {{-- <button id="testStoreOrder" class="btn btn-primary">Test Order</button> --}}
@@ -695,6 +695,11 @@
             if(!frametypekey)
                 {
                     flashpopup('Please select the Frame type !');
+                    return false;
+                }
+            if(!framesizekey)
+                {
+                    flashpopup('Please select the Frame size !');
                     return false;
                 }
             dataarray = {

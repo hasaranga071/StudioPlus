@@ -49,7 +49,7 @@
                         <input class="form-control input-md" type="date" id="search-enddate" name="search-enddate">
                     </div> -->
                     <div class="form-group">
-                        <label class="form-label">Delivery Date (Within)</label>
+                        <label class="form-label">Order Create Date (Within)</label>
                         <div style="display: flex; gap: 10px;">
                             <input class="form-control" type="date" id="search-stdate" name="search-stdate">
                             <input class="form-control" type="date" id="search-enddate" name="search-enddate">

@@ -134,7 +134,7 @@
             </div>
         </div></br></br>
         <div class="row">
-            <div class="column2" style="background-color:#bbb;">
+            <div class="column2" style="background-color:#c4c2c2;border-radius:12px;">
                 <div class="form-group" style="display: flex; gap: 20px; align-items: center;" id="ecordersection">
                     <!-- Original Order No. Input Field -->
                     <div class="col-md-4" >
@@ -276,7 +276,7 @@
                     {{-- <button id="testStoreOrder" class="btn btn-primary">Test Order</button> --}}
                 </div>
             </div>
-            <div class="column1" style="background-color:#aaa;" id="order-summary-tb">
+            <div class="column1" style="background-color:#aaa;border-radius:12px;" id="order-summary-tb">
                 <h2>Order Summary</h2>
                 <div id="ordermaintable"></div>
 
@@ -331,6 +331,9 @@
         // Toggle frame type section based on Fiber Fream
         $("#frametype").change(function () {
             toggleField();
+            $("#framesize").val('').change();
+            $("#subframetype").val('').change();
+            $("#subframesize").val('').change();
         });
 
         toggleField(); // Run function on page load
@@ -547,6 +550,8 @@
                             }, 2000);
                 }
             });
+               // auto scroll down
+            document.getElementById("order-summary-tb").scrollIntoView({ behavior: "smooth", block: "end" });
         }
 
         function generateOrderId() {

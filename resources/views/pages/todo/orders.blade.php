@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @include('components.orderviewmodal_SS')
 @include('components.orderviewmodal_EC')
+@include('components.orderviewmodal_ME')
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 @section('content')
@@ -424,7 +425,7 @@
         }, 300);        
     }
     
-    function addnew(orderkey){
+    function addnew_ss(orderkey){
         if (!orderkey) {
             alert("Order key is missing!");
             return;
@@ -613,6 +614,465 @@
 
     // ******************* END Studio sitting Retated ************************
 
+    // ******************* Media Related *****************************
+
+    function loaditemdata_ME(okey){
+        let orderkey = okey;
+        $.ajax({
+            url: "/order-itemsummary/" + orderkey,
+            type: "GET",
+            data: {
+                orderkey: orderkey,
+                _token: "{{ csrf_token() }}" // CSRF Token for security
+            },
+            success: function (response) {
+                console.log('Server response:', response); // Debugging
+
+                if (!response || response.length === 0) {
+                    console.log("No order items returned from server.");
+                } else {
+                    displayOrderitemSearchResults_ME(response);
+                }
+            }
+        });
+                        
+    }  
+
+    function displayOrderitemSearchResults_ME(orderitems) {
+        if (!orderitems.orderItems.length) {
+            $('#orderitemResults_me').html(
+                '<div class="alert alert-info">No Order Items found.</div>'
+            );
+            return;
+        }
+
+        let html = `
+            <table id="itemtable_me" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Item Type</th>
+                        <th>Laminate Type</th>
+                        <th>Hard Copied</th>
+                        <th>Soft Copies</th>
+                        <th>Edit Type</th>
+                        <th>Cost (LKR)</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        orderitems.orderItems.forEach(function(orderitem) {
+        
+            html += `
+                <tr id="row_me_${orderitem.ssorderitemmapkey}">
+                    <td id="name_me_${orderitem.ssorderitemmapkey}">${orderitem.order_type_item.itemname}</td>
+                    <td id="lamtype_me_${orderitem.ssorderitemmapkey}">${orderitem.lam_type.laminatetype}</td>
+                    <td id="hcopy_me_${orderitem.ssorderitemmapkey}">${orderitem.hardcopyquantity}</td>
+                    <td id="scopy_me_${orderitem.ssorderitemmapkey}">${orderitem.softcopyquantity}</td>
+                    <td id="edittype_me_${orderitem.ssorderitemmapkey}">${orderitem.edit_type.edittype}</td>
+                    <td>${orderitem.totalcost}</td>
+                    <td>Inprogress</td>
+                
+
+                    <td>
+                
+                    <button id="editBtn_me_${orderitem.ssorderitemmapkey}" type="button" class="btn btn-primary" onClick="edititem_me(${orderitem.ssorderitemmapkey},${orderitem.hardcopyquantity},${orderitem.softcopyquantity},'${orderitem.edit_type.edittype}')">
+                        Edit 
+                    </button>
+                    <button style="display:none" id="saveBtn_me_${orderitem.ssorderitemmapkey}" 
+                        type="button" class="btn btn-primary" 
+                        onClick="saveitem_me(${orderitem.ssorderitemmapkey},'${orderitem.order.order_type.ordertype}',${orderitem.order.order_type.ordertypekey},${orderitem.order_type_item.ordertypeitemkey},'${orderitem.lam_type?.lamtypekey || ''}',${orderitem.order.customerkey},${orderitem.order.isurgent},'${orderitem.order.discount}','${orderitem.order.paidcost}',${orderitem.order.studiokey},'${orderitem.order.orderid}','${orderitem.order.deliverydate}','${orderitem.order.remarks}')">
+                        Save 
+                    </button>
+                    </td>
+
+                </tr>
+            `;
+        });
+
+        html += '</tbody></table>';
+        $('#orderitemResults_me').html(html);
+    }  
+
+    function edititem_me(ssorderitemmapkey) {
+        // Get latest values from the table before editing
+        let lamtypeElement = document.getElementById(`lamtype_me_${ssorderitemmapkey}`);
+        let hcopyElement = document.getElementById(`hcopy_me_${ssorderitemmapkey}`);
+        let scopyElement = document.getElementById(`scopy_me_${ssorderitemmapkey}`);
+        let edittypeElement = document.getElementById(`edittype_me_${ssorderitemmapkey}`);
+
+        // Ensure elements exist before accessing properties
+        if (!hcopyElement || !scopyElement || !edittypeElement || !lamtypeElement) {
+            console.error(`Error: One or more elements missing for item ${ssorderitemmapkey}`);
+            return;
+        }
+
+        let lamtype = lamtypeElement.textContent.trim();
+        let hcopy = hcopyElement.textContent.trim();
+        let scopy = scopyElement.textContent.trim();
+        let edittype = edittypeElement.textContent.trim(); // Get displayed edit type text
+
+        // Hide Edit Button, Show Save Button
+        document.getElementById(`editBtn_me_${ssorderitemmapkey}`).style.display = "none";
+        document.getElementById(`saveBtn_me_${ssorderitemmapkey}`).style.display = "inline-block";
+
+        // Convert Laminate Type to Input Field
+        lamtypeElement.innerHTML =
+            `<div class="col-md-4">
+                <select style="width:150px;border-color: orange;" id="input_lamtype_me_${ssorderitemmapkey}" name="lamtype" class="form-control">
+                    <option value="">Select Laminate Type</option>
+                    @foreach ($lamTypes as $lamType) 
+                        <option value="{{ $lamType->lamtypekey }}" ${lamtype === '{{ $lamType->laminatetype }}' ? 'selected' : ''}>{{ $lamType->laminatetype }}</option>
+                    @endforeach
+                </select>
+            </div>`;
+
+        // Convert Hard Copy to Input Field
+        hcopyElement.innerHTML =
+            `<div class="col-md-4">
+                <input style="border-color: orange;" id="input_hcopy_me_${ssorderitemmapkey}" value="${hcopy}" name="hcopy" type="text" class="form-control input-md" required="">
+            </div>`;
+
+        // Convert Soft Copy to Input Field
+        scopyElement.innerHTML =
+            `<div class="col-md-4">
+                <input style="border-color: orange;" id="input_scopy_me_${ssorderitemmapkey}" value="${scopy}" name="scopy" type="text" class="form-control input-md" required="">
+            </div>`;
+
+        // Convert Edit Type to Dropdown
+        edittypeElement.innerHTML =
+            `<div class="col-md-4">
+                <select style="width:150px;border-color: orange;" id="input_edittype_me_${ssorderitemmapkey}" name="edittype" class="form-control">
+                    <option value="">Select Edit Type</option>
+                    @foreach ($editTypes as $editType) 
+                        <option value="{{ $editType->edittypekey }}" ${edittype === '{{ $editType->edittype }}' ? 'selected' : ''}>{{ $editType->edittype }}</option>
+                    @endforeach
+                </select>
+            </div>`;
+    }
+
+    function saveitem_me(ssorderitemmapkey, ordertype, ordertypekey, ordertypeitemkey, lamtypekey, customerkey, isurgent, discount, paidcost, studiokey, orderid, deliverydate, remarks) {
+        dataarray=[]       
+
+        setTimeout(() => {
+            let hcopy = document.querySelector(`#input_hcopy_me_${ssorderitemmapkey}`)?.value || "";
+            let scopy = document.querySelector(`#input_scopy_me_${ssorderitemmapkey}`)?.value || "";
+
+            let lamtypeElement = document.querySelector(`#input_lamtype_me_${ssorderitemmapkey}`);
+            if (!lamtypeElement) {
+                console.error("Edit type dropdown not found!");
+                return;
+            }
+            let lamtype = lamtypeElement.options[lamtypeElement.selectedIndex].value;
+            let lamtypeText = lamtypeElement.options[lamtypeElement.selectedIndex].text;
+
+            if (!lamtype) {
+                console.error("Error: laminating type is not defined or empty!");
+                return; // Prevent the function from executing further if edittype is missing.
+            }
+
+            let edittypeElement = document.querySelector(`#input_edittype_me_${ssorderitemmapkey}`);
+            if (!edittypeElement) {
+                console.error("Edit type dropdown not found!");
+                return;
+            }
+            let edittype = edittypeElement.options[edittypeElement.selectedIndex].value;
+            let edittypeText = edittypeElement.options[edittypeElement.selectedIndex].text;
+
+            if (!edittype) {
+                console.error("Error: edittype is not defined or empty!");
+                return; // Prevent the function from executing further if edittype is missing.
+            }
+
+            let dataarray = {
+                studiokey: studiokey,
+                orderid: orderid,
+                ordertypekey: ordertypekey,
+                ordertype: ordertype,
+                ordertypeitemkey: ordertypeitemkey,
+                edittypekey: edittype,
+                lamtypekey: lamtype,
+                customerkey: customerkey,
+                isurgent: isurgent,
+                discount: discount,
+                paidcost: paidcost,
+                softcopycount: scopy,  // Fix: Use correct variable
+                hardcopycount: hcopy,   // Fix: Use correct variable
+                deliverydate: deliverydate,
+                remarks: remarks,
+                iscompleted: 0,
+                _token: "{{ csrf_token() }}" // Required for Laravel AJAX requests
+            };
+            console.log('Data Sent:', dataarray);
+            
+            let cells = document.querySelectorAll(`#row_me_${ssorderitemmapkey} td`);
+            cells.forEach(cell => {
+                if (cell.cellIndex !== 0) { 
+                    cell.contentEditable = "false";
+                    cell.classList.remove("edit-mode");
+                }
+            });
+
+            $.ajax({
+                    url: "{{ route('storeOrder_ss') }}",
+                    type: "POST",
+                    data: dataarray,
+                    success: function (response) {
+                        console.log("Order Updated Successfully:", response);
+
+                        // Update the table row with latest values
+                        document.getElementById(`hcopy_me_${ssorderitemmapkey}`).innerHTML = hcopy;
+                        document.getElementById(`scopy_me_${ssorderitemmapkey}`).innerHTML = scopy;
+                        document.getElementById(`edittype_me_${ssorderitemmapkey}`).innerHTML = edittypeText;
+                        document.getElementById(`lamtype_me_${ssorderitemmapkey}`).innerHTML = lamtypeText;
+
+                        // Show Edit Button Again
+                        document.getElementById(`editBtn_me_${ssorderitemmapkey}`).style.display = "inline-block";
+                        document.getElementById(`saveBtn_me_${ssorderitemmapkey}`).style.display = "none";
+                        // render table
+                        let flashbody = '<div id="flash-message" class="alert alert-success" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);z-index: 9999; padding: 15px 20px; font-size: 16px; text-align: center;background-color: #434844; color: white; border-radius: 5px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);">'
+                        + response.message +'!</div>';
+
+                        $("body").prepend(flashbody);
+                            // Automatically remove the message after 2 seconds
+                            setTimeout(function() {
+                                $("#flash-message").fadeOut("slow", function() {
+                                    $(this).remove();
+                                });
+                            }, 2000);
+                    },
+                    error: function (xhr, status, error) {
+                    console.error("Error:", xhr.responseText);
+
+                    // Attempt to parse the JSON response
+                    try {
+                        var response = JSON.parse(xhr.responseText);
+
+                        // Display the error message using SweetAlert2
+                        Swal.fire({
+                            title: 'Failed to Create Order',
+                            text: response.message || 'An unexpected error occurred.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    } catch (e) {
+                        // If parsing fails, display a generic error message
+                        Swal.fire({
+                            title: 'Failed to Create Order',
+                            text: 'An unexpected error occurred.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                }
+            });
+        }, 300);        
+    }
+
+    function addnew_me(orderkey){
+        if (!orderkey) {
+            alert("Order key is missing!");
+            return;
+        }
+        // Get the table body
+        let table = document.getElementById("itemtable_me").getElementsByTagName('tbody')[0];
+
+        // Create a new row
+        let newRow = table.insertRow();
+        newRow.style.backgroundColor = "lightblue";
+
+        // Insert cells into the row
+        let itemcell = newRow.insertCell(0);
+        let lamtypecell = newRow.insertCell(1);
+        let hcopycell = newRow.insertCell(2);
+        let scopycell = newRow.insertCell(3);
+        let edittypecell = newRow.insertCell(4);
+        let costcell = newRow.insertCell(5);
+        let statuscell = newRow.insertCell(6);
+        let actioncell = newRow.insertCell(7);
+
+        // Get order type key
+        var otk = document.getElementById("otk")?.value || "";
+
+        // Add content to the new cells
+        itemcell.innerHTML = `
+            <div style="width:150px;border-color: blue;border-width: 2px;" class="col-md-4">
+                <select id="sittingitem" name="item" class="form-control">
+                    <option value="">Select Item Type</option>
+                </select>
+            </div>
+        `;
+        
+        setTimeout(() => loadOrderTypeItems(otk), 300);
+
+        lamtypecell.innerHTML = `
+            <div class="col-md-4">
+                <select style="width:150px;" id="edittype_me" name="lamtype" class="form-control">
+                    <option value="">Select Edit Type</option>
+                    @foreach ($lamTypes as $lamType)
+                        <option value="{{ $lamType->lamtypekey }}">{{ $lamType->laminatetype }}</option>
+                    @endforeach
+                </select>
+            </div>
+        `;
+
+        hcopycell.innerHTML = `
+            <div class="col-md-4">
+                <input id="hcopy_me" name="hcopy" type="text" class="form-control input-md" required="">
+            </div>
+        `;
+
+        scopycell.innerHTML = `
+            <div class="col-md-4">
+                <input id="scopy_me" name="scopy" type="text" class="form-control input-md" required="">
+            </div>
+        `;
+        
+        edittypecell.innerHTML = `
+            <div class="col-md-4">
+                <select style="width:150px;" id="edittype_me" name="edittype" class="form-control">
+                    <option value="">Select Edit Type</option>
+                    @foreach ($editTypes as $editType)
+                        <option value="{{ $editType->edittypekey }}">{{ $editType->edittype }}</option>
+                    @endforeach
+                </select>
+            </div>
+        `;
+
+        costcell.innerHTML = '';
+        statuscell.innerHTML = '';
+
+        actioncell.innerHTML = `
+            <button id="addBtn_me" type="button" class="btn btn-primary" onClick="additem_me(this)" data-orderkey="${orderkey}">
+                Add
+            </button>
+        `;
+        document.getElementById("addBtn_me").style.display = "inline-block";
+    }
+
+    function additem_me(btn) {
+        let orderkey = btn.getAttribute("data-orderkey"); 
+        // Get the row (parent of the button)
+        let row = btn.closest("tr");
+
+        // Extract input values
+        let hcopy = row.querySelector("input[name='hcopy']").value;
+        let scopy = row.querySelector("input[name='scopy']").value;
+        let edittype = row.querySelector("select[name='edittype']").value;
+        let lamtype = row.querySelector("select[name='lamtype']").value;
+        let item = row.querySelector("select[name='item']").value;
+
+        $.ajax({
+            url: "/order-itemsummary/" + orderkey,
+            type: "GET",
+            data: {
+                orderkey: orderkey,
+                hcopy: hcopy,
+                scopy: scopy,
+                edittype: edittype,
+                lamtype: lamtype,
+                item: item,
+                _token: "{{ csrf_token() }}" // CSRF Token for security
+            },
+            success: function (response) {
+                if (!response || response.length === 0) {
+                    console.log("No order items returned from server.");
+                } else {
+                    console.log('data call working ...............')
+                    createitem_me(response,{ orderkey, hcopy, scopy, edittype, lamtype, item});
+                }
+            }
+        });
+    }
+
+    function createitem_me(orderdata,formData) {
+        if (!orderdata.orderItems.length) {
+            $('#orderitemResults').html(
+                '<div class="alert alert-info">No Order Items found.</div>'
+            );
+            return;
+        }
+
+        let orderdetail=orderdata.orderItems[0];
+
+        //dataarray=[]       
+        
+        let dataarray = {
+            studiokey: orderdetail.order.studiokey,
+            orderid: orderdetail.order.orderid,
+            ordertypekey: orderdetail.order.ordertypekey,
+            ordertype: orderdetail.order.order_type.ordertype,
+            ordertypeitemkey: formData.item,
+            edittypekey: formData.edittype,
+            lamtypekey: formData.lamtype,
+            customerkey: orderdetail.order.customerkey,
+            isurgent: orderdetail.order.isurgent,
+            discount: orderdetail.order.discount,
+            paidcost: orderdetail.order.paidcost,
+            softcopycount: formData.scopy,  // Fix: Use correct variable
+            hardcopycount: formData.hcopy,   // Fix: Use correct variable
+            deliverydate: orderdetail.order.deliverydate,
+            remarks: orderdetail.order.remarks,
+            iscompleted: 0,
+            _token: "{{ csrf_token() }}" // Required for Laravel AJAX requests
+        };
+
+        $.ajax({
+                url: "{{ route('storeOrder_ss') }}",
+                type: "POST",
+                data: dataarray,
+                success: function (response) {
+                    console.log("Order Item Created Successfully:", response);
+
+                    setTimeout(() => {
+                        loaditemdata_ME(formData.orderkey);
+                        $('orderviewmodal_ME').modal('show');
+                    }, 500);
+
+                    document.getElementById("addBtn_me").style.display = "none";
+                    // render table
+                    let flashbody = '<div id="flash-message" class="alert alert-success" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);z-index: 9999; padding: 15px 20px; font-size: 16px; text-align: center;background-color: #434844; color: white; border-radius: 5px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);">'
+                    + response.message +'!</div>';
+
+                    $("body").prepend(flashbody);
+                        // Automatically remove the message after 2 seconds
+                        setTimeout(function() {
+                            $("#flash-message").fadeOut("slow", function() {
+                                $(this).remove();
+                            });
+                        }, 2000);
+                },
+                error: function (xhr, status, error) {
+                console.error("Error:", xhr.responseText);
+
+                // Attempt to parse the JSON response
+                try {
+                    var response = JSON.parse(xhr.responseText);
+
+                    // Display the error message using SweetAlert2
+                    Swal.fire({
+                        title: 'Failed to Create Order',
+                        text: response.message || 'An unexpected error occurred.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                } catch (e) {
+                    // If parsing fails, display a generic error message
+                    Swal.fire({
+                        title: 'Failed to Create Order',
+                        text: 'An unexpected error occurred.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            }
+        });
+               
+    }
+
+    // ******************* End Media Related *************************
+
     // ******************* Extra Copy Retated ************************
 
     function loaditemdata_EC(okey){
@@ -773,6 +1233,21 @@
             $("#urgent").text(urgent);
             $("#status").text(status);
             loaditemdata_SS(key)
+        }
+
+        if (ot=='Media') 
+        {        
+            $("#orderModal_ME").modal("show");
+            $("#onum_me").text(no);
+            $("#okey_me").text(key);
+            $("#odate_me").text(odate);
+            $("#customer_me").text(customer);
+            $("#total_me").text(total);
+            $("#discount_me").text(discount);
+            $("#paid_me").text(paid);
+            $("#urgent_me").text(urgent);
+            $("#status_me").text(status);
+            loaditemdata_ME(key)
         }
             
         if (ot=='Extra Copy') 

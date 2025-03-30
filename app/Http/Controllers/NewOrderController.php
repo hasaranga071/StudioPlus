@@ -58,7 +58,8 @@ class NewOrderController extends Controller
     // Fetch all order types from the database
     $orderTypes = StudioOrderType::all();
     $editTypes = StudioEdittype::all();
-    return view ('pages.todo.orders', compact('orderTypes','editTypes'));
+    $lamTypes = StudioLaminatingtype::all();
+    return view ('pages.todo.orders', compact('orderTypes','editTypes','lamTypes'));
   }
 
   public function orderssearch()
@@ -66,7 +67,8 @@ class NewOrderController extends Controller
     // Fetch all order types from the database
     $orderTypes = StudioOrderType::all();
     $editTypes = StudioEdittype::all();
-    return view ('pages.todo.orderssearch', compact('orderTypes','editTypes'));
+    $lamTypes = StudioLaminatingtype::all();
+    return view ('pages.todo.orderssearch', compact('orderTypes','editTypes','lamTypes'));
   }
 
   public function ordertypeitems($ordertypekey)

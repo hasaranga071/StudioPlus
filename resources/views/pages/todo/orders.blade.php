@@ -49,7 +49,7 @@
                         <input class="form-control input-md" type="date" id="search-enddate" name="search-enddate">
                     </div> -->
                     <div class="form-group">
-                        <label class="form-label">Delivery Date (Within)</label>
+                        <label class="form-label">Order Create Date (Within)</label>
                         <div style="display: flex; gap: 10px;">
                             <input class="form-control" type="date" id="search-stdate" name="search-stdate">
                             <input class="form-control" type="date" id="search-enddate" name="search-enddate">
@@ -168,7 +168,7 @@
                 <tr>
                     <td>${order.orderid}</td>
                     <td>${order.ordertype}</td>
-                    <td>${order.deliverydate}</td>
+                    <td>${order.createdtime}</td>
                     <td>${order.username}</td>
                     <td>${order.urgent_flag === 1 ? 'Yes' : 'No'}</td>
                     <td>${order.totalcost}</td>
@@ -176,7 +176,7 @@
                     <td>${order.paidcost}</td>
                     <td>${order.salestatus}</td>
                     <td>
-                        <button onClick="vieworder(${order.orderkey},'${order.orderid}','${order.deliverydate}','${order.username}','${order.totalcost}','${order.discount}','${order.paidcost}','${order.urgent_flag === 1 ? 'Yes' : 'No'}','${order.salestatus}',${order.ordertypekey},'${order.ordertype}')" id="vieword" _data-orderkey="${order.orderkey}" type="button" class="btn btn-primary view-order"  >
+                        <button onClick="vieworder(${order.orderkey},'${order.orderid}','${order.createdtime}','${order.username}','${order.totalcost}','${order.discount}','${order.paidcost}','${order.urgent_flag === 1 ? 'Yes' : 'No'}','${order.salestatus}',${order.ordertypekey},'${order.ordertype}')" id="vieword" _data-orderkey="${order.orderkey}" type="button" class="btn btn-primary view-order"  >
                         View
                         </button>
                     </td>

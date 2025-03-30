@@ -110,7 +110,7 @@ class NewOrderController extends Controller
 
             // Apply date filter inside the same function
             if (!empty($start_date) && !empty($end_date)) {
-                $q->whereBetween('studioorders.deliverydate', [$start_date, $end_date]);
+                $q->whereBetween('studioorders.createdtime', [$start_date, $end_date]);
             }
         })
         ->join('studioordertypes', 'studioorders.ordertypekey', '=', 'studioordertypes.ordertypekey') // Join order types

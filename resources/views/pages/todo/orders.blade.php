@@ -23,7 +23,7 @@
                     <div class="col-md-4">
                         <label class="form-label" for="otype">Order Type (*)</label>
                         <select style="margin-top: -7px;" id="search-otype" name="search-otype" value="1" class="form-control">
-            
+
                             @foreach ($orderTypes as $orderType)
                                 <option value="{{ $orderType->ordertypekey }}">{{ $orderType->ordertype }}</option>
                             @endforeach
@@ -42,7 +42,7 @@
                             <label class="col-md-4 control-label" for="name" >Search Text</label>
                             <input id="search-term" name="username" style="width: 80%;" type="text" placeholder="Customer Name,Phone or Order No." class="form-control">
                             <span class="error-message text-danger" id="username-error"></span>
-    
+
                     </div>
                     <!-- <div class="col-md-4">
                         <label _class="col-md-4 control-label">Delivery date-within</label>
@@ -50,7 +50,7 @@
                         <input class="form-control input-md" type="date" id="search-enddate" name="search-enddate">
                     </div> -->
                     <div class="form-group">
-                        <label class="form-label">Delivery Date (Within)</label>
+                        <label class="form-label">Order Create Date (Within)</label>
                         <div style="display: flex; gap: 10px;">
                             <input class="form-control" type="date" id="search-stdate" name="search-stdate">
                             <input class="form-control" type="date" id="search-enddate" name="search-enddate">
@@ -95,16 +95,16 @@
         loaddata()
     };
     // Set default values
-    document.getElementById("search-stdate").value = getFormattedDate(-30); 
+    document.getElementById("search-stdate").value = getFormattedDate(-30);
     document.getElementById("search-enddate").value = getFormattedDate(+1); // Today
 
 
     function loaddata()
     {
         //document.getElementById('ocount').innerHTML='loading...'
-        let otype = $('#search-otype').val(); 
-        let query = $('#search-term').val(); 
-        let startDate = $('#search-stdate').val(); 
+        let otype = $('#search-otype').val();
+        let query = $('#search-term').val();
+        let startDate = $('#search-stdate').val();
         let endDate = $('#search-enddate').val();
         event.preventDefault(); // Prevent default form submission
         $('#orderResults').html("");
@@ -129,12 +129,12 @@
         setTimeout(function () {
         loaddata();
         }, 500); // 500ms delay ensures proper execution           // Trigger button click on page load
-                            
+
     }
-    
-    function displayOrderSearchResults(orders) 
+
+    function displayOrderSearchResults(orders)
     {
-        
+
         if (!orders.length) {
             $('#orderResults').html(
                 '<div class="alert alert-info">No Orders found.</div>'
@@ -164,7 +164,7 @@
         `;
 
         orders.forEach(function(order) {
-            
+
             html += `
                 <tr>
                     <td>${order.orderid}</td>
@@ -217,8 +217,8 @@
                 }
             }
         });
-                        
-    }  
+
+    }
 
     function displayOrderitemSearchResults(orderitems) {
         if (!orderitems.orderItems.length) {
@@ -244,7 +244,7 @@
         `;
 
         orderitems.orderItems.forEach(function(orderitem) {
-        
+
             html += `
                 <tr id="row_${orderitem.ssorderitemmapkey}">
                     <td id="name_${orderitem.ssorderitemmapkey}">${orderitem.order_type_item.itemname}</td>
@@ -253,17 +253,17 @@
                     <td id="edittype_${orderitem.ssorderitemmapkey}">${orderitem.edit_type.edittype}</td>
                     <td>${orderitem.totalcost}</td>
                     <td>Inprogress</td>
-                
+
 
                     <td>
-                
+
                     <button id="editBtn_${orderitem.ssorderitemmapkey}" type="button" class="btn btn-primary" onClick="edititem(${orderitem.ssorderitemmapkey},${orderitem.hardcopyquantity},${orderitem.softcopyquantity},'${orderitem.edit_type.edittype}')">
-                        Edit 
+                        Edit
                     </button>
-                    <button style="display:none" id="saveBtn_${orderitem.ssorderitemmapkey}" 
-                        type="button" class="btn btn-primary" 
+                    <button style="display:none" id="saveBtn_${orderitem.ssorderitemmapkey}"
+                        type="button" class="btn btn-primary"
                         onClick="saveitem(${orderitem.ssorderitemmapkey},'${orderitem.order.order_type.ordertype}',${orderitem.order.order_type.ordertypekey},${orderitem.order_type_item.ordertypeitemkey},'${orderitem.lam_type?.lamtypekey || ''}',${orderitem.order.customerkey},${orderitem.order.isurgent},'${orderitem.order.discount}','${orderitem.order.paidcost}',${orderitem.order.studiokey},'${orderitem.order.orderid}','${orderitem.order.deliverydate}','${orderitem.order.remarks}')">
-                        Save 
+                        Save
                     </button>
                     </td>
 
@@ -273,7 +273,7 @@
 
         html += '</tbody></table>';
         $('#orderitemResults').html(html);
-    }    
+    }
 
     function edititem(ssorderitemmapkey) {
         // Get latest values from the table before editing
@@ -312,7 +312,7 @@
             `<div class="col-md-4">
                 <select style="width:150px;border-color: orange;" id="input_edittype_${ssorderitemmapkey}" name="edittype" class="form-control">
                     <option value="">Select Edit Type</option>
-                    @foreach ($editTypes as $editType) 
+                    @foreach ($editTypes as $editType)
                         <option value="{{ $editType->edittypekey }}" ${edittype === '{{ $editType->edittype }}' ? 'selected' : ''}>{{ $editType->edittype }}</option>
                     @endforeach
                 </select>
@@ -320,7 +320,7 @@
     }
 
     function saveitem(ssorderitemmapkey, ordertype, ordertypekey, ordertypeitemkey, lamtypekey, customerkey, isurgent, discount, paidcost, studiokey, orderid, deliverydate, remarks) {
-        dataarray=[]       
+        dataarray=[]
 
         setTimeout(() => {
             let hcopy = document.querySelector(`#input_hcopy_${ssorderitemmapkey}`)?.value || "";
@@ -361,10 +361,10 @@
                 _token: "{{ csrf_token() }}" // Required for Laravel AJAX requests
             };
             console.log('Data Sent:', dataarray);
-            
+
             let cells = document.querySelectorAll(`#row_${ssorderitemmapkey} td`);
             cells.forEach(cell => {
-                if (cell.cellIndex !== 0) { 
+                if (cell.cellIndex !== 0) {
                     cell.contentEditable = "false";
                     cell.classList.remove("edit-mode");
                 }
@@ -422,7 +422,7 @@
                     }
                 }
             });
-        }, 300);        
+        }, 300);
     }
     
     function addnew_ss(orderkey){
@@ -457,7 +457,7 @@
                 </select>
             </div>
         `;
-        
+
         setTimeout(() => loadOrderTypeItems(otk), 300);
 
         hcopycell.innerHTML = `
@@ -471,7 +471,7 @@
                 <input id="scopy" name="scopy" type="text" class="form-control input-md" required="">
             </div>
         `;
-        
+
         edittypecell.innerHTML = `
             <div class="col-md-4">
                 <select style="width:150px;" id="edittype" name="edittype" class="form-control">
@@ -495,7 +495,7 @@
     }
 
     function additem(btn) {
-        let orderkey = btn.getAttribute("data-orderkey"); 
+        let orderkey = btn.getAttribute("data-orderkey");
         // Get the row (parent of the button)
         let row = btn.closest("tr");
 
@@ -537,8 +537,8 @@
 
         let orderdetail=orderdata.orderItems[0];
 
-        //dataarray=[]       
-        
+        //dataarray=[]
+
         let dataarray = {
             studiokey: orderdetail.order.studiokey,
             orderid: orderdetail.order.orderid,
@@ -609,7 +609,7 @@
                 }
             }
         });
-               
+
     }
 
     // ******************* END Studio sitting Retated ************************
@@ -1090,11 +1090,11 @@
 
             }
         });
-                        
+
     }
 
     function displayOrderitemSearchResults_EC(orderitems) {
-        
+
         if (!orderitems.orderItems.length) {
             $('#orderitemResults_EC').html(
                 '<div class="alert alert-info">No Order Items found.</div>'
@@ -1126,15 +1126,15 @@
                     <td id="edittype_${orderitem.ecorderitemmapkey}_EC">${orderitem.edit_type.edittype}</td>
                     <td>${orderitem.totalcost}</td>
                     <td>Inprogress</td>
-                
+
 
                     <td>
-                
+
                     <button id="editBtn_${orderitem.ecorderitemmapkey}_EC" type="button" class="btn btn-primary" onClick="edititem_EC(${orderitem.ecorderitemmapkey},${orderitem.quantity},0,'${orderitem.edit_type.edittype}','${orderitem.original_order.orderid}','${orderitem.original_order.orderkey}')">
-                        Edit 
+                        Edit
                     </button>
                     <button style="display:none" id="saveBtn_${orderitem.ecorderitemmapkey}_EC" type="button" class="btn btn-primary" onClick="saveitem(${orderitem.ecorderitemmapkey},${orderitem.hardcopyquantity},${orderitem.softcopyquantity},'${orderitem.edit_type.edittype}')">
-                        Save 
+                        Save
                     </button>
                     <button class="btn btn-delete remove-order" data-id="${orderitem.ecorderitemmapkey}_EC"><i class="fas fa-trash"></i></button>
                     </td>
@@ -1183,7 +1183,7 @@
     //     edittypecell.innerHTML='<div class="col-md-4" id="edittypemain"><select  style="width:150px;" id="edittype" name="edittype" class="form-control"> @foreach ($editTypes as $editType) <option value="">Select Edit Type</option><option value="{{ $editType->edittypekey }}">{{ $editType->edittype }}</option> @endforeach </select> </div>'
     //     costcell.innerHTML=''
     //     statuscell.innerHTML=''
-    //     actioncell.innerHTML='<button id="addBtn" type="button" class="btn btn-primary" onClick="">Add</button>'        
+    //     actioncell.innerHTML='<button id="addBtn" type="button" class="btn btn-primary" onClick="">Add</button>'
     // }
 
     function loadOrderTypeItems(otk) {
@@ -1220,8 +1220,8 @@
         // Show the modal first
 
 
-        if (ot=='Studio Sittings') 
-        {        
+        if (ot=='Studio Sittings')
+        {
             $("#orderModal_SS").modal("show");
             $("#onum").text(no);
             $("#okey").text(key);
@@ -1263,11 +1263,11 @@
             $("#status_EC").text(status);
             loaditemdata_EC(key)
 
-        }        
+        }
 
         $(this).off("shown.bs.modal");
 
-    }        
+    }
 </script>
 @endpush
 @endsection

@@ -634,7 +634,7 @@ a {
   padding: 7rem 0; }
 
 .form-control {
-  height: 50px;
+  height: 40px;
   border-radius: 10px;
   font-family: "Inter", sans-serif; }
   .form-control:active, .form-control:focus {
@@ -787,14 +787,14 @@ padding-top: 5px;
 }
 .column1 {
   float: left;
-  width: 60%;
+  width: 64%;
   padding-top: 10px;
 
   height: 500px; /* Should be removed. Only for demonstration */
 }
 .column2 {
   float: left;
-  width: 39%;
+  width: 35%;
   padding-top: 10px;
   height: 500px; /* Should be removed. Only for demonstration */
 }
@@ -836,7 +836,7 @@ font-size: 20px;
 }
 
 .form-control {
-    width: 100%; /* Ensures input fields take full width of the container */
+    width: 95%; /* Ensures input fields take full width of the container */
 }
 
 .search-btn-container {

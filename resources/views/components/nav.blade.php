@@ -120,7 +120,7 @@
 </div>
 </nav>
 <script>
-    var sname,skey;
+    var sname,skey,sphone,saddress;
         $(document).ready(function () {
 
         var userkey="{{ auth()->user()->id }}";
@@ -134,6 +134,8 @@
             var d=response.data[0];
             sname=d['studioname']
             skey=d['studiokey']
+            sphone=d['location']
+            saddress=d['address']
             document.getElementById("sname").innerHTML=sname;
             $('#slogo').attr('src','/logo/s_'+skey+'.png');
         })

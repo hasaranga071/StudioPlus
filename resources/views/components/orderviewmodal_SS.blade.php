@@ -47,7 +47,7 @@
                     </div>
 
                 </div>                    </br>
-                    <button id="addnew" onClick="addnew(document.getElementById('okey').textContent.trim())" type="button" style="float:left;font-size:15px" class="btn btn-info">+ Add Item</button></br></br>
+                    <button id="addnew" onClick="addnew_ss(document.getElementById('okey').textContent.trim())" type="button" style="float:left;font-size:15px" class="btn btn-info">+ Add Item</button></br></br>
                     
         
                     <div id="orderitemResults" class="overflow-x-auto"></div>

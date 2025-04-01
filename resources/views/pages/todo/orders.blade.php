@@ -181,6 +181,7 @@
                         <button onClick="vieworder(${order.orderkey},'${order.orderid}','${order.createdtime}','${order.username}','${order.totalcost}','${order.discount}','${order.paidcost}','${order.urgent_flag === 1 ? 'Yes' : 'No'}','${order.salestatus}',${order.ordertypekey},'${order.ordertype}')" id="vieword" _data-orderkey="${order.orderkey}" type="button" class="btn btn-primary view-order"  >
                         View
                         </button>
+                       
                     </td>
                 </tr>
             `;
@@ -1269,6 +1270,160 @@
         $(this).off("shown.bs.modal");
 
     }
+function printDiv(divId,onum,odate) {
+    let basicDetailsElement = document.getElementById("printArea");
+    //let printContents_bd = document.getElementById("basicdetails").innerHTML;
+    let printContents_items = document.getElementById("orderitemResults").innerHTML;
+    let printWindow = window.open('', '', 'width=800,height=600');
+
+    let clonedContent = basicDetailsElement.cloneNode(true);
+    clonedContent.querySelector("#addnew").remove();
+    clonedContent.querySelector("#date").remove();
+    clonedContent.querySelectorAll("button[id^='editBtn_']").forEach(div => div.remove());
+
+    const table = clonedContent.querySelector("table");
+    const headerText = "Status"; // Change this to the column's header text
+
+    const headerCells = Array.from(table.querySelectorAll("th"));
+    const columnIndex = headerCells.findIndex(th => th.textContent.trim() === headerText);
+
+    if (columnIndex !== -1) {
+        table.querySelectorAll("tr").forEach(row => {
+            row.deleteCell(columnIndex);
+        });
+    }   
+  
+    printWindow.document.write(`
+    <html>
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background: #f5f5f5;
+        }
+        .invoice-container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .company-logo img {
+            max-width: 100px;
+        }
+        .invoice-details {
+            text-align: right;
+        }
+        .invoice-details h2 {
+            margin: 0;
+            color: #333;
+        }
+        .client-info, .invoice-summary {
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background: #333;
+            color: #fff;
+        }
+        .total {
+            text-align: right;
+        }
+        .print-btn {
+            display: block;
+            width: 100px;
+            margin: 20px auto;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .print-btn:hover {
+            background: #0056b3;
+        }
+        @media print {
+            .print-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="invoice-container" id="invoice">
+    <div class="invoice-header">
+        <div class="company-logo">
+            <img id="slogo" src="/logo/s_`+skey+`.png" alt="Company Logo">
+        </div>
+        <div class="">
+            <h3>`+sname+` Studio</h3>
+            <h5>`+saddress+`</h5>
+            <h5>`+sphone+`</h5>
+
+        </div>
+        <div class="invoice-details">
+            <h2>INVOICE</h2>
+            <p>Invoice #: `+onum+`</p>
+            <p>Date: `+odate+`</p>
+        </div>
+    </div>
+
+
+    ${clonedContent.innerHTML}  
+
+    <div class="invoice-summary">
+        <h3 class="total">Grand Total: $180.00</h3>
+    </div>
+</div>
+
+<button class="print-btn" onclick="printInvoice()">Print</button>
+
+</body>
+</html>
+
+    `);
+
+
+    printWindow.document.close();
+    printWindow.focus();
+    
+    // Wait for the new window to load before printing
+    printWindow.onload = function () {
+        
+        //$('#slogo').attr('src','/logo/s_'+skey+'.png')
+        printWindow.print();
+        printWindow.onafterprint = function () {
+            printWindow.close();
+        };
+    };
+}
+
+       
 </script>
 @endpush
 @endsection

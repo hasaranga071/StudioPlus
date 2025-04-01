@@ -82,7 +82,7 @@ Route::get('/studiodetails_of_user', function (Request $request) {
     // Fetching data from studiousers and studios with a filter
     $data = DB::table('studiousers')
     ->join('studios', 'studiousers.studiokey', '=', 'studios.studiokey') // Joining 'orders' table
-    ->select('studios.studioname','studios.studiokey') // Selecting specific columns
+    ->select('studios.studioname','studios.studiokey','studios.location','studios.address') // Selecting specific columns
     ->when($param, function ($query, $param) { // Optional filter
         return $query->where('studiousers.userkey', '=', "%{$param}%");
     })

@@ -2,6 +2,7 @@
 @include('components.orderviewmodal_SS')
 @include('components.orderviewmodal_EC')
 @include('components.orderviewmodal_ME')
+@include('components.orderviewmodal_FR')
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 @section('content')

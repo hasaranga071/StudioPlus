@@ -10,7 +10,7 @@ class StudioOrderItemMapFR extends Model
     use HasFactory;
 
     // Specify the custom table name
-    protected $table = 'StudioOrderItemMapFR';
+    protected $table = 'studioorderitemmapfr';
 
     // Specify the primary key
     protected $primaryKey = 'frorderitemmapkey';

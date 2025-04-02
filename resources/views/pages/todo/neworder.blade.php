@@ -508,7 +508,13 @@
             });
             html += '</tbody></table>';
             $('#search-results').html(html);
-            $('#search-results').css('height', '400px');
+            // Set dynamic height based on row count
+            var rowHeight = 170;
+            var rowCount = $('#search-results table tbody tr').length;
+            var maxHeight = 400;
+            var newHeight = rowCount === 0 ? 125 : Math.min(rowCount * rowHeight, maxHeight);
+
+            $('#search-results').css('height', newHeight + 'px');
         }
 
         $(document).on('click', '.select-customer', function () {

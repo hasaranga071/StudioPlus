@@ -9,7 +9,7 @@ class StudioOrder extends Model
 {
     use HasFactory;
 
-    protected $table = 'StudioOrders'; // Define the table name
+    protected $table = 'studioorders'; // Define the table name
     protected $primaryKey = 'orderkey'; // Primary key
     public $timestamps = false; // Disable timestamps (handled manually)
 

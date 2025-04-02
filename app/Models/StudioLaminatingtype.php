@@ -10,7 +10,7 @@ class StudioLaminatingtype extends Model
     use HasFactory;
 
     // Specify the custom table name
-    protected $table = 'StudioLaminatingtypes';
+    protected $table = 'studiolaminatingtypes';
 
     // Specify the primary key
     protected $primaryKey = 'lamtypekey';

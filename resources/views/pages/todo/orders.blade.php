@@ -655,7 +655,6 @@
                         <th>Item Type</th>
                         <th>Laminate Type</th>
                         <th>Hard Copied</th>
-                        <th>Soft Copies</th>
                         <th>Edit Type</th>
                         <th>Cost (LKR)</th>
                         <th>Status</th>
@@ -671,7 +670,6 @@
                     <td id="name_me_${orderitem.ssorderitemmapkey}">${orderitem.order_type_item.itemname}</td>
                     <td id="lamtype_me_${orderitem.ssorderitemmapkey}">${orderitem.lam_type.laminatetype}</td>
                     <td id="hcopy_me_${orderitem.ssorderitemmapkey}">${orderitem.hardcopyquantity}</td>
-                    <td id="scopy_me_${orderitem.ssorderitemmapkey}">${orderitem.softcopyquantity}</td>
                     <td id="edittype_me_${orderitem.ssorderitemmapkey}">${orderitem.edit_type.edittype}</td>
                     <td>${orderitem.totalcost}</td>
                     <td>Inprogress</td>
@@ -701,7 +699,6 @@
         // Get latest values from the table before editing
         let lamtypeElement = document.getElementById(`lamtype_me_${ssorderitemmapkey}`);
         let hcopyElement = document.getElementById(`hcopy_me_${ssorderitemmapkey}`);
-        let scopyElement = document.getElementById(`scopy_me_${ssorderitemmapkey}`);
         let edittypeElement = document.getElementById(`edittype_me_${ssorderitemmapkey}`);
 
         // Ensure elements exist before accessing properties
@@ -712,7 +709,6 @@
 
         let lamtype = lamtypeElement.textContent.trim();
         let hcopy = hcopyElement.textContent.trim();
-        let scopy = scopyElement.textContent.trim();
         let edittype = edittypeElement.textContent.trim(); // Get displayed edit type text
 
         // Hide Edit Button, Show Save Button
@@ -736,12 +732,6 @@
                 <input style="border-color: orange;" id="input_hcopy_me_${ssorderitemmapkey}" value="${hcopy}" name="hcopy" type="text" class="form-control input-md" required="">
             </div>`;
 
-        // Convert Soft Copy to Input Field
-        scopyElement.innerHTML =
-            `<div class="col-md-4">
-                <input style="border-color: orange;" id="input_scopy_me_${ssorderitemmapkey}" value="${scopy}" name="scopy" type="text" class="form-control input-md" required="">
-            </div>`;
-
         // Convert Edit Type to Dropdown
         edittypeElement.innerHTML =
             `<div class="col-md-4">
@@ -759,7 +749,6 @@
 
         setTimeout(() => {
             let hcopy = document.querySelector(`#input_hcopy_me_${ssorderitemmapkey}`)?.value || "";
-            let scopy = document.querySelector(`#input_scopy_me_${ssorderitemmapkey}`)?.value || "";
 
             let lamtypeElement = document.querySelector(`#input_lamtype_me_${ssorderitemmapkey}`);
             if (!lamtypeElement) {
@@ -799,7 +788,7 @@
                 isurgent: isurgent,
                 discount: discount,
                 paidcost: paidcost,
-                softcopycount: scopy,  // Fix: Use correct variable
+                softcopycount: 0,  // Fix: Use correct variable
                 hardcopycount: hcopy,   // Fix: Use correct variable
                 deliverydate: deliverydate,
                 remarks: remarks,
@@ -825,7 +814,6 @@
 
                         // Update the table row with latest values
                         document.getElementById(`hcopy_me_${ssorderitemmapkey}`).innerHTML = hcopy;
-                        document.getElementById(`scopy_me_${ssorderitemmapkey}`).innerHTML = scopy;
                         document.getElementById(`edittype_me_${ssorderitemmapkey}`).innerHTML = edittypeText;
                         document.getElementById(`lamtype_me_${ssorderitemmapkey}`).innerHTML = lamtypeText;
 
@@ -888,11 +876,10 @@
         let itemcell = newRow.insertCell(0);
         let lamtypecell = newRow.insertCell(1);
         let hcopycell = newRow.insertCell(2);
-        let scopycell = newRow.insertCell(3);
-        let edittypecell = newRow.insertCell(4);
-        let costcell = newRow.insertCell(5);
-        let statuscell = newRow.insertCell(6);
-        let actioncell = newRow.insertCell(7);
+        let edittypecell = newRow.insertCell(3);
+        let costcell = newRow.insertCell(4);
+        let statuscell = newRow.insertCell(5);
+        let actioncell = newRow.insertCell(6);
 
         // Get order type key
         var otk = document.getElementById("otk")?.value || "";
@@ -922,12 +909,6 @@
         hcopycell.innerHTML = `
             <div class="col-md-4">
                 <input id="hcopy_me" name="hcopy" type="text" class="form-control input-md" required="">
-            </div>
-        `;
-
-        scopycell.innerHTML = `
-            <div class="col-md-4">
-                <input id="scopy_me" name="scopy" type="text" class="form-control input-md" required="">
             </div>
         `;
         
@@ -960,7 +941,6 @@
 
         // Extract input values
         let hcopy = row.querySelector("input[name='hcopy']").value;
-        let scopy = row.querySelector("input[name='scopy']").value;
         let edittype = row.querySelector("select[name='edittype']").value;
         let lamtype = row.querySelector("select[name='lamtype']").value;
         let item = row.querySelector("select[name='item']").value;
@@ -971,7 +951,6 @@
             data: {
                 orderkey: orderkey,
                 hcopy: hcopy,
-                scopy: scopy,
                 edittype: edittype,
                 lamtype: lamtype,
                 item: item,
@@ -982,7 +961,7 @@
                     console.log("No order items returned from server.");
                 } else {
                     console.log('data call working ...............')
-                    createitem_me(response,{ orderkey, hcopy, scopy, edittype, lamtype, item});
+                    createitem_me(response,{ orderkey, hcopy, edittype, lamtype, item});
                 }
             }
         });
@@ -1012,7 +991,7 @@
             isurgent: orderdetail.order.isurgent,
             discount: orderdetail.order.discount,
             paidcost: orderdetail.order.paidcost,
-            softcopycount: formData.scopy,  // Fix: Use correct variable
+            softcopycount: 0,  // Fix: Use correct variable
             hardcopycount: formData.hcopy,   // Fix: Use correct variable
             deliverydate: orderdetail.order.deliverydate,
             remarks: orderdetail.order.remarks,
@@ -1074,6 +1053,336 @@
     }
 
     // ******************* End Media Related *************************
+
+    // ******************* Frames Retated ****************************
+
+    function loaditemdata_FR(okey){
+        let orderkey = okey;
+        $.ajax({
+            url: "/order-itemsummary/" + orderkey,
+            type: "GET",
+            data: {
+                orderkey: orderkey,
+                _token: "{{ csrf_token() }}" // CSRF Token for security
+            },
+            success: function (response) {
+                console.log('Server responsessss:', response); // Debugging
+
+                if (!response || response.length === 0) {
+                    console.log("No order items returned from server.");
+                } else {
+                    displayOrderitemSearchResults_FR(response);
+                }
+            }
+        });
+                        
+    }  
+
+    function displayOrderitemSearchResults_FR(orderitems) {
+        if (!orderitems.orderItems.length) {
+            $('#orderitemResults_fr').html(
+                '<div class="alert alert-info">No Order Items found.</div>'
+            );
+            return;
+        }
+
+        let html = `
+            <table id="itemtable_fr" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Size</th>
+                        <th>F# Size</th>
+                        <th>Frame Type</th>
+                        <th>Cost (LKR)</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        console.log('Order detailsaaa',orderitems);
+
+        orderitems.orderItems.forEach(function(orderitem) {
+        
+            html += `
+                <tr id="row_fr_${orderitem.frorderitemmapkey}">
+                    <td id="frametype_fr_${orderitem.frorderitemmapkey}">${orderitem.frame_type.frametype}</td>
+                    <td id="framesize_fr_${orderitem.frorderitemmapkey}">${orderitem.frame_size.size}</td>
+                    <td id="sframesize_fr_${orderitem.frorderitemmapkey}">${orderitem.subframe_size?.framesize || ''}</td>
+                    <td id="sframetype_fr_${orderitem.frorderitemmapkey}">${orderitem.subframe_type?.subframetype || ''}</td>
+                    <td>${orderitem.totalcost}</td>
+                    <td>Inprogress</td>
+                    <td>                
+                        <button id="editBtn_fr_${orderitem.frorderitemmapkey}" type="button" class="btn btn-primary" onClick="edititem_fr(${orderitem.frorderitemmapkey},'${orderitem.frame_type.frametype}','${orderitem.frame_size.size}','${orderitem.subframe_size?.framesize || ''}','${orderitem.subframe_type?.subframetype || ''}')">
+                            Edit 
+                        </button>
+                        <button style="display:none" id="saveBtn_fr_${orderitem.frorderitemmapkey}" 
+                            type="button" class="btn btn-primary" 
+                            onClick="saveitem_fr(${orderitem.frorderitemmapkey},'${orderitem.order.order_type?.ordertype || ''}',${orderitem.order.order_type?.ordertypekey || ''},'${orderitem.order_type_item?.ordertypeitemkey || ''}','${orderitem.lam_type?.lamtypekey || ''}','${orderitem.order?.customerkey || ''}',${orderitem.order?.isurgent},'${orderitem.order?.discount || ''}','${orderitem.order?.paidcost || ''}',${orderitem.order?.studiokey || ''},'${orderitem.order?.orderid || ''}','${orderitem.order?.deliverydate || ''}','${orderitem.order?.remarks || ''}','${orderitem.frame_type.frametype}','${orderitem.frame_type.frametypekey}','${orderitem.quantity}')">
+                            Save 
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        html += '</tbody></table>';
+        $('#orderitemResults_fr').html(html);
+    }  
+
+    function edititem_fr(frorderitemmapkey) {
+        // Get latest values from the table before editing
+        let frtypeElement = document.getElementById(`frametype_fr_${frorderitemmapkey}`);
+        let frsizeElement = document.getElementById(`framesize_fr_${frorderitemmapkey}`);
+        let sfrsizeElement = document.getElementById(`sframesize_fr_${frorderitemmapkey}`);
+        let sfrtypeElement = document.getElementById(`sframetype_fr_${frorderitemmapkey}`);
+
+        if (frtypeElement.textContent==='Fiber Frame'){
+            // Ensure elements exist before accessing properties
+            if (!frsizeElement || !sfrsizeElement || !sfrtypeElement) {
+                console.error(`Error: One or more elements missing for item ${frorderitemmapkey}`);
+                return;
+            }
+
+            let frsize = frsizeElement.textContent.trim();
+            let sfrsize = sfrsizeElement.textContent.trim();
+            let sfrtype = sfrtypeElement.textContent.trim();
+
+            // Convert Frame Size to Dropdown
+            frsizeElement.innerHTML =
+                `<div class="col-md-4">
+                    <select style="width:150px;border-color: orange;" id="input_frsize_fr_${frorderitemmapkey}" name="frsize" class="form-control">
+                        <option value="">Select Frame Size</option>
+                        @foreach ($frameSizes as $frameSize) 
+                            <option value="{{ $frameSize->framesizekey }}" ${frsize === '{{ $frameSize->size }}' ? 'selected' : ''}>{{ $frameSize->size }}</option>
+                        @endforeach
+                    </select>
+                </div>`;           
+
+            // Convert Sub Frame Size to Dropdown
+            sfrsizeElement.innerHTML =
+                `<div class="col-md-4">
+                    <select style="width:150px;border-color: orange;" id="input_sfrsize_fr_${frorderitemmapkey}" name="sfrsize" class="form-control">
+                        <option value="">Select F# Size</option>
+                        @foreach ($frameSubSizes as $frameSubSize) 
+                            <option value="{{ $frameSubSize->subframesizekey }}" ${sfrsize === '{{ $frameSubSize->framesize }}' ? 'selected' : ''}>{{ $frameSubSize->framesize }}</option>
+                        @endforeach
+                    </select>
+                </div>`;
+            
+             // Convert Sub Frame Type to Dropdown
+             sfrtypeElement.innerHTML =
+                `<div class="col-md-4">
+                    <select style="width:150px;border-color: orange;" id="input_sfrtype_fr_${frorderitemmapkey}" name="sfrtype" class="form-control">
+                        <option value="">Select Frame Type</option>
+                        @foreach ($frameSubTypes as $frameSubType) 
+                            <option value="{{ $frameSubType->subframetypekey }}" ${sfrtype === '{{ $frameSubType->subframetype }}' ? 'selected' : ''}>{{ $frameSubType->subframetype }}</option>
+                        @endforeach
+                    </select>
+                </div>`;
+        }
+        else{
+            // Ensure elements exist before accessing properties
+            if (!frsizeElement) {
+                console.error(`Error: One or more elements missing for item ${frorderitemmapkey}`);
+                return;
+            }
+
+            let frsize = frsizeElement.textContent.trim();
+
+            // Convert Frame Size to Dropdown
+            frsizeElement.innerHTML =
+                `<div class="col-md-4">
+                    <select style="width:150px;border-color: orange;" id="input_frsize_fr_${frorderitemmapkey}" name="frsize" class="form-control">
+                        <option value="">Select Frame Size</option>
+                        @foreach ($frameSizes as $frameSize) 
+                            <option value="{{ $frameSize->framesizekey }}" ${frsize === '{{ $frameSize->size }}' ? 'selected' : ''}>{{ $frameSize->size }}</option>
+                        @endforeach
+                    </select>
+                </div>`; 
+        }
+
+        
+
+        // Hide Edit Button, Show Save Button
+        document.getElementById(`editBtn_fr_${frorderitemmapkey}`).style.display = "none";
+        document.getElementById(`saveBtn_fr_${frorderitemmapkey}`).style.display = "inline-block";
+
+        
+    }
+
+    function saveitem_fr(frorderitemmapkey, ordertype, ordertypekey, ordertypeitemkey, lamtypekey, customerkey, isurgent, discount, paidcost, studiokey, orderid, deliverydate, remarks, frametype, frametypekey, quantity) {
+        let dataarray = [];
+        let framesizeText = '';
+        let sframesizeText = '';
+        let sframetypeText = '';
+
+        setTimeout(() => {
+            if (frametype === 'Fiber Frame') {
+
+                // Read Frame Size Element
+                let framesizeElement = document.querySelector(`#input_frsize_fr_${frorderitemmapkey}`);
+                if (!framesizeElement) {
+                    console.error("Frame size dropdown not found!");
+                    return;
+                }
+                let framesize = framesizeElement.options[framesizeElement.selectedIndex].value;
+                framesizeText = framesizeElement.options[framesizeElement.selectedIndex].text;
+
+                if (!framesize) {
+                    console.error("Error: frame size is not defined or empty!");
+                    return;
+                }
+
+                // Read Sub Frame Size Element
+                let sframesizeElement = document.querySelector(`#input_sfrsize_fr_${frorderitemmapkey}`);
+                if (!sframesizeElement) {
+                    console.error("F# Size dropdown not found!");
+                    return;
+                }
+                let sframesize = sframesizeElement.options[sframesizeElement.selectedIndex].value;
+                sframesizeText = sframesizeElement.options[sframesizeElement.selectedIndex].text;
+
+                if (!sframesize) {
+                    console.error("Error: F# size not defined or empty!");
+                    return;
+                }
+
+                // Read Sub Frame Type Element
+                let sframetypeElement = document.querySelector(`#input_sfrtype_fr_${frorderitemmapkey}`);
+                if (!sframetypeElement) {
+                    console.error("F# Type dropdown not found!");
+                    return;
+                }
+                let sframetype = sframetypeElement.options[sframetypeElement.selectedIndex].value;
+                sframetypeText = sframetypeElement.options[sframetypeElement.selectedIndex].text;
+
+                if (!sframetype) {
+                    console.error("Error: Frame Type not defined or empty!");
+                    return;
+                }
+
+                dataarray = {
+                    studiokey: studiokey,
+                    orderid: orderid,
+                    ordertypekey: ordertypekey,
+                    frorderitemmapkey: frorderitemmapkey,
+                    ordertype: ordertype,
+                    customerkey: customerkey,
+                    isurgent: isurgent,
+                    discount: discount,
+                    paidcost: paidcost,
+                    deliverydate: deliverydate,
+                    remarks: remarks,
+                    iscompleted: 0,
+                    frametypekey: frametypekey,
+                    framesizekey: framesize,
+                    subframesizekey: sframesize,
+                    subframetypekey: sframetype,
+                    quantity: quantity,
+                    _token: "{{ csrf_token() }}"
+                };
+            } else {
+                let framesizeElement = document.querySelector(`#input_frsize_fr_${frorderitemmapkey}`);
+                if (!framesizeElement) {
+                    console.error("Frame size dropdown not found!");
+                    return;
+                }
+                let framesize = framesizeElement.options[framesizeElement.selectedIndex].value;
+                framesizeText = framesizeElement.options[framesizeElement.selectedIndex].text;
+
+                if (!framesize) {
+                    console.error("Error: frame size is not defined or empty!");
+                    return;
+                }
+
+                dataarray = {
+                    studiokey: studiokey,
+                    orderid: orderid,
+                    ordertypekey: ordertypekey,
+                    frorderitemmapkey: frorderitemmapkey,
+                    ordertype: ordertype,
+                    customerkey: customerkey,
+                    isurgent: isurgent,
+                    discount: discount,
+                    paidcost: paidcost,
+                    deliverydate: deliverydate,
+                    remarks: remarks,
+                    iscompleted: 0,
+                    frametypekey: frametypekey,
+                    framesizekey: framesize,
+                    subframesizekey: '',
+                    subframetypekey: '',
+                    quantity: quantity,
+                    _token: "{{ csrf_token() }}"
+                };
+            }
+
+            console.log('Data Sent:', dataarray);
+
+            // Make table cells read-only again
+            let cells = document.querySelectorAll(`#row_fr_${frorderitemmapkey} td`);
+            cells.forEach(cell => {
+                if (cell.cellIndex !== 0) {
+                    cell.contentEditable = "false";
+                    cell.classList.remove("edit-mode");
+                }
+            });
+
+            // Send data to server
+            $.ajax({
+                url: "{{ route('storeOrder_fr') }}",
+                type: "POST",
+                data: dataarray,
+                success: function (response) {
+                    console.log("Order Updated Successfully:", response);
+
+                    document.getElementById(`framesize_fr_${frorderitemmapkey}`).innerHTML = framesizeText;
+                    document.getElementById(`sframesize_fr_${frorderitemmapkey}`).innerHTML = sframesizeText;
+                    document.getElementById(`sframetype_fr_${frorderitemmapkey}`).innerHTML = sframetypeText;
+
+                    document.getElementById(`editBtn_fr_${frorderitemmapkey}`).style.display = "inline-block";
+                    document.getElementById(`saveBtn_fr_${frorderitemmapkey}`).style.display = "none";
+
+                    // Flash message
+                    let flashbody = '<div id="flash-message" class="alert alert-success" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);z-index: 9999; padding: 15px 20px; font-size: 16px; text-align: center;background-color: #434844; color: white; border-radius: 5px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);">'
+                        + response.message + '!</div>';
+
+                    $("body").prepend(flashbody);
+                    setTimeout(function () {
+                        $("#flash-message").fadeOut("slow", function () {
+                            $(this).remove();
+                        });
+                    }, 2000);
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error:", xhr.responseText);
+
+                    try {
+                        var response = JSON.parse(xhr.responseText);
+                        Swal.fire({
+                            title: 'Failed to Create Order',
+                            text: response.message || 'An unexpected error occurred.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    } catch (e) {
+                        Swal.fire({
+                            title: 'Failed to Create Order',
+                            text: 'An unexpected error occurred.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                }
+            });
+        }, 300);
+    }
+
+
+
+     // ******************* End Frames Related *************************
 
     // ******************* Extra Copy Retated ************************
 
@@ -1250,6 +1559,21 @@
             $("#urgent_me").text(urgent);
             $("#status_me").text(status);
             loaditemdata_ME(key)
+        }
+
+        if (ot=='Frames') 
+        {        
+            $("#orderModal_FR").modal("show");
+            $("#onum_fr").text(no);
+            $("#okey_fr").text(key);
+            $("#odate_fr").text(odate);
+            $("#customer_fr").text(customer);
+            $("#total_fr").text(total);
+            $("#discount_fr").text(discount);
+            $("#paid_fr").text(paid);
+            $("#urgent_fr").text(urgent);
+            $("#status_fr").text(status);
+            loaditemdata_FR(key)
         }
             
         if (ot=='Extra Copy') 

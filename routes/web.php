@@ -13,6 +13,7 @@ use App\Http\Controllers\CacheController;
 use App\Http\Controllers\StudioOrderTypeController;
 use App\Http\Controllers\StudioOrderController;
 use App\Http\Controllers\StudioOrderItemMapSS;
+use App\Http\Controllers\OrderSummaryController;
 
 Route::post('/cache-data', [CacheController::class, 'store']);
 Route::post('/get_cached_data', [CacheController::class, 'get_cached_data']);
@@ -37,6 +38,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/order-itemsummary/{orderkey}', [NewOrderController::class, 'getOrderItemSummary'])->name('orderitemsummary_ss');
     Route::get('/order-item-details/{ssorderitemmapkey}', [NewOrderController::class, 'getOrderItemDetails'])->name('orderitemdetail_ss');
     Route::delete('/delete-order-item/{ssorderitemmapkey}', [StudioOrderController::class, 'deleteOrderItem']);
+
+    // order type summary
+    Route::get('/ordertypesummary', [OrderSummaryController::class, 'index'])->name('ordertypesummary');
+    Route::get('/api/ordertypesummary', [OrderSummaryController::class, 'getOrderTypeSummary']);
 
 
     //EditType

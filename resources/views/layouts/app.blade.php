@@ -11,6 +11,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- <link href="libraries/css/tiny-slider.css" rel="stylesheet">
 		<link href="libraries/css/style.css" rel="stylesheet"> -->
 

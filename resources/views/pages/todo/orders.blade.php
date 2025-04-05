@@ -1487,17 +1487,17 @@
                     <td id="name_${orderitem.ecorderitemmapkey}_EC">${orderitem.order_type_item.itemname}</td>
                     <td id="orionum_${orderitem.ecorderitemmapkey}_EC">${orderitem.original_order.orderid}</td>
                     <td id="hcopy_${orderitem.ecorderitemmapkey}_EC">${orderitem.hardcopyquantity}</td>
-                    <td id="edittype_${orderitem.ecorderitemmapkey}_EC">${orderitem.edit_type.edittype}</td>
+                    <td id="edittype_${orderitem.ecorderitemmapkey}_EC">TEST</td>
                     <td>${orderitem.totalcost}</td>
                     <td>Inprogress</td>
 
 
                     <td>
 
-                    <button id="editBtn_${orderitem.ecorderitemmapkey}_EC" type="button" class="btn btn-primary" onClick="edititem_EC(${orderitem.ecorderitemmapkey},${orderitem.quantity},0,'${orderitem.edit_type.edittype}','${orderitem.original_order.orderid}','${orderitem.original_order.orderkey}')">
+                    <button id="editBtn_${orderitem.ecorderitemmapkey}_EC" type="button" class="btn btn-primary" onClick="edititem_EC(${orderitem.ecorderitemmapkey},${orderitem.quantity},0,'TEST','${orderitem.original_order.orderid}','${orderitem.original_order.orderkey}')">
                         Edit
                     </button>
-                    <button style="display:none" id="saveBtn_${orderitem.ecorderitemmapkey}_EC" type="button" class="btn btn-primary" onClick="saveitem(${orderitem.ecorderitemmapkey},${orderitem.hardcopyquantity},${orderitem.softcopyquantity},'${orderitem.edit_type.edittype}')">
+                    <button style="display:none" id="saveBtn_${orderitem.ecorderitemmapkey}_EC" type="button" class="btn btn-primary" onClick="saveitem(${orderitem.ecorderitemmapkey},${orderitem.hardcopyquantity},${orderitem.softcopyquantity},'TEST')">
                         Save
                     </button>
                     <button class="btn btn-delete remove-order" data-id="${orderitem.ecorderitemmapkey}_EC"><i class="fas fa-trash"></i></button>
@@ -1707,7 +1707,7 @@ function printDiv(divId,onum,odate,dateDiv) {
     let clonedContent = basicDetailsElement.cloneNode(true);
     clonedContent.querySelector("#addnew").remove();
     clonedContent.querySelector("#"+dateDiv).remove();
-    alert(divId+'-'+dateDiv)
+    clonedContent.querySelector("div[id^='date']").remove();
 
     clonedContent.querySelectorAll("tr[id^='row_']").forEach(row => {
        //if (row.cells.length > 5) { // Ensure the cell exists before deleting

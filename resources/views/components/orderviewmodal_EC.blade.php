@@ -10,7 +10,7 @@
                 </div>
                 <div>
                         
-                    <button style="border-radius: 5px;" onClick="printDiv('printArea_EC',document.getElementById('onum_EC').textContent,document.getElementById('odate').textContent,'odate_EC')">
+                    <button style="border-radius: 5px;" onClick="printDiv('printArea_EC',document.getElementById('onum_EC').textContent,document.getElementById('odate_EC').textContent,'odate_EC')">
                     Print
                     </button>
                 </div>
@@ -18,7 +18,7 @@
             <div class="modal-body" id="printArea_EC">
                 <div class="container mx-auto py-6">
                     <div class="bg-white rounded-lg shadow-md p-6" style="display:flex;gap:10%">
-                        <div>
+                        <div  id="date">
                             <p class="text-gray-600">Created Date</p>
                             <span class="font-semibold" id="odate_EC"></span>
                         </div>

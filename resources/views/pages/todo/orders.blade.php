@@ -214,14 +214,14 @@
                 if (!response || response.length === 0) {
                     console.log("No order items returned from server.");
                 } else {
-                    displayOrderitemSearchResults(response);
+                    displayOrderitemSearchResults(response,orderkey);
                 }
             }
         });
 
     }
 
-    function displayOrderitemSearchResults(orderitems) {
+    function displayOrderitemSearchResults(orderitems,okey) {
         if (!orderitems.orderItems.length) {
             $('#orderitemResults').html(
                 '<div class="alert alert-info">No Order Items found.</div>'
@@ -229,16 +229,68 @@
             return;
         }
 
+        //show order summary
+        $.ajax({
+            url: "/order-itemsummary/" + okey,
+            type: "GET",
+            success: function (response) {
+                if (response.status === "success") {
+                    let orderSummaryHtml = "";
+                    let orderSummaryTotalHtml = "";
+                    let orderTotalCost = 0;
+                    let orderDiscount = 0;
+                    let discountAmount = 0;
+                    let paidAmount = 0;
+
+                    response.orderItems.forEach(item => {
+                        orderTotalCost += parseFloat(item.totalcost) || 0;
+                        orderDiscount = parseFloat(item.order.discount) || 0;
+                        paidAmount = parseFloat(item.order.paidcost) || 0;
+                    });
+
+                    discountAmount = (orderTotalCost * orderDiscount) / 100;
+                    let balanceDue = (orderTotalCost - discountAmount) - paidAmount;
+
+                    orderSummaryTotalHtml = `
+                    </br><table>    
+                        <tr>
+                            <th style="width: 50%;">Total Cost</th>
+                            <td><span id="total-cost">Rs ${orderTotalCost.toFixed(2)}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Discount (${orderDiscount}%)</th>
+                            <td><span id="total-cost">Rs ${discountAmount.toFixed(2)}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Paid Amount</th>
+                            <td><span id="total-cost">Rs ${paidAmount.toFixed(2)}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Balance Due</th>
+                            <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
+                        </tr>
+                    </table> `;
+                    
+                    $("#ordersummary").html(orderSummaryTotalHtml);
+                }
+            },
+            error: function (xhr) {
+                console.error("Error fetching order summary:", xhr);
+            }
+        });
+
+        // end order summary
         let html = `
             <table id="itemtable" class="table table-bordered">
                 <thead>
-                    <tr>
+                    <tr id="row_0">
                         <th>Item Type</th>
                         <th>Hard Copied</th>
                         <th>Soft Copies</th>
                         <th>Edit Type</th>
                         <th>Cost (LKR)</th>
                         <th>Status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -256,16 +308,16 @@
                     <td>Inprogress</td>
 
 
-                    <td>
+                    <td id="tdeditBtn_${orderitem.ssorderitemmapkey}">
 
-                    <button id="editBtn_${orderitem.ssorderitemmapkey}" type="button" class="btn btn-primary" onClick="edititem(${orderitem.ssorderitemmapkey},${orderitem.hardcopyquantity},${orderitem.softcopyquantity},'${orderitem.edit_type.edittype}')">
-                        Edit
-                    </button>
-                    <button style="display:none" id="saveBtn_${orderitem.ssorderitemmapkey}"
-                        type="button" class="btn btn-primary"
-                        onClick="saveitem(${orderitem.ssorderitemmapkey},'${orderitem.order.order_type.ordertype}',${orderitem.order.order_type.ordertypekey},${orderitem.order_type_item.ordertypeitemkey},'${orderitem.lam_type?.lamtypekey || ''}',${orderitem.order.customerkey},${orderitem.order.isurgent},'${orderitem.order.discount}','${orderitem.order.paidcost}',${orderitem.order.studiokey},'${orderitem.order.orderid}','${orderitem.order.deliverydate}','${orderitem.order.remarks}')">
-                        Save
-                    </button>
+                        <button id="editBtn_${orderitem.ssorderitemmapkey}" type="button" class="btn btn-primary" onClick="edititem(${orderitem.ssorderitemmapkey},${orderitem.hardcopyquantity},${orderitem.softcopyquantity},'${orderitem.edit_type.edittype}')">
+                            Edit
+                        </button>
+                        <button style="display:none" id="saveBtn_${orderitem.ssorderitemmapkey}"
+                            type="button" class="btn btn-primary"
+                            onClick="saveitem(${orderitem.ssorderitemmapkey},'${orderitem.order.order_type.ordertype}',${orderitem.order.order_type.ordertypekey},${orderitem.order_type_item.ordertypeitemkey},'${orderitem.lam_type?.lamtypekey || ''}',${orderitem.order.customerkey},${orderitem.order.isurgent},'${orderitem.order.discount}','${orderitem.order.paidcost}',${orderitem.order.studiokey},'${orderitem.order.orderid}','${orderitem.order.deliverydate}','${orderitem.order.remarks}')">
+                            Save
+                        </button>
                     </td>
 
                 </tr>
@@ -632,7 +684,7 @@
                 if (!response || response.length === 0) {
                     console.log("No order items returned from server.");
                 } else {
-                    displayOrderitemSearchResults_ME(response);
+                    displayOrderitemSearchResults_ME(response,orderkey);
                 }
             }
         });
@@ -650,7 +702,7 @@
         let html = `
             <table id="itemtable_me" class="table table-bordered">
                 <thead>
-                    <tr>
+                    <tr id="row_0">
                         <th>Item Type</th>
                         <th>Laminate Type</th>
                         <th>Hard Copied</th>
@@ -1087,14 +1139,14 @@
             },
             success: function (response) {
                     console.log('Itemsearch result EC',response)
-                    displayOrderitemSearchResults_EC(response);
+                    displayOrderitemSearchResults_EC(response,orderkey);
 
             }
         });
 
     }
 
-    function displayOrderitemSearchResults_EC(orderitems) {
+    function displayOrderitemSearchResults_EC(orderitems,okey) {
 
         if (!orderitems.orderItems.length) {
             $('#orderitemResults_EC').html(
@@ -1106,13 +1158,14 @@
         let html = `
             <table id="itemtable_EC" class="table table-bordered">
             <thead>
-                <tr>
+                <tr id="row_0">
                     <th>Item Type</th>
                     <th>Original Order</th>
                     <th>Hard Copied</th>
                     <th>Edit Type</th>
                     <th>Cost (LKR)</th>
                     <th>Status</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -1120,10 +1173,10 @@
 
         orderitems.orderItems.forEach(function(orderitem) {
             html += `
-                <tr data-id="${orderitem.ecorderitemmapkey}_EC">
+                <tr id="row_${orderitem.ecorderitemmapkey}" data-id="${orderitem.ecorderitemmapkey}_EC">
                     <td id="name_${orderitem.ecorderitemmapkey}_EC">${orderitem.order_type_item.itemname}</td>
                     <td id="orionum_${orderitem.ecorderitemmapkey}_EC">${orderitem.original_order.orderid}</td>
-                    <td id="hcopy_${orderitem.ecorderitemmapkey}_EC">${orderitem.quantity}</td>
+                    <td id="hcopy_${orderitem.ecorderitemmapkey}_EC">${orderitem.hardcopyquantity}</td>
                     <td id="edittype_${orderitem.ecorderitemmapkey}_EC">${orderitem.edit_type.edittype}</td>
                     <td>${orderitem.totalcost}</td>
                     <td>Inprogress</td>
@@ -1145,6 +1198,58 @@
         });
         html += '</tbody></table>';
         $('#orderitemResults_EC').html(html);
+        //show order summary
+        $.ajax({
+            url: "/order-itemsummary/" + okey,
+            type: "GET",
+            success: function (response) {
+                if (response.status === "success") {
+                    let orderSummaryHtml = "";
+                    let orderSummaryTotalHtml = "";
+                    let orderTotalCost = 0;
+                    let orderDiscount = 0;
+                    let discountAmount = 0;
+                    let paidAmount = 0;
+
+                    response.orderItems.forEach(item => {
+                        orderTotalCost += parseFloat(item.totalcost) || 0;
+                        orderDiscount = parseFloat(item.order.discount) || 0;
+                        paidAmount = parseFloat(item.order.paidcost) || 0;
+                    });
+
+                    discountAmount = (orderTotalCost * orderDiscount) / 100;
+                    let balanceDue = (orderTotalCost - discountAmount) - paidAmount;
+
+                    orderSummaryTotalHtml = `
+                    </br><table>    
+                        <tr>
+                            <th style="width: 50%;">Total Cost</th>
+                            <td><span id="total-cost">Rs ${orderTotalCost.toFixed(2)}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Discount (${orderDiscount}%)</th>
+                            <td><span id="total-cost">Rs ${discountAmount.toFixed(2)}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Paid Amount</th>
+                            <td><span id="total-cost">Rs ${paidAmount.toFixed(2)}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Balance Due</th>
+                            <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
+                        </tr>
+                    </table> `;
+                 
+                    $("#ordersummary_EC").html(orderSummaryTotalHtml);
+                }
+            },
+            error: function (xhr) {
+                console.error("Error fetching order summary:", xhr);
+            }
+        });
+
+        // end order summary
+
     }
 
     function edititem_EC(ecorderitemmapkey,hcopy,scopy,edittype,oriorde){
@@ -1269,28 +1374,22 @@
         $(this).off("shown.bs.modal");
 
     }
-function printDiv(divId,onum,odate) {
-    let basicDetailsElement = document.getElementById("printArea");
-    //let printContents_bd = document.getElementById("basicdetails").innerHTML;
-    let printContents_items = document.getElementById("orderitemResults").innerHTML;
+function printDiv(divId,onum,odate,dateDiv) {
+    
+    let basicDetailsElement = document.getElementById(divId);
     let printWindow = window.open('', '', 'width=800,height=600');
 
     let clonedContent = basicDetailsElement.cloneNode(true);
     clonedContent.querySelector("#addnew").remove();
-    clonedContent.querySelector("#date").remove();
-    clonedContent.querySelectorAll("button[id^='editBtn_']").forEach(div => div.remove());
+    clonedContent.querySelector("#"+dateDiv).remove();
+    alert(divId+'-'+dateDiv)
 
-    const table = clonedContent.querySelector("table");
-    const headerText = "Status"; // Change this to the column's header text
-
-    const headerCells = Array.from(table.querySelectorAll("th"));
-    const columnIndex = headerCells.findIndex(th => th.textContent.trim() === headerText);
-
-    if (columnIndex !== -1) {
-        table.querySelectorAll("tr").forEach(row => {
-            row.deleteCell(columnIndex);
-        });
-    }   
+    clonedContent.querySelectorAll("tr[id^='row_']").forEach(row => {
+       //if (row.cells.length > 5) { // Ensure the cell exists before deleting
+       //alert(1)
+          row.deleteCell(6);
+       //}
+    });
   
     printWindow.document.write(`
     <html>
@@ -1338,15 +1437,7 @@ function printDiv(divId,onum,odate) {
             width: 100%;
             border-collapse: collapse;
         }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background: #333;
-            color: #fff;
-        }
+   
         .total {
             text-align: right;
         }
@@ -1364,6 +1455,11 @@ function printDiv(divId,onum,odate) {
         }
         .print-btn:hover {
             background: #0056b3;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
         }
         @media print {
             .print-btn {
@@ -1391,16 +1487,13 @@ function printDiv(divId,onum,odate) {
             <p>Date: `+odate+`</p>
         </div>
     </div>
-
-
     ${clonedContent.innerHTML}  
-
     <div class="invoice-summary">
-        <h3 class="total">Grand Total: $180.00</h3>
+        <!-- <h3 class="total">Grand Total: $180.00</h3> -->
     </div>
 </div>
 
-<button class="print-btn" onclick="printInvoice()">Print</button>
+
 
 </body>
 </html>
@@ -1421,7 +1514,6 @@ function printDiv(divId,onum,odate) {
         };
     };
 }
-
        
 </script>
 @endpush

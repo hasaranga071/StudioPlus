@@ -284,7 +284,7 @@ class StudioOrderController extends Controller
                         StudioOrderItemMapEC::updateOrCreate(
                             [
                                 'orderkey' =>  $sorderkey,
-                                'ordertypeitemkey' => $request->ordertypeitemkey
+                                'ecorderitemmapkey' => $request->ecorderitemmapkey
                             ],
                             [
                                 'edittypekey' => $request->edittypekey,
@@ -292,6 +292,7 @@ class StudioOrderController extends Controller
                                 'originalorderkey' => $request->originalorderkey,
                                 'totalcost' => $ssitemCost,
                                 'iscompleted' => $request->iscompleted,
+                                'ordertypeitemkey' => $request->ordertypeitemkey,
                             ]
                         );
                     }

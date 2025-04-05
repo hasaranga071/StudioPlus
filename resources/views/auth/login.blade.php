@@ -4,7 +4,9 @@
 
     <form method="POST" action="{{ route('login') }}">
         @csrf
-
+        <div style="font-size:35px">
+         Studio Login
+        </div>
         <!-- Email Address -->
         <div>
             <x-input-label for="email" :value="__('Email')" />
@@ -31,6 +33,12 @@
                 <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Remember me') }}</span>
             </label>
         </div>
+        <div style="display:flex">
+        <div class="flex items-center justify-end mt-4">
+            <a style="margin-right: 115px;" href="/register" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('password.request') }}">
+                Signup
+            </a>
+        </div>
 
         <div class="flex items-center justify-end mt-4">
             @if (Route::has('password.request'))
@@ -43,5 +51,6 @@
                 {{ __('Log in') }}
             </x-primary-button>
         </div>
+        <div>
     </form>
 </x-guest-layout>

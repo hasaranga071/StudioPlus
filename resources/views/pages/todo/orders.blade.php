@@ -4,6 +4,7 @@
 @include('components.orderviewmodal_ME')
 @include('components.orderviewmodal_FR')
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 @section('content')
 <!-- <div class='s-page-title'>Orders</div> -->
@@ -319,6 +320,7 @@
                             onClick="saveitem(${orderitem.ssorderitemmapkey},'${orderitem.order.order_type.ordertype}',${orderitem.order.order_type.ordertypekey},${orderitem.order_type_item.ordertypeitemkey},'${orderitem.lam_type?.lamtypekey || ''}',${orderitem.order.customerkey},${orderitem.order.isurgent},'${orderitem.order.discount}','${orderitem.order.paidcost}',${orderitem.order.studiokey},'${orderitem.order.orderid}','${orderitem.order.deliverydate}','${orderitem.order.remarks}')">
                             Save
                         </button>
+                        <button class="btn btn-delete remove-order" data-orderid="${orderitem.orderkey}" data-id="${orderitem.ssorderitemmapkey}" data-type="${orderitem.order.order_type.ordertype}"><i class="fas fa-trash"></i></button>
                     </td>
 
                 </tr>
@@ -775,21 +777,22 @@
                     <td id="name_me_${orderitem.meorderitemmapkey}">${orderitem.order_type_item.itemname}</td>
                     <td id="lamtype_me_${orderitem.meorderitemmapkey}">${orderitem.lam_type?.laminatetype || ''}</td>
                     <td id="hcopy_me_${orderitem.meorderitemmapkey}">${orderitem.hardcopyquantity}</td>
-                    <td id="edittype_me_${orderitem.meorderitemmapkey}">${orderitem.edit_type?.edittype || ''}</td>
+                    <td id="edittype_me_${orderitem.meorderitemmapkey}">${orderitem.edit_type.edittype}</td>
                     <td>${orderitem.totalcost}</td>
                     <td>Inprogress</td>
                 
 
                     <td>
                 
-                    <button id="editBtn_me_${orderitem.ssorderitemmapkey}" type="button" class="btn btn-primary" onClick="edititem_me(${orderitem.ssorderitemmapkey},${orderitem.hardcopyquantity},${orderitem.softcopyquantity},'${orderitem.edit_type?.edittype || ""}')">
+                    <button id="editBtn_me_${orderitem.meorderitemmapkey}" type="button" class="btn btn-primary" onClick="edititem_me(${orderitem.ssorderitemmapkey},${orderitem.hardcopyquantity},${orderitem.softcopyquantity},'${orderitem.edit_type.edittype}')">
                         Edit 
                     </button>
-                    <button style="display:none" id="saveBtn_me_${orderitem.ssorderitemmapkey}" 
+                    <button style="display:none" id="saveBtn_me_${orderitem.meorderitemmapkey}" 
                         type="button" class="btn btn-primary" 
-                        onClick="saveitem_me(${orderitem.ssorderitemmapkey},'${orderitem.order.order_type.ordertype}',${orderitem.order.order_type.ordertypekey},${orderitem.order_type_item.ordertypeitemkey},'${orderitem.lam_type?.lamtypekey || ''}',${orderitem.order.customerkey},${orderitem.order.isurgent},'${orderitem.order.discount}','${orderitem.order.paidcost}',${orderitem.order.studiokey},'${orderitem.order.orderid}','${orderitem.order.deliverydate}','${orderitem.order.remarks}')">
+                        onClick="saveitem_me(${orderitem.meorderitemmapkey},'${orderitem.order.order_type.ordertype}',${orderitem.order.order_type.ordertypekey},${orderitem.order_type_item.ordertypeitemkey},'${orderitem.lam_type?.lamtypekey || ''}',${orderitem.order.customerkey},${orderitem.order.isurgent},'${orderitem.order.discount}','${orderitem.order.paidcost}',${orderitem.order.studiokey},'${orderitem.order.orderid}','${orderitem.order.deliverydate}','${orderitem.order.remarks}')">
                         Save 
                     </button>
+                    <button class="btn btn-delete remove-order" data-orderid="${orderitem.orderkey}" data-id="${orderitem.meorderitemmapkey}" data-type="${orderitem.order.order_type.ordertype}"><i class="fas fa-trash"></i></button>
                     </td>
 
                 </tr>
@@ -800,15 +803,15 @@
         $('#orderitemResults_me').html(html);
     }  
 
-    function edititem_me(ssorderitemmapkey) {
+    function edititem_me(meorderitemmapkey) {
         // Get latest values from the table before editing
-        let lamtypeElement = document.getElementById(`lamtype_me_${ssorderitemmapkey}`);
-        let hcopyElement = document.getElementById(`hcopy_me_${ssorderitemmapkey}`);
-        let edittypeElement = document.getElementById(`edittype_me_${ssorderitemmapkey}`);
+        let lamtypeElement = document.getElementById(`lamtype_me_${meorderitemmapkey}`);
+        let hcopyElement = document.getElementById(`hcopy_me_${meorderitemmapkey}`);
+        let edittypeElement = document.getElementById(`edittype_me_${meorderitemmapkey}`);
 
         // Ensure elements exist before accessing properties
         if (!hcopyElement || !scopyElement || !edittypeElement || !lamtypeElement) {
-            console.error(`Error: One or more elements missing for item ${ssorderitemmapkey}`);
+            console.error(`Error: One or more elements missing for item ${meorderitemmapkey}`);
             return;
         }
 
@@ -817,13 +820,13 @@
         let edittype = edittypeElement.textContent.trim(); // Get displayed edit type text
 
         // Hide Edit Button, Show Save Button
-        document.getElementById(`editBtn_me_${ssorderitemmapkey}`).style.display = "none";
-        document.getElementById(`saveBtn_me_${ssorderitemmapkey}`).style.display = "inline-block";
+        document.getElementById(`editBtn_me_${meorderitemmapkey}`).style.display = "none";
+        document.getElementById(`saveBtn_me_${meorderitemmapkey}`).style.display = "inline-block";
 
         // Convert Laminate Type to Input Field
         lamtypeElement.innerHTML =
             `<div class="col-md-4">
-                <select style="width:150px;border-color: orange;" id="input_lamtype_me_${ssorderitemmapkey}" name="lamtype" class="form-control">
+                <select style="width:150px;border-color: orange;" id="input_lamtype_me_${meorderitemmapkey}" name="lamtype" class="form-control">
                     <option value="">Select Laminate Type</option>
                     @foreach ($lamTypes as $lamType) 
                         <option value="{{ $lamType->lamtypekey }}" ${lamtype === '{{ $lamType->laminatetype }}' ? 'selected' : ''}>{{ $lamType->laminatetype }}</option>
@@ -834,13 +837,13 @@
         // Convert Hard Copy to Input Field
         hcopyElement.innerHTML =
             `<div class="col-md-4">
-                <input style="border-color: orange;" id="input_hcopy_me_${ssorderitemmapkey}" value="${hcopy}" name="hcopy" type="text" class="form-control input-md" required="">
+                <input style="border-color: orange;" id="input_hcopy_me_${meorderitemmapkey}" value="${hcopy}" name="hcopy" type="text" class="form-control input-md" required="">
             </div>`;
 
         // Convert Edit Type to Dropdown
         edittypeElement.innerHTML =
             `<div class="col-md-4">
-                <select style="width:150px;border-color: orange;" id="input_edittype_me_${ssorderitemmapkey}" name="edittype" class="form-control">
+                <select style="width:150px;border-color: orange;" id="input_edittype_me_${meorderitemmapkey}" name="edittype" class="form-control">
                     <option value="">Select Edit Type</option>
                     @foreach ($editTypes as $editType) 
                         <option value="{{ $editType->edittypekey }}" ${edittype === '{{ $editType->edittype }}' ? 'selected' : ''}>{{ $editType->edittype }}</option>
@@ -849,13 +852,13 @@
             </div>`;
     }
 
-    function saveitem_me(ssorderitemmapkey, ordertype, ordertypekey, ordertypeitemkey, lamtypekey, customerkey, isurgent, discount, paidcost, studiokey, orderid, deliverydate, remarks) {
+    function saveitem_me(meorderitemmapkey, ordertype, ordertypekey, ordertypeitemkey, lamtypekey, customerkey, isurgent, discount, paidcost, studiokey, orderid, deliverydate, remarks) {
         dataarray=[]       
 
         setTimeout(() => {
-            let hcopy = document.querySelector(`#input_hcopy_me_${ssorderitemmapkey}`)?.value || "";
+            let hcopy = document.querySelector(`#input_hcopy_me_${meorderitemmapkey}`)?.value || "";
 
-            let lamtypeElement = document.querySelector(`#input_lamtype_me_${ssorderitemmapkey}`);
+            let lamtypeElement = document.querySelector(`#input_lamtype_me_${meorderitemmapkey}`);
             if (!lamtypeElement) {
                 console.error("Edit type dropdown not found!");
                 return;
@@ -868,7 +871,7 @@
                 return; // Prevent the function from executing further if edittype is missing.
             }
 
-            let edittypeElement = document.querySelector(`#input_edittype_me_${ssorderitemmapkey}`);
+            let edittypeElement = document.querySelector(`#input_edittype_me_${meorderitemmapkey}`);
             if (!edittypeElement) {
                 console.error("Edit type dropdown not found!");
                 return;
@@ -902,7 +905,7 @@
             };
             console.log('Data Sent:', dataarray);
             
-            let cells = document.querySelectorAll(`#row_me_${ssorderitemmapkey} td`);
+            let cells = document.querySelectorAll(`#row_me_${meorderitemmapkey} td`);
             cells.forEach(cell => {
                 if (cell.cellIndex !== 0) { 
                     cell.contentEditable = "false";
@@ -918,13 +921,13 @@
                         console.log("Order Updated Successfully:", response);
 
                         // Update the table row with latest values
-                        document.getElementById(`hcopy_me_${ssorderitemmapkey}`).innerHTML = hcopy;
-                        document.getElementById(`edittype_me_${ssorderitemmapkey}`).innerHTML = edittypeText;
-                        document.getElementById(`lamtype_me_${ssorderitemmapkey}`).innerHTML = lamtypeText;
+                        document.getElementById(`hcopy_me_${meorderitemmapkey}`).innerHTML = hcopy;
+                        document.getElementById(`edittype_me_${meorderitemmapkey}`).innerHTML = edittypeText;
+                        document.getElementById(`lamtype_me_${meorderitemmapkey}`).innerHTML = lamtypeText;
 
                         // Show Edit Button Again
-                        document.getElementById(`editBtn_me_${ssorderitemmapkey}`).style.display = "inline-block";
-                        document.getElementById(`saveBtn_me_${ssorderitemmapkey}`).style.display = "none";
+                        document.getElementById(`editBtn_me_${meorderitemmapkey}`).style.display = "inline-block";
+                        document.getElementById(`saveBtn_me_${meorderitemmapkey}`).style.display = "none";
                         // render table
                         let flashbody = '<div id="flash-message" class="alert alert-success" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);z-index: 9999; padding: 15px 20px; font-size: 16px; text-align: center;background-color: #434844; color: white; border-radius: 5px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);">'
                         + response.message +'!</div>';
@@ -1281,6 +1284,7 @@
                             onClick="saveitem_fr(${orderitem.frorderitemmapkey},'${orderitem.order.order_type?.ordertype || ''}',${orderitem.order.order_type?.ordertypekey || ''},'${orderitem.order_type_item?.ordertypeitemkey || ''}','${orderitem.lam_type?.lamtypekey || ''}','${orderitem.order?.customerkey || ''}',${orderitem.order?.isurgent},'${orderitem.order?.discount || ''}','${orderitem.order?.paidcost || ''}',${orderitem.order?.studiokey || ''},'${orderitem.order?.orderid || ''}','${orderitem.order?.deliverydate || ''}','${orderitem.order?.remarks || ''}','${orderitem.frame_type.frametype}','${orderitem.frame_type.frametypekey}','${orderitem.quantity}')">
                             Save 
                         </button>
+                        <button class="btn btn-delete remove-order" data-orderid="${orderitem.orderkey}" data-id="${orderitem.frorderitemmapkey}" data-type="${orderitem.order.order_type.ordertype}"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
             `;
@@ -1864,7 +1868,7 @@
                         onClick="saveitem_ec(${orderitem.ecorderitemmapkey},'${orderitem.order.order_type.ordertype}',${orderitem.order.order_type.ordertypekey},${orderitem.order_type_item.ordertypeitemkey},'${orderitem.lam_type?.lamtypekey || ''}',${orderitem.order.customerkey},${orderitem.order.isurgent},'${orderitem.order.discount}','${orderitem.order.paidcost}',${orderitem.order.studiokey},'${orderitem.order.orderid}','${orderitem.order.deliverydate}','${orderitem.order.remarks}',${orderitem.hardcopyquantity},'${orderitem.edit_type.edittype}','${orderitem.original_order.orderid}','${orderitem.original_order.orderkey}')">
                         Save 
                     </button>
-                    <button class="btn btn-delete remove-order" data-id="del_ec_${orderitem.ecorderitemmapkey}"><i class="fas fa-trash"></i></button>
+                    <button class="btn btn-delete remove-order" data-orderid="${orderitem.orderkey}" data-id="${orderitem.ecorderitemmapkey}" data-type="${orderitem.order.order_type.ordertype}"><i class="fas fa-trash"></i></button>
                     </td>
 
                 </tr>
@@ -1924,14 +1928,6 @@
 
 
     }
-
-    // function edititem_EC(ecorderitemmapkey,hcopy,scopy,edittype,oriorde){
-    //     document.getElementById("editBtn_ec_"+ecorderitemmapkey).style.display = "none";
-    //     document.getElementById("saveBtn_ec_"+ecorderitemmapkey).style.display = "inline-block";
-    //     document.getElementById("hcopy_ec_"+ecorderitemmapkey).innerHTML='<div class="col-md-4" id="scopymain"> <input style="border-color: orange;" id="hcopy" value="'+hcopy+'" name="hcopy" type="text" class="form-control input-md" required=""> </div>'
-    //     document.getElementById("edittype_ec_"+ecorderitemmapkey).innerHTML=
-    //     '<div class="col-md-4" id="edittypemain"><select  style="width:150px;border-color: orange;" id="input_edittype_fr_${frorderitemmapkey}" name="edittype" class="form-control"> <option value="">'+edittype+'</option> @foreach ($editTypes as $editType) <option value="{{ $editType->edittypekey }}">{{ $editType->edittype }}</option> @endforeach </select> </div>'
-    // }
 
     function edititem_ec(ecorderitemmapkey) {
         // Get latest values from the table before editing
@@ -2072,7 +2068,87 @@
     }
 
     // ******************* End Extra Copy Retated ************************
-    
+
+    // Remove order from summary table
+    $(document).on('click', '.remove-order', function(event) {
+        event.preventDefault();
+
+        let orderItemId = $(this).data('id');
+        let orderkey = $(this).data('orderid');
+        let ordertype = $(this).data('type');
+
+        console.log('orderItemId:', orderItemId);
+        console.log('orderkey:', orderkey);
+        console.log('ordertype:', ordertype);
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Do you want to delete this order item?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "/delete-order-item/" + orderItemId,
+                    type: "DELETE",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        orderkey: orderkey
+                    },
+                    success: function(response) {
+                        $("body").prepend(`
+                            <div id="flash-message" class="alert alert-success"
+                                style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                                z-index: 9999; padding: 15px 20px; font-size: 16px; text-align: center;
+                                background-color: #434844; color: white; border-radius: 5px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);">
+                                Order item deleted!
+                            </div>
+                        `);
+
+                        // Refresh modal
+                        if (ordertype === 'Studio Sittings') {
+                            setTimeout(() => {
+                                loaditemdata_SS(orderkey);
+                                $('#orderviewmodal_SS').modal('show'); // ✅ fixed ID selector
+                            }, 500);
+                        }
+                        if (ordertype === 'Extra Copy') {
+                            setTimeout(() => {
+                                loaditemdata_EC(orderkey);
+                                $('#orderviewmodal_EC').modal('show'); // ✅ fixed ID selector
+                            }, 500);
+                        }
+                        if (ordertype === 'Frames') {
+                            setTimeout(() => {
+                                loaditemdata_FR(orderkey);
+                                $('#orderviewmodal_FR').modal('show'); // ✅ fixed ID selector
+                            }, 500);
+                        }
+                        if (ordertype === 'Media') {
+                            setTimeout(() => {
+                                loaditemdata_ME(orderkey);
+                                $('#orderviewmodal_ME').modal('show'); // ✅ fixed ID selector
+                            }, 500);
+                        }
+
+                        // Auto-hide the flash message
+                        setTimeout(function() {
+                            $("#flash-message").fadeOut("slow", function() {
+                                $(this).remove();
+                            });
+                        }, 2000);
+                    },
+                    error: function() {
+                        Swal.fire("Error!", "Something went wrong.", "error");
+                    }
+                });
+            }
+        });
+    });
+
     function loadOrderTypeItems(otk) {
         var ordertypekey = otk;
         if (ordertypekey) {

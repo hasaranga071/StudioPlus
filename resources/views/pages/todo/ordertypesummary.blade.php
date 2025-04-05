@@ -5,7 +5,7 @@
 <div class="container mt-5">
     <!-- Title Row with Print Button -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-center mb-0 w-100">Order Type Summary</h2>
+        <h2 class="text-center mb-0 w-100">Operation Summary</h2>
         <button id="print-btn" class="btn" onclick="printReport()">
             <i class="fa fa-print"></i> Print
         </button>
@@ -55,11 +55,11 @@
                     </div>
                     <div class="card-body" style="min-height: 400px;" id="tablebbox">
                         <div class="table-responsive">
-                            <table class="table" id="summaryTable">
+                            <table class="table" id="summaryTable" style="text-align: left;">
                                 <thead>
                                     <tr>
-                                        <th>Order Type</th>
-                                        <th class="text-right">Count</th>
+                                        <th style="text-align: left;">Order Type</th>
+                                        <th style="text-align: left;">Count</th>
                                     </tr>
                                 </thead>
                                 <tbody id="summaryTableBody">
@@ -67,8 +67,8 @@
                                 </tbody>
                                 <tfoot>
                                     <tr class="bg-blue-200 font-bold text-black">
-                                        <td>TOTAL</td>
-                                        <td class="text-right" id="totalOrders">0</td>
+                                        <td style="text-align: left;font-weight:600;">TOTAL</td>
+                                        <td style="text-align: left;font-weight:600;" id="totalOrders">0</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -101,11 +101,11 @@
                     </div>
                     <div class="card-body" style="min-height: 400px;" id="earningsbbox">
                         <div class="table-responsive">
-                            <table class="table" id="earningsSummaryTable">
+                            <table class="table" id="earningsSummaryTable" style="text-align: left;">
                                 <thead>
                                     <tr>
-                                        <th>Order Type</th>
-                                        <th class="text-right">Earnings</th>
+                                        <th style="text-align: left;">Order Type</th>
+                                        <th style="text-align: left;">Earnings</th>
                                     </tr>
                                 </thead>
                                 <tbody id="earningsSummaryTableBody">
@@ -113,8 +113,8 @@
                                 </tbody>
                                 <tfoot>
                                     <tr class="font-weight-bold">
-                                        <td>TOTAL</td>
-                                        <td class="text-right" id="totalEarnings">0</td>
+                                        <td style="text-align: left;font-weight:600;">TOTAL</td>
+                                        <td style="text-align: left;font-weight:600;" id="totalEarnings">0</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -149,9 +149,6 @@
                 background-color: #535350 !important;
                 color: white !important;
             }
-            .text-right {
-                text-align: right;
-            }
             .card {
                 border-radius: 10px;
                 border: none;
@@ -168,6 +165,9 @@
             }
             #summaryTable, #earningsSummaryTable {
                 margin-bottom: 0;
+            }
+            #summaryTable td, #summaryTable th, #earningsSummaryTable td, #earningsSummaryTable th {
+                text-align: left !important;
             }
             #chart-date-range, #table-date-range, #earnings-chart-date-range, #earnings-table-date-range {
                 font-size: 14px;
@@ -442,10 +442,11 @@
                 }
 
                 const typeCell = document.createElement('td');
+                typeCell.style.textAlign = 'left';
                 typeCell.textContent = order.orderType;
 
                 const countCell = document.createElement('td');
-                countCell.className = 'text-right';
+                countCell.style.textAlign = 'left';
                 countCell.textContent = order.total;
 
                 row.appendChild(typeCell);
@@ -476,10 +477,11 @@
                 }
 
                 const typeCell = document.createElement('td');
+                typeCell.style.textAlign = 'left';
                 typeCell.textContent = earning.orderType;
 
                 const earningsCell = document.createElement('td');
-                earningsCell.className = 'text-right';
+                earningsCell.style.textAlign = 'left';
                 earningsCell.textContent = 'Rs ' + parseFloat(earning.earnings).toFixed(2);
 
                 row.appendChild(typeCell);
@@ -539,7 +541,7 @@
     function printReport() {
         // Add title to print area
         const titleElement = document.createElement('h2');
-        titleElement.textContent = 'Order Type Summary';
+        titleElement.textContent = 'Operation Summary';
         titleElement.className = 'text-center';
         titleElement.style.width = '100%';
         titleElement.style.marginBottom = '20px';
@@ -553,6 +555,6 @@
     }
 </script>
 
-<!-- Include Chart.js Data Labels plugin -->
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+
+
 @endsection

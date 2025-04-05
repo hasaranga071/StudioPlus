@@ -843,3 +843,7 @@ font-size: 20px;
     padding-top: 30px;
 }
 
+.filter-btn.active, #custom-filter-btn.active {
+    background-color: #535350 !important;
+    color: #000000 !important;
+}

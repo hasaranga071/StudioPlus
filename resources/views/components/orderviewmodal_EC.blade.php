@@ -3,14 +3,22 @@
     <div class="modal-dialog  modal-xl">
     <input type="hidden" id="otk" name="otk" value="edititem">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalTitle">Order Details | <span id="onum_EC"></span></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-header">
+                <div style='display:flex'>
+                    <h5 class="modal-title" id="modalTitle">Order Details | <span id="onum_EC"></span></h5>
+                    
+                </div>
+                <div>
+                        
+                    <button style="border-radius: 5px;" onClick="printDiv('printArea_EC',document.getElementById('onum_EC').textContent,document.getElementById('odate_EC').textContent,'odate_EC')">
+                    Print
+                    </button>
+                </div>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" id="printArea_EC">
                 <div class="container mx-auto py-6">
                     <div class="bg-white rounded-lg shadow-md p-6" style="display:flex;gap:10%">
-                        <div>
+                        <div  id="date">
                             <p class="text-gray-600">Created Date</p>
                             <span class="font-semibold" id="odate_EC"></span>
                         </div>
@@ -35,14 +43,13 @@
                             <span class="font-semibold" id="status_EC"></span>
                         </div>
                     </div></br>
-                    <button onClick="addnew()" type="button" style="float:left;font-size:15px" class="btn btn-info">+ Add Item</button></br></br>
+                    <button id="addnew" onClick="addnew()" type="button" style="float:left;font-size:15px" class="btn btn-info">+ Add Item</button></br></br>
                     
                    
 
-                    <div id="orderitemResults_EC" class="overflow-x-auto">
-                       
-                        </div>
-                    </div>
+                    <div id="orderitemResults_EC" class="overflow-x-auto"></div>
+                    <div id="ordersummary_EC" class="overflow-x-auto"> </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

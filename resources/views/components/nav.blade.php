@@ -13,7 +13,7 @@
 		<ul class="custom-navbar-nav navbar-nav ">
 			<li _class="nav-item active"> <a class="navbar-link" href="index.html">Dashboard</</li>
 			<li><a class="navbar-link" href="/orders">Orders</a></li>
-			<li><a class="navbar-link" href="about.html">My Business</a></li>
+			<li><a class="navbar-link" href="/ordertypesummary">My Business</a></li>
 			<li><a class="navbar-link" href="services.html">Configurations</a></li>
 		</ul>
 		<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">

@@ -413,8 +413,7 @@ class StudioOrderController extends Controller
                      StudioOrderItemMapFR::updateOrCreate(
                         [
                             'orderkey' =>  $sorderkey,
-                            'frametypekey' => $request->frametypekey,
-                            'framesizekey' => $request->framesizekey
+                            'frorderitemmapkey' => $request->frorderitemmapkey
                         ],
                         [
                             'framesizekey' => $request->framesizekey,

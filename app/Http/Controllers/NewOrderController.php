@@ -59,7 +59,10 @@ class NewOrderController extends Controller
     $orderTypes = StudioOrderType::all();
     $editTypes = StudioEdittype::all();
     $lamTypes = StudioLaminatingtype::all();
-    return view ('pages.todo.orders', compact('orderTypes','editTypes','lamTypes'));
+    $frameSizes = StudioFramesize::all();
+    $frameSubSizes = StudioSubframesize::all();
+    $frameSubTypes = StudioSubframetype::all();
+    return view ('pages.todo.orders', compact('orderTypes','editTypes','lamTypes','frameSizes','frameSubSizes','frameSubTypes'));
   }
 
   public function orderssearch()
@@ -68,7 +71,10 @@ class NewOrderController extends Controller
     $orderTypes = StudioOrderType::all();
     $editTypes = StudioEdittype::all();
     $lamTypes = StudioLaminatingtype::all();
-    return view ('pages.todo.orderssearch', compact('orderTypes','editTypes','lamTypes'));
+    $frameSizes = StudioFramesize::all();
+    $frameSubSizes = StudioSubframesize::all();
+    $frameSubTypes = StudioSubframetype::all();
+    return view ('pages.todo.orderssearch', compact('orderTypes','editTypes','lamTypes','frameSizes','frameSubSizes','frameSubTypes'));
   }
 
   public function ordertypeitems($ordertypekey)

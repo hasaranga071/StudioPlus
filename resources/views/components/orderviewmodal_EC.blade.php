@@ -11,7 +11,7 @@
                 </div>
                 <div>
                         
-                    <button style="border-radius: 5px;" onClick="printDiv('printArea_EC',document.getElementById('onum_EC').textContent,document.getElementById('odate_EC').textContent,'odate_EC')">
+                    <button style="border-radius: 5px;" onClick="printDiv('EC','printArea_EC',document.getElementById('onum_EC').textContent,document.getElementById('odate_EC').textContent,'odate_EC')">
                     Print
                     </button>
                 </div>

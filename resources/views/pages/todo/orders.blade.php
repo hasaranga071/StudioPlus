@@ -58,7 +58,7 @@
                             <input class="form-control" type="date" id="search-enddate" name="search-enddate">
                         </div>
                     </div>
-                    <div class="col-md-4" style="padding-top: 30px;">
+                    <div class="col-md-4" style="padding-top: 30px;margin-left: 35px;">
                         <button type="submit" onClick="loaddata()" id="searchBtn" class="btn btn-primary">Search</button>
                     </div>
 
@@ -694,7 +694,7 @@
                         
     }  
 
-    function displayOrderitemSearchResults_ME(orderitems) {
+    function displayOrderitemSearchResults_ME(orderitems,okey) {
         if (!orderitems.orderItems.length) {
             $('#orderitemResults_me').html(
                 '<div class="alert alert-info">No Order Items found.</div>'
@@ -702,8 +702,58 @@
             return;
         }
 
-        console.log('Media Responce',orderitems)
 
+            //show order summary
+                $.ajax({
+            url: "/order-itemsummary/" + okey,
+            type: "GET",
+            success: function (response) {
+                if (response.status === "success") {
+                    let orderSummaryHtml = "";
+                    let orderSummaryTotalHtml = "";
+                    let orderTotalCost = 0;
+                    let orderDiscount = 0;
+                    let discountAmount = 0;
+                    let paidAmount = 0;
+
+                    response.orderItems.forEach(item => {
+                        orderTotalCost += parseFloat(item.totalcost) || 0;
+                        orderDiscount = parseFloat(item.order.discount) || 0;
+                        paidAmount = parseFloat(item.order.paidcost) || 0;
+                    });
+
+                    discountAmount = (orderTotalCost * orderDiscount) / 100;
+                    let balanceDue = (orderTotalCost - discountAmount) - paidAmount;
+
+                    orderSummaryTotalHtml = `
+                    </br><table>    
+                        <tr>
+                            <th style="width: 50%;">Total Cost</th>
+                            <td><span id="total-cost">Rs ${orderTotalCost.toFixed(2)}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Discount (${orderDiscount}%)</th>
+                            <td><span id="total-cost">Rs ${discountAmount.toFixed(2)}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Paid Amount</th>
+                            <td><span id="total-cost">Rs ${paidAmount.toFixed(2)}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Balance Due</th>
+                            <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
+                        </tr>
+                    </table> `;
+                    
+                    $("#ordersummary_me").html(orderSummaryTotalHtml);
+                }
+            },
+            error: function (xhr) {
+                console.error("Error fetching order summary:", xhr);
+            }
+        });
+
+        // end order summary
         let html = `
             <table id="itemtable_me" class="table table-bordered">
                 <thead>
@@ -714,6 +764,7 @@
                         <th>Edit Type</th>
                         <th>Cost (LKR)</th>
                         <th>Status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1128,14 +1179,14 @@
                 if (!response || response.length === 0) {
                     console.log("No order items returned from server.");
                 } else {
-                    displayOrderitemSearchResults_FR(response);
+                    displayOrderitemSearchResults_FR(response,orderkey);
                 }
             }
         });
                         
     }  
 
-    function displayOrderitemSearchResults_FR(orderitems) {
+    function displayOrderitemSearchResults_FR(orderitems,okey) {
         if (!orderitems.orderItems.length) {
             $('#orderitemResults_fr').html(
                 '<div class="alert alert-info">No Order Items found.</div>'
@@ -1143,10 +1194,61 @@
             return;
         }
 
+    //show order summary
+        $.ajax({
+            url: "/order-itemsummary/" + okey,
+            type: "GET",
+            success: function (response) {
+                if (response.status === "success") {
+                    let orderSummaryHtml = "";
+                    let orderSummaryTotalHtml = "";
+                    let orderTotalCost = 0;
+                    let orderDiscount = 0;
+                    let discountAmount = 0;
+                    let paidAmount = 0;
+
+                    response.orderItems.forEach(item => {
+                        orderTotalCost += parseFloat(item.totalcost) || 0;
+                        orderDiscount = parseFloat(item.order.discount) || 0;
+                        paidAmount = parseFloat(item.order.paidcost) || 0;
+                    });
+
+                    discountAmount = (orderTotalCost * orderDiscount) / 100;
+                    let balanceDue = (orderTotalCost - discountAmount) - paidAmount;
+
+                    orderSummaryTotalHtml = `
+                    </br><table>    
+                        <tr>
+                            <th style="width: 50%;">Total Cost</th>
+                            <td><span id="total-cost">Rs ${orderTotalCost.toFixed(2)}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Discount (${orderDiscount}%)</th>
+                            <td><span id="total-cost">Rs ${discountAmount.toFixed(2)}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Paid Amount</th>
+                            <td><span id="total-cost">Rs ${paidAmount.toFixed(2)}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Balance Due</th>
+                            <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
+                        </tr>
+                    </table> `;
+                    
+                    $("#ordersummary_FR").html(orderSummaryTotalHtml);
+                }
+            },
+            error: function (xhr) {
+                console.error("Error fetching order summary:", xhr);
+            }
+        });
+
+        // end order summary
         let html = `
             <table id="itemtable_fr" class="table table-bordered">
                 <thead>
-                    <tr>
+                    <tr id="row_0">
                         <th>Type</th>
                         <th>Size</th>
                         <th>F# Size</th>
@@ -1154,6 +1256,7 @@
                         <th>Quantity</th>
                         <th>Cost (LKR)</th>
                         <th>Status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -2144,20 +2247,23 @@
         $(this).off("shown.bs.modal");
 
     }
-function printDiv(divId,onum,odate,dateDiv) {
+function printDiv(type,divId,onum,odate,dateDiv) {
     
     let basicDetailsElement = document.getElementById(divId);
     let printWindow = window.open('', '', 'width=800,height=600');
 
     let clonedContent = basicDetailsElement.cloneNode(true);
-    clonedContent.querySelector("#addnew").remove();
+    if (type!='EC'){
+    clonedContent.querySelector("#addnew").remove();}
     clonedContent.querySelector("#"+dateDiv).remove();
     clonedContent.querySelector("div[id^='date']").remove();
 
     clonedContent.querySelectorAll("tr[id^='row_']").forEach(row => {
        //if (row.cells.length > 5) { // Ensure the cell exists before deleting
-       //alert(1)
-          row.deleteCell(6);
+       if (type=='FR'){
+        row.deleteCell(7);
+       }
+        else{row.deleteCell(6);}
        //}
     });
   

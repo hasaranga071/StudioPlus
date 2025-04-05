@@ -180,7 +180,7 @@
                 </div>
                 <div class="form-group" style="display:flex;gap: 50px">
                     <div class="col-md-4" id="edittypemain">
-                        <label class="form-label" for="edittype">Edit Type (*)</label>
+                        <label class="form-label" for="edittype">Edit Type</label>
                         <select id="edittype" name="edittype" class="form-control">
                         <option value="">Select Edit Type</option>
                             @foreach ($editTypes as $editType)

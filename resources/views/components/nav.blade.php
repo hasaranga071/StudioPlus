@@ -1,4 +1,4 @@
-<nav class="custom-navbar navbar navbar navbar-expand-md navbar-dark bg-white" arial-label="Furni navigation bar">
+<nav style="background-image: url('/logo/banner.png') !important;background-repeat:repeat;background-size: cover;" class="custom-navbar navbar navbar navbar-expand-md navbar-dark bg-white" arial-label="Furni navigation bar">
 	<div class="container">
         <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5" >
             <div class="image-container">
@@ -9,16 +9,17 @@
         <div id='sname' class="navbar-brand">MY STUDIO</div>
 
 
-	<div class="collapse navbar-collapse" style="margin-left: 180px;">
+	<div class="collapse navbar-collapse" style="margin-left: 470px;">
+        <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
+			<button class="btn-primary" style="border-radius:5px" type="button" onclick="window.open('/neworder')">NEW ORDER</button>
+		</ul>
 		<ul class="custom-navbar-nav navbar-nav ">
 			<li _class="nav-item active"> <a class="navbar-link" href="index.html">Dashboard</</li>
 			<li><a class="navbar-link" href="/orders">Orders</a></li>
-			<li><a class="navbar-link" href="/ordertypesummary">My Business</a></li>
-			<li><a class="navbar-link" href="services.html">Configurations</a></li>
+			<!-- <li><a class="navbar-link" href="/ordertypesummary">My Business</a></li>
+			<li><a class="navbar-link" href="services.html">Configurations</a></li> -->
 		</ul>
-		<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
-			<button class="btn-primary" style="border-radius:5px" type="button" onclick="window.open('/neworder')">NEW ORDER</button>
-		</ul>
+
 		<ul _class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5" style="margin-right: auto !important">
 			<div class="logindetails_container">
                 <!--start login panel -->

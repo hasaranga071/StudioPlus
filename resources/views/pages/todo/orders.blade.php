@@ -1094,6 +1094,7 @@
                         <th>Size</th>
                         <th>F# Size</th>
                         <th>Frame Type</th>
+                        <th>Quantity</th>
                         <th>Cost (LKR)</th>
                         <th>Status</th>
                     </tr>
@@ -1111,10 +1112,11 @@
                     <td id="framesize_fr_${orderitem.frorderitemmapkey}">${orderitem.frame_size.size}</td>
                     <td id="sframesize_fr_${orderitem.frorderitemmapkey}">${orderitem.subframe_size?.framesize || ''}</td>
                     <td id="sframetype_fr_${orderitem.frorderitemmapkey}">${orderitem.subframe_type?.subframetype || ''}</td>
+                    <td id="quantity_fr_${orderitem.frorderitemmapkey}">${orderitem.quantity}</td>
                     <td>${orderitem.totalcost}</td>
                     <td>Inprogress</td>
                     <td>                
-                        <button id="editBtn_fr_${orderitem.frorderitemmapkey}" type="button" class="btn btn-primary" onClick="edititem_fr(${orderitem.frorderitemmapkey},'${orderitem.frame_type.frametype}','${orderitem.frame_size.size}','${orderitem.subframe_size?.framesize || ''}','${orderitem.subframe_type?.subframetype || ''}')">
+                        <button id="editBtn_fr_${orderitem.frorderitemmapkey}" type="button" class="btn btn-primary" onClick="edititem_fr(${orderitem.frorderitemmapkey},'${orderitem.frame_type.frametype}','${orderitem.frame_size.size}','${orderitem.subframe_size?.framesize || ''}','${orderitem.subframe_type?.subframetype || ''}','${orderitem.quantity}')">
                             Edit 
                         </button>
                         <button style="display:none" id="saveBtn_fr_${orderitem.frorderitemmapkey}" 
@@ -1137,6 +1139,7 @@
         let frsizeElement = document.getElementById(`framesize_fr_${frorderitemmapkey}`);
         let sfrsizeElement = document.getElementById(`sframesize_fr_${frorderitemmapkey}`);
         let sfrtypeElement = document.getElementById(`sframetype_fr_${frorderitemmapkey}`);
+        let quantityElement = document.getElementById(`quantity_fr_${frorderitemmapkey}`);
 
         if (frtypeElement.textContent==='Fiber Frame'){
             // Ensure elements exist before accessing properties
@@ -1148,6 +1151,7 @@
             let frsize = frsizeElement.textContent.trim();
             let sfrsize = sfrsizeElement.textContent.trim();
             let sfrtype = sfrtypeElement.textContent.trim();
+            let quantity = quantityElement.textContent.trim();
 
             // Convert Frame Size to Dropdown
             frsizeElement.innerHTML =
@@ -1181,6 +1185,11 @@
                         @endforeach
                     </select>
                 </div>`;
+
+            quantityElement.innerHTML =
+                `<div class="col-md-4">
+                    <input style="border-color: orange;" id="input_quantity_fr_${frorderitemmapkey}" value="${quantity}" name="quantity" type="text" class="form-control input-md" required="">
+                </div>`;
         }
         else{
             // Ensure elements exist before accessing properties
@@ -1190,6 +1199,7 @@
             }
 
             let frsize = frsizeElement.textContent.trim();
+            let quantity = quantityElement.textContent.trim();
 
             // Convert Frame Size to Dropdown
             frsizeElement.innerHTML =
@@ -1201,6 +1211,11 @@
                         @endforeach
                     </select>
                 </div>`; 
+            
+            quantityElement.innerHTML =
+                `<div class="col-md-4">
+                    <input style="border-color: orange;" id="input_quantity_fr_${frorderitemmapkey}" value="${quantity}" name="quantity" type="text" class="form-control input-md" required="">
+                </div>`;
         }
 
         
@@ -1220,6 +1235,8 @@
 
         setTimeout(() => {
             if (frametype === 'Fiber Frame') {
+
+                quantity = document.querySelector(`#input_quantity_fr_${frorderitemmapkey}`)?.value || "";
 
                 // Read Frame Size Element
                 let framesizeElement = document.querySelector(`#input_frsize_fr_${frorderitemmapkey}`);
@@ -1284,6 +1301,9 @@
                     _token: "{{ csrf_token() }}"
                 };
             } else {
+
+                quantity = document.querySelector(`#input_quantity_fr_${frorderitemmapkey}`)?.value || "";
+
                 let framesizeElement = document.querySelector(`#input_frsize_fr_${frorderitemmapkey}`);
                 if (!framesizeElement) {
                     console.error("Frame size dropdown not found!");
@@ -1341,6 +1361,7 @@
                     document.getElementById(`framesize_fr_${frorderitemmapkey}`).innerHTML = framesizeText;
                     document.getElementById(`sframesize_fr_${frorderitemmapkey}`).innerHTML = sframesizeText;
                     document.getElementById(`sframetype_fr_${frorderitemmapkey}`).innerHTML = sframetypeText;
+                    document.getElementById(`quantity_fr_${frorderitemmapkey}`).innerHTML = quantity;
 
                     document.getElementById(`editBtn_fr_${frorderitemmapkey}`).style.display = "inline-block";
                     document.getElementById(`saveBtn_fr_${frorderitemmapkey}`).style.display = "none";
@@ -1378,6 +1399,237 @@
                 }
             });
         }, 300);
+    }
+
+    function addnew_fr(orderkey) {
+        if (!orderkey) {
+            alert("Order key is missing!");
+            return;
+        }
+
+        // Get order type key
+        var otk = document.getElementById("otk")?.value || "";
+
+        // Get the table body
+        let table = document.getElementById("itemtable_fr").getElementsByTagName('tbody')[0];
+
+        // Create a new row
+        let newRow = table.insertRow();
+        newRow.style.backgroundColor = "lightblue";
+
+        // Insert cells into the row
+        let typecell = newRow.insertCell(0);
+        let sizecell = newRow.insertCell(1);
+        let sfsizecell = newRow.insertCell(2);
+        let sftypecell = newRow.insertCell(3);
+        let quantitycell = newRow.insertCell(4);
+        let costcell = newRow.insertCell(5);
+        let statuscell = newRow.insertCell(6);
+        let actioncell = newRow.insertCell(7);
+
+        setTimeout(() => loadOrderTypeItems(otk), 300);
+
+        // Create unique IDs for the new row elements
+        let rowId = Date.now(); // Simple way to make unique IDs per row
+
+        // Frame Type Cell
+        typecell.innerHTML = `
+            <div class="col-md-4">
+                <select style="width:150px;" id="ftype_fr_${rowId}" name="frametype" class="form-control"
+                    onchange="toggleSubFrameFields_fr('${rowId}')">
+                    <option value="">Select Type</option>
+                    @foreach ($frameTypes as $frameType)
+                        <option value="{{ $frameType->frametypekey }}">{{ $frameType->frametype }}</option>
+                    @endforeach
+                </select>
+            </div>
+        `;
+
+        // Frame Size Cell
+        sizecell.innerHTML = `
+            <div class="col-md-4">
+                <select style="width:150px;" id="fsize_fr_${rowId}" name="framesize" class="form-control">
+                    <option value="">Select Size</option>
+                    @foreach ($frameSizes as $frameSize)
+                        <option value="{{ $frameSize->framesizekey }}">{{ $frameSize->size }}</option>
+                    @endforeach
+                </select>
+            </div>
+        `;
+
+        // Sub Frame Size Cell
+        sfsizecell.innerHTML = `
+            <div class="col-md-4">
+                <select style="width:150px;" id="sfsize_fr_${rowId}" name="sframesize" class="form-control" disabled>
+                    <option value="">Select F# Size</option>
+                    @foreach ($frameSubSizes as $frameSubSize)
+                        <option value="{{ $frameSubSize->subframesizekey }}">{{ $frameSubSize->framesize }}</option>
+                    @endforeach
+                </select>
+            </div>
+        `;
+
+        // Sub Frame Type Cell
+        sftypecell.innerHTML = `
+            <div class="col-md-4">
+                <select style="width:150px;" id="sftype_fr_${rowId}" name="sframetype" class="form-control" disabled>
+                    <option value="">Select Frame Type</option>
+                    @foreach ($frameSubTypes as $frameSubType)
+                        <option value="{{ $frameSubType->subframetypekey }}">{{ $frameSubType->subframetype }}</option>
+                    @endforeach
+                </select>
+            </div>
+        `;
+
+        quantitycell.innerHTML = `
+            <div class="col-md-4">
+                <input id="quantity_fr" name="quantity" type="text" class="form-control input-md" required="" style="width:150px;">
+            </div>
+        `;
+
+        costcell.innerHTML = '';
+        statuscell.innerHTML = '';
+
+        actioncell.innerHTML = `
+            <button id="addBtn_fr_${rowId}" type="button" class="btn btn-primary" onClick="additem_fr(this)" data-orderkey="${orderkey}">
+                Add
+            </button>
+        `;
+    }
+
+    function toggleSubFrameFields_fr(rowId) {
+        const frameTypeSelect = document.getElementById(`ftype_fr_${rowId}`);
+        const selectedText = frameTypeSelect.options[frameTypeSelect.selectedIndex].text;
+
+        const sfSizeSelect = document.getElementById(`sfsize_fr_${rowId}`);
+        const sfTypeSelect = document.getElementById(`sftype_fr_${rowId}`);
+
+        if (selectedText === "Fiber Frame") {
+            sfSizeSelect.disabled = false;
+            sfTypeSelect.disabled = false;
+        } else {
+            sfSizeSelect.disabled = true;
+            sfSizeSelect.selectedIndex = 0;
+
+            sfTypeSelect.disabled = true;
+            sfTypeSelect.selectedIndex = 0;
+        }
+    }
+
+    function additem_fr(btn) {
+        let orderkey = btn.getAttribute("data-orderkey"); 
+        // Get the row (parent of the button)
+        let row = btn.closest("tr");
+
+        // Extract input values
+        let frametype = row.querySelector("select[name='frametype']").value;
+        let framesize = row.querySelector("select[name='framesize']").value;
+        let sframesize = row.querySelector("select[name='sframesize']").value;
+        let sframetype = row.querySelector("select[name='sframetype']").value;
+        let quantity = row.querySelector("input[name='quantity']").value;
+
+        $.ajax({
+            url: "/order-itemsummary/" + orderkey,
+            type: "GET",
+            data: {
+                orderkey: orderkey,
+                _token: "{{ csrf_token() }}" // CSRF Token for security
+            },
+            success: function (response) {
+                if (!response || response.length === 0) {
+                    console.log("No order items returned from server.");
+                } else {
+                    console.log('data call working ...............')
+                    createitem_fr(response,{ orderkey, frametype, framesize, sframesize, sframetype, quantity});
+                }
+            }
+        });
+    }
+
+    function createitem_fr(orderdata,formData) {
+        if (!orderdata.orderItems.length) {
+            $('#orderitemResults').html(
+                '<div class="alert alert-info">No Order Items found.</div>'
+            );
+            return;
+        }
+
+        let orderdetail=orderdata.orderItems[0];
+
+        let dataarray = {
+            studiokey: orderdetail.order.studiokey,
+            orderid: orderdetail.order.orderid,
+            ordertypekey: orderdetail.order.ordertypekey,
+            ordertype: orderdetail.order.order_type.ordertype,
+            customerkey: orderdetail.order.customerkey,
+            isurgent: orderdetail.order.isurgent,
+            discount: orderdetail.order.discount,
+            paidcost: orderdetail.order.paidcost,
+            deliverydate: orderdetail.order.deliverydate,
+            remarks: orderdetail.order.remarks,
+            iscompleted:0,
+            frametypekey : formData.frametype,
+            framesizekey : formData.framesize,
+            subframesizekey : formData.sframesize,
+            subframetypekey : formData.sframetype,
+            quantity:formData.quantity,
+            _token: "{{ csrf_token() }}"  
+        };
+
+        $.ajax({
+                url: "{{ route('storeOrder_fr') }}",
+                type: "POST",
+                data: dataarray,
+                success: function (response) {
+                    console.log("Order Item Created Successfully:", response);
+
+                    setTimeout(() => {
+                        loaditemdata_FR(formData.orderkey);
+                        $('orderviewmodal_FR').modal('show');
+                    }, 500);
+
+                    let addBtn = document.getElementById("addBtn_fr");
+                    if (addBtn) {
+                        addBtn.style.display = "none";
+                    }
+                    // render table
+                    let flashbody = '<div id="flash-message" class="alert alert-success" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);z-index: 9999; padding: 15px 20px; font-size: 16px; text-align: center;background-color: #434844; color: white; border-radius: 5px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);">'
+                    + response.message +'!</div>';
+
+                    $("body").prepend(flashbody);
+                        // Automatically remove the message after 2 seconds
+                        setTimeout(function() {
+                            $("#flash-message").fadeOut("slow", function() {
+                                $(this).remove();
+                            });
+                        }, 2000);
+                },
+                error: function (xhr, status, error) {
+                console.error("Error:", xhr.responseText);
+
+                // Attempt to parse the JSON response
+                try {
+                    var response = JSON.parse(xhr.responseText);
+
+                    // Display the error message using SweetAlert2
+                    Swal.fire({
+                        title: 'Failed to Create Order',
+                        text: response.message || 'An unexpected error occurred.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                } catch (e) {
+                    // If parsing fails, display a generic error message
+                    Swal.fire({
+                        title: 'Failed to Create Order',
+                        text: 'An unexpected error occurred.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            }
+        });
+               
     }
 
 
@@ -1433,7 +1685,7 @@
                 <tr data-id="${orderitem.ecorderitemmapkey}_EC">
                     <td id="name_${orderitem.ecorderitemmapkey}_EC">${orderitem.order_type_item.itemname}</td>
                     <td id="orionum_${orderitem.ecorderitemmapkey}_EC">${orderitem.original_order.orderid}</td>
-                    <td id="hcopy_${orderitem.ecorderitemmapkey}_EC">${orderitem.quantity}</td>
+                    <td id="hcopy_${orderitem.ecorderitemmapkey}_EC">${orderitem.hardcopyquantity}</td>
                     <td id="edittype_${orderitem.ecorderitemmapkey}_EC">${orderitem.edit_type.edittype}</td>
                     <td>${orderitem.totalcost}</td>
                     <td>Inprogress</td>
@@ -1441,10 +1693,10 @@
 
                     <td>
 
-                    <button id="editBtn_${orderitem.ecorderitemmapkey}_EC" type="button" class="btn btn-primary" onClick="edititem_EC(${orderitem.ecorderitemmapkey},${orderitem.quantity},0,'${orderitem.edit_type.edittype}','${orderitem.original_order.orderid}','${orderitem.original_order.orderkey}')">
+                    <button id="editBtn_${orderitem.ecorderitemmapkey}_EC" type="button" class="btn btn-primary" onClick="edititem_EC(${orderitem.ecorderitemmapkey},${orderitem.hardcopyquantity},0,'${orderitem.edit_type.edittype}','${orderitem.original_order.orderid}','${orderitem.original_order.orderkey}')">
                         Edit
                     </button>
-                    <button style="display:none" id="saveBtn_${orderitem.ecorderitemmapkey}_EC" type="button" class="btn btn-primary" onClick="saveitem(${orderitem.ecorderitemmapkey},${orderitem.hardcopyquantity},${orderitem.softcopyquantity},'${orderitem.edit_type.edittype}')">
+                    <button style="display:none" id="saveBtn_${orderitem.ecorderitemmapkey}_EC" type="button" class="btn btn-primary" onClick="saveitem_EC(${orderitem.ecorderitemmapkey},${orderitem.hardcopyquantity},${orderitem.softcopyquantity},'${orderitem.edit_type.edittype}')">
                         Save
                     </button>
                     <button class="btn btn-delete remove-order" data-id="${orderitem.ecorderitemmapkey}_EC"><i class="fas fa-trash"></i></button>

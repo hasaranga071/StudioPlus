@@ -59,10 +59,11 @@ class NewOrderController extends Controller
     $orderTypes = StudioOrderType::all();
     $editTypes = StudioEdittype::all();
     $lamTypes = StudioLaminatingtype::all();
+    $frameTypes = StudioFrametype::all();
     $frameSizes = StudioFramesize::all();
     $frameSubSizes = StudioSubframesize::all();
     $frameSubTypes = StudioSubframetype::all();
-    return view ('pages.todo.orders', compact('orderTypes','editTypes','lamTypes','frameSizes','frameSubSizes','frameSubTypes'));
+    return view ('pages.todo.orders', compact('orderTypes','editTypes','lamTypes','frameTypes','frameSizes','frameSubSizes','frameSubTypes'));
   }
 
   public function orderssearch()
@@ -71,10 +72,11 @@ class NewOrderController extends Controller
     $orderTypes = StudioOrderType::all();
     $editTypes = StudioEdittype::all();
     $lamTypes = StudioLaminatingtype::all();
+    $frameTypes = StudioFrametype::all();
     $frameSizes = StudioFramesize::all();
     $frameSubSizes = StudioSubframesize::all();
     $frameSubTypes = StudioSubframetype::all();
-    return view ('pages.todo.orderssearch', compact('orderTypes','editTypes','lamTypes','frameSizes','frameSubSizes','frameSubTypes'));
+    return view ('pages.todo.orderssearch', compact('orderTypes','editTypes','lamTypes','frameTypes','frameSizes','frameSubSizes','frameSubTypes'));
   }
 
   public function ordertypeitems($ordertypekey)
@@ -176,6 +178,7 @@ class NewOrderController extends Controller
     }
 
     else if ($ordertype=='Extra Copy')
+    
     {
         // Search order items based on orderkey
         $orderitems = StudioOrderItemMapEC::with('editType','lamType','orderTypeItem','order.orderType','originalOrder') // Assuming 'itemType' is the relationship method

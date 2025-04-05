@@ -2177,7 +2177,8 @@ function printDiv(type,divId,onum,odate,dateDiv) {
     let printWindow = window.open('', '', 'width=800,height=600');
 
     let clonedContent = basicDetailsElement.cloneNode(true);
-    clonedContent.querySelector("#addnew").remove();
+    if (type!='EC'){
+    clonedContent.querySelector("#addnew").remove();}
     clonedContent.querySelector("#"+dateDiv).remove();
     clonedContent.querySelector("div[id^='date']").remove();
 

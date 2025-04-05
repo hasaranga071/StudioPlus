@@ -40,7 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/delete-order-item/{ssorderitemmapkey}', [StudioOrderController::class, 'deleteOrderItem']);
 
     // order type summary
-    Route::get('/ordertypesummary', [OrderSummaryController::class, 'index'])->name('ordertypesummary');
+    Route::get('/index', [OrderSummaryController::class, 'index'])->name('index');
     Route::get('/api/ordertypesummary', [OrderSummaryController::class, 'getOrderTypeSummary']);
     Route::get('/api/orderearningummary', [OrderSummaryController::class, 'getOrderEarningSummary']);
 

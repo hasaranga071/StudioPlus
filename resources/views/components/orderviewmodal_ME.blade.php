@@ -5,13 +5,21 @@
     <span id="okey_me" style="display:none;"></span>
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalTitle">Order Details | <span id="onum_me"></span></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div style='display:flex'>
+                    <h5 class="modal-title" id="modalTitle">Order Details | <span id="onum_me"></span></h5>
+                    
+                </div>
+                <div>
+                        
+                    <button style="border-radius: 5px;" onClick="printDiv('ME','printArea_ME',document.getElementById('onum_me').textContent,document.getElementById('odate_me').textContent,'odate_me')">
+                    Print
+                    </button>
+                </div>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" id="printArea_ME">
                 <div class="container mx-auto py-6">
                     <div class="bg-white rounded-lg shadow-md p-6" style="display:flex;gap:10%">
-                        <div>
+                        <div id="date">
                             <p class="text-gray-600">Created Date</p>
                             <span class="font-semibold" id="odate_me"></span>
                         </div>
@@ -36,13 +44,12 @@
                             <span class="font-semibold" id="status_me"></span>
                         </div>
                     </div></br>
-                    <button onClick="addnew_me(document.getElementById('okey_me').textContent.trim())" type="button" style="float:left;font-size:15px" class="btn btn-info">+ Add Item</button></br></br>
+                    <button id="addnew" onClick="addnew_me(document.getElementById('okey_me').textContent.trim())" type="button" style="float:left;font-size:15px" class="btn btn-info">+ Add Item</button></br></br>
                     
                    
 
-                    <div id="orderitemResults_me" class="overflow-x-auto">
-                       
-                        </div>
+                    <div id="orderitemResults_me" class="overflow-x-auto"></div>
+                    <div id="ordersummary_me" class="overflow-x-auto"></div>
                     </div>
             </div>
             <div class="modal-footer">

@@ -11,7 +11,7 @@
                     
                 </div>
                 <div>
-                    <button style="border-radius: 5px;" onClick="printDiv('printArea',document.getElementById('onum').textContent,document.getElementById('odate').textContent)">
+                    <button style="border-radius: 5px;" onClick="printDiv('printArea',document.getElementById('onum').textContent,document.getElementById('odate').textContent,'odate')">
                     Print
                     </button>
                 </div>
@@ -51,6 +51,7 @@
                     
         
                     <div id="orderitemResults" class="overflow-x-auto"></div>
+                    <div id="ordersummary" class="overflow-x-auto"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

@@ -67,8 +67,8 @@
                                 </tbody>
                                 <tfoot>
                                     <tr class="bg-blue-200 font-bold text-black">
-                                        <td style="text-align: left;font-weight:600;">TOTAL</td>
-                                        <td style="text-align: left;font-weight:600;" id="totalOrders">0</td>
+                                        <td style="text-align: left;font-weight:600;background: #e8e8e5;">TOTAL</td>
+                                        <td style="text-align: left;font-weight:600;background: #e8e8e5;" id="totalOrders">0</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -113,8 +113,8 @@
                                 </tbody>
                                 <tfoot>
                                     <tr class="font-weight-bold">
-                                        <td style="text-align: left;font-weight:600;">TOTAL</td>
-                                        <td style="text-align: left;font-weight:600;" id="totalEarnings">0</td>
+                                        <td style="text-align: left;font-weight:600;background: #e8e8e5;">TOTAL</td>
+                                        <td style="text-align: left;font-weight:600;background: #e8e8e5;" id="totalEarnings">0</td>
                                     </tr>
                                 </tfoot>
                             </table>

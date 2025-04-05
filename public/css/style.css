@@ -185,7 +185,8 @@ a {
     box-shadow: none; }
   .btn.btn-primary {
     background: #3b5d50;
-    border-color: #3b5d50; }
+    border-color: #3b5d50; 
+    width: auto;}
     .btn.btn-primary:hover {
       background: #314d43;
       border-color: #314d43; }
@@ -773,7 +774,6 @@ width: 120px;
 .container{
   padding-left: 0px !important;
   margin-left: initial;
-  color:white;
 }
 .section_title{
   padding-top: 10px;

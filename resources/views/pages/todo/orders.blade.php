@@ -59,7 +59,7 @@
                         </div>
                     </div>
                     <div class="col-md-4" style="padding-top: 30px;margin-left: 35px;">
-                        <button type="submit" onClick="loaddata()" id="searchBtn" class="btn btn-primary">Search</button>
+                        <button type="submit" onClick="loaddata()" id="searchBtn" class="btn btn-primary">Go</button>
                     </div>
 
                 </Form>
@@ -2354,7 +2354,7 @@ function printDiv(type,divId,onum,odate,dateDiv) {
         <div class="">
             <h3>`+sname+` Studio</h3>
             <h5>`+saddress+`</h5>
-            <h5>`+sphone+`</h5>
+            <h5>T.P. `+sphone+`</h5>
 
         </div>
         <div class="invoice-details">

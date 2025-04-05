@@ -1813,7 +1813,10 @@
 
     }
 
+    let globalOrderItems_EC = [];
+
     function displayOrderitemSearchResults_EC(orderitems,okey) {
+        
 
         if (!orderitems.orderItems.length) {
             $('#orderitemResults_EC').html(
@@ -1821,6 +1824,8 @@
             );
             return;
         }
+
+        globalOrderItems_EC = orderitems.orderItems;
 
         let html = `
             <table id="itemtable_EC" class="table table-bordered">
@@ -1837,27 +1842,29 @@
             </thead>
             <tbody>
         `;
-
+        
         orderitems.orderItems.forEach(function(orderitem) {
             html += `
-                <tr id="row_${orderitem.ecorderitemmapkey}" data-id="${orderitem.ecorderitemmapkey}_EC">
-                    <td id="name_${orderitem.ecorderitemmapkey}_EC">${orderitem.order_type_item.itemname}</td>
-                    <td id="orionum_${orderitem.ecorderitemmapkey}_EC">${orderitem.original_order.orderid}</td>
-                    <td id="hcopy_${orderitem.ecorderitemmapkey}_EC">${orderitem.hardcopyquantity}</td>
-                    <td id="edittype_${orderitem.ecorderitemmapkey}_EC">${orderitem.edit_type?.edittype || ""}</td>
+                <tr id="row_ec_${orderitem.ecorderitemmapkey}" data-id="${orderitem.ecorderitemmapkey}">
+                    <td id="name_ec_${orderitem.ecorderitemmapkey}">${orderitem.order_type_item.itemname}</td>
+                    <td id="orionum_ec_${orderitem.ecorderitemmapkey}">${orderitem.original_order.orderid}</td>
+                    <td id="hcopy_ec_${orderitem.ecorderitemmapkey}">${orderitem.hardcopyquantity}</td>
+                    <td id="edittype_ec_${orderitem.ecorderitemmapkey}">${orderitem.edit_type.edittype}</td>
                     <td>${orderitem.totalcost}</td>
                     <td>Inprogress</td>
 
 
                     <td>
 
-                    <button id="editBtn_${orderitem.ecorderitemmapkey}_EC" type="button" class="btn btn-primary" onClick="edititem_EC(${orderitem.ecorderitemmapkey},${orderitem.hardcopyquantity},0,'${orderitem.edit_type?.edittype || ""}','${orderitem.original_order.orderid}','${orderitem.original_order.orderkey}')">
+                    <button id="editBtn_ec_${orderitem.ecorderitemmapkey}" type="button" class="btn btn-primary" onClick="edititem_ec(${orderitem.ecorderitemmapkey},${orderitem.hardcopyquantity},0,'${orderitem.edit_type.edittype}','${orderitem.original_order.orderid}','${orderitem.original_order.orderkey}')">
                         Edit
                     </button>
-                    <button style="display:none" id="saveBtn_${orderitem.ecorderitemmapkey}_EC" type="button" class="btn btn-primary" onClick="saveitem_EC(${orderitem.ecorderitemmapkey},${orderitem.hardcopyquantity},${orderitem.softcopyquantity},'${orderitem.edit_type?.edittype || ""}')">
-                        Save
+                    <button style="display:none" id="saveBtn_ec_${orderitem.ecorderitemmapkey}" 
+                        type="button" class="btn btn-primary" 
+                        onClick="saveitem_ec(${orderitem.ecorderitemmapkey},'${orderitem.order.order_type.ordertype}',${orderitem.order.order_type.ordertypekey},${orderitem.order_type_item.ordertypeitemkey},'${orderitem.lam_type?.lamtypekey || ''}',${orderitem.order.customerkey},${orderitem.order.isurgent},'${orderitem.order.discount}','${orderitem.order.paidcost}',${orderitem.order.studiokey},'${orderitem.order.orderid}','${orderitem.order.deliverydate}','${orderitem.order.remarks}',${orderitem.hardcopyquantity},'${orderitem.edit_type.edittype}','${orderitem.original_order.orderid}','${orderitem.original_order.orderkey}')">
+                        Save 
                     </button>
-                    <button class="btn btn-delete remove-order" data-id="${orderitem.ecorderitemmapkey}_EC"><i class="fas fa-trash"></i></button>
+                    <button class="btn btn-delete remove-order" data-id="del_ec_${orderitem.ecorderitemmapkey}"><i class="fas fa-trash"></i></button>
                     </td>
 
                 </tr>
@@ -1915,50 +1922,157 @@
             }
         });
 
-        // end order summary
 
     }
 
-    function edititem_EC(ecorderitemmapkey,hcopy,scopy,edittype,oriorde){
-        document.getElementById("editBtn_"+ecorderitemmapkey+"_EC").style.display = "none";
-        document.getElementById("saveBtn_"+ecorderitemmapkey+"_EC").style.display = "inline-block";
-        document.getElementById("hcopy_"+ecorderitemmapkey+"_EC").innerHTML='<div class="col-md-4" id="scopymain"> <input style="border-color: orange;" id="hcopy" value="'+hcopy+'" name="hcopy" type="text" class="form-control input-md" required=""> </div>'
-        document.getElementById("edittype_"+ecorderitemmapkey+"_EC").innerHTML=
-        '<div class="col-md-4" id="edittypemain"><select  style="width:150px;border-color: orange;" id="edittype" name="edittype" class="form-control"> <option value="">'+edittype+'</option> @foreach ($editTypes as $editType) <option value="{{ $editType->edittypekey }}">{{ $editType->edittype }}</option> @endforeach </select> </div>'
+    // function edititem_EC(ecorderitemmapkey,hcopy,scopy,edittype,oriorde){
+    //     document.getElementById("editBtn_ec_"+ecorderitemmapkey).style.display = "none";
+    //     document.getElementById("saveBtn_ec_"+ecorderitemmapkey).style.display = "inline-block";
+    //     document.getElementById("hcopy_ec_"+ecorderitemmapkey).innerHTML='<div class="col-md-4" id="scopymain"> <input style="border-color: orange;" id="hcopy" value="'+hcopy+'" name="hcopy" type="text" class="form-control input-md" required=""> </div>'
+    //     document.getElementById("edittype_ec_"+ecorderitemmapkey).innerHTML=
+    //     '<div class="col-md-4" id="edittypemain"><select  style="width:150px;border-color: orange;" id="input_edittype_fr_${frorderitemmapkey}" name="edittype" class="form-control"> <option value="">'+edittype+'</option> @foreach ($editTypes as $editType) <option value="{{ $editType->edittypekey }}">{{ $editType->edittype }}</option> @endforeach </select> </div>'
+    // }
+
+    function edititem_ec(ecorderitemmapkey) {
+        // Get latest values from the table before editing
+        let hcopyElement = document.getElementById(`hcopy_ec_${ecorderitemmapkey}`);
+        let edittypeElement = document.getElementById(`edittype_ec_${ecorderitemmapkey}`);
+
+        // Ensure elements exist before accessing properties
+        if (!hcopyElement || !edittypeElement) {
+            console.error(`Error: One or more elements missing for item ${ecorderitemmapkey}`);
+            return;
+        }
+        let hcopy = hcopyElement.textContent.trim();
+        let edittype = edittypeElement.textContent.trim(); // Get displayed edit type text
+
+        // Hide Edit Button, Show Save Button
+        document.getElementById(`editBtn_ec_${ecorderitemmapkey}`).style.display = "none";
+        document.getElementById(`saveBtn_ec_${ecorderitemmapkey}`).style.display = "inline-block";
+
+        // Convert Hard Copy to Input Field
+        hcopyElement.innerHTML =
+            `<div class="col-md-4">
+                <input style="border-color: orange;" id="input_hcopy_ec_${ecorderitemmapkey}" value="${hcopy}" name="hcopy" type="text" class="form-control input-md" required="">
+            </div>`;
+
+        // Convert Edit Type to Dropdown
+        edittypeElement.innerHTML =
+            `<div class="col-md-4">
+                <select style="width:150px;border-color: orange;" id="input_edittype_ec_${ecorderitemmapkey}" name="edittype" class="form-control">
+                    <option value="">Select Edit Type</option>
+                    @foreach ($editTypes as $editType) 
+                        <option value="{{ $editType->edittypekey }}" ${edittype === '{{ $editType->edittype }}' ? 'selected' : ''}>{{ $editType->edittype }}</option>
+                    @endforeach
+                </select>
+            </div>`;
+    }
+    
+    function saveitem_ec(ecorderitemmapkey, ordertype, ordertypekey, ordertypeitemkey, lamtypekey, customerkey, isurgent, discount, paidcost, studiokey, orderid, deliverydate, remarks, hcopy, edittype, originalorderid, originalorderkey) {
+        dataarray=[]    
+        setTimeout(() => {
+            let hcopy = document.querySelector(`#input_hcopy_ec_${ecorderitemmapkey}`)?.value || "";            
+
+            let edittypeElement = document.querySelector(`#input_edittype_ec_${ecorderitemmapkey}`);
+            if (!edittypeElement) {
+                console.error("Edit type dropdown not found!");
+                return;
+            }
+            let edittype = edittypeElement.options[edittypeElement.selectedIndex].value;
+            let edittypeText = edittypeElement.options[edittypeElement.selectedIndex].text;
+
+            if (!edittype) {
+                console.error("Error: edittype is not defined or empty!");
+                return; // Prevent the function from executing further if edittype is missing.
+            }
+
+            let dataarray = {
+                studiokey: studiokey,
+                orderid: orderid,
+                ordertypekey: ordertypekey,
+                ordertype: ordertype,
+                ecorderitemmapkey: ecorderitemmapkey,
+                ordertypeitemkey: ordertypeitemkey,
+                originalorderkey: originalorderkey,
+                edittypekey: edittype,
+                lamtypekey: lamtypekey,
+                customerkey: customerkey,
+                isurgent: isurgent,
+                discount: discount,
+                paidcost: paidcost,
+                softcopycount: 0,  // Fix: Use correct variable
+                hardcopycount: hcopy,   // Fix: Use correct variable
+                deliverydate: deliverydate,
+                remarks: remarks,
+                iscompleted: 0,
+                _token: "{{ csrf_token() }}" // Required for Laravel AJAX requests
+            };
+            console.log('Data Sent:', dataarray);
+            
+            let cells = document.querySelectorAll(`#row_ec_${ecorderitemmapkey} td`);
+            cells.forEach(cell => {
+                if (cell.cellIndex !== 0) { 
+                    cell.contentEditable = "false";
+                    cell.classList.remove("edit-mode");
+                }
+            });
+
+            $.ajax({
+                    url: "{{ route('storeOrder_ss') }}",
+                    type: "POST",
+                    data: dataarray,
+                    success: function (response) {
+                        console.log("Order Updated Successfully:", response);
+
+                        // Update the table row with latest values
+                        document.getElementById(`hcopy_ec_${ecorderitemmapkey}`).innerHTML = hcopy;
+                        document.getElementById(`edittype_ec_${ecorderitemmapkey}`).innerHTML = edittypeText;
+
+                        // Show Edit Button Again
+                        document.getElementById(`editBtn_ec_${ecorderitemmapkey}`).style.display = "inline-block";
+                        document.getElementById(`saveBtn_ec_${ecorderitemmapkey}`).style.display = "none";
+                        // render table
+                        let flashbody = '<div id="flash-message" class="alert alert-success" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);z-index: 9999; padding: 15px 20px; font-size: 16px; text-align: center;background-color: #434844; color: white; border-radius: 5px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);">'
+                        + response.message +'!</div>';
+
+                        $("body").prepend(flashbody);
+                            // Automatically remove the message after 2 seconds
+                            setTimeout(function() {
+                                $("#flash-message").fadeOut("slow", function() {
+                                    $(this).remove();
+                                });
+                            }, 2000);
+                    },
+                    error: function (xhr, status, error) {
+                    console.error("Error:", xhr.responseText);
+
+                    // Attempt to parse the JSON response
+                    try {
+                        var response = JSON.parse(xhr.responseText);
+
+                        // Display the error message using SweetAlert2
+                        Swal.fire({
+                            title: 'Failed to Create Order',
+                            text: response.message || 'An unexpected error occurred.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    } catch (e) {
+                        // If parsing fails, display a generic error message
+                        Swal.fire({
+                            title: 'Failed to Create Order',
+                            text: 'An unexpected error occurred.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                }
+            });
+        }, 300);        
     }
 
     // ******************* End Extra Copy Retated ************************
-
-    // function addnew(){
-    //     // Get the table body
-    //     let table = document.getElementById("itemtable").getElementsByTagName('tbody')[0];
-
-    //     // Create a new row
-    //     let newRow = table.insertRow();
-    //     newRow.style.backgroundColor = "lightblue";
-
-    //     // Insert cells into the row
-    //     let itemcell = newRow.insertCell(0);
-    //     let hcopycell = newRow.insertCell(1);
-    //     let scopycell = newRow.insertCell(2);
-    //     let edittypecell = newRow.insertCell(3);
-    //     let costcell = newRow.insertCell(4);
-    //     let statuscell = newRow.insertCell(5);
-    //     let actioncell = newRow.insertCell(6);
-
-
-    //     // Add content to the new cells
-    //     var otk=document.getElementById("otk").value;
-    //     itemcell.innerHTML = '<div style="width:150px;border-color: blue;border-width: 2px;" class="col-md-4" id="Sittings"> <select id="sittingitem" name="item" class="form-control" _style="width: 57%;"> <option value="">Select Item Type</option></select> </div>';
-    //     setTimeout(loadOrderTypeItems(otk), 3000)
-    //     hcopycell.innerHTML ='<div class="col-md-4" id="hcopymain"> <input id="hcopy" name="hcopy" type="text" class="form-control input-md" required=""> </div>'
-    //     scopycell.innerHTML ='<div class="col-md-4" id="scopymain"> <input id="scopy" name="scopy" type="text" class="form-control input-md" required=""> </div>'
-    //     edittypecell.innerHTML='<div class="col-md-4" id="edittypemain"><select  style="width:150px;" id="edittype" name="edittype" class="form-control"> @foreach ($editTypes as $editType) <option value="">Select Edit Type</option><option value="{{ $editType->edittypekey }}">{{ $editType->edittype }}</option> @endforeach </select> </div>'
-    //     costcell.innerHTML=''
-    //     statuscell.innerHTML=''
-    //     actioncell.innerHTML='<button id="addBtn" type="button" class="btn btn-primary" onClick="">Add</button>'
-    // }
-
+    
     function loadOrderTypeItems(otk) {
         var ordertypekey = otk;
         if (ordertypekey) {
@@ -2042,6 +2156,7 @@
         {
             $("#orderModal_EC").modal("show");
             $("#onum_EC").text(no);
+            $("#okey_EC").text(key);
             $("#odate_EC").text(odate);
             $("#customer_EC").text(customer);
             $("#total_EC").text(total);

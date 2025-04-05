@@ -42,6 +42,7 @@ Route::middleware('auth')->group(function () {
     // order type summary
     Route::get('/ordertypesummary', [OrderSummaryController::class, 'index'])->name('ordertypesummary');
     Route::get('/api/ordertypesummary', [OrderSummaryController::class, 'getOrderTypeSummary']);
+    Route::get('/api/orderearningummary', [OrderSummaryController::class, 'getOrderEarningSummary']);
 
 
     //EditType

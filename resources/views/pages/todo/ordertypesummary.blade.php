@@ -29,8 +29,9 @@
                 <div class="card-header">
                     <h5 class="card-title mb-0">Order Distribution <span id="chart-date-range"></span></h5>
                 </div>
-                <div class="card-body d-flex justify-content-center align-items-center" style="min-height: 400px;">
+                <div class="card-body d-flex justify-content-center align-items-center" style="min-height: 400px;" >
                     <canvas id="orderChart" height="350" width="350"></canvas>
+                    <div id="orderbox" style="position: absolute;"></div>
                 </div>
             </div>
         </div>
@@ -41,7 +42,7 @@
                 <div class="card-header">
                     <h5 class="card-title mb-0">Order Summary <span id="table-date-range"></span></h5>
                 </div>
-                <div class="card-body" style="min-height: 400px;">
+                <div class="card-body" style="min-height: 400px;" id="tablebbox">
                     <div class="table-responsive">
                         <table class="table" id="summaryTable">
                             <thead>
@@ -177,6 +178,13 @@
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
+                    if(data.length==0){
+                        document.getElementById("orderbox").style.display = "flex";
+                        document.getElementById('orderbox').textContent = "No Orders";
+                    }
+                    else{
+                        document.getElementById("orderbox").style.display = "none";
+                    }
                     const orderLabels = data.map(order => order.orderType);
                     const orderCounts = data.map(order => order.total);
 

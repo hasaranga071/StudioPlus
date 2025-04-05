@@ -14,7 +14,7 @@
 			<button class="btn-primary" style="border-radius:5px" type="button" onclick="window.open('/neworder')">NEW ORDER</button>
 		</ul>
 		<ul class="custom-navbar-nav navbar-nav ">
-			<li _class="nav-item active"> <a class="navbar-link" href="/ordertypesummary">Dashboard</</li>
+			<li _class="nav-item active"> <a class="navbar-link" href="/index">Dashboard</</li>
 			<li><a class="navbar-link" href="/orders">Orders</a></li>
 			<!-- <li><a class="navbar-link" href="/ordertypesummary">My Business</a></li>
 			<li><a class="navbar-link" href="services.html">Configurations</a></li> -->

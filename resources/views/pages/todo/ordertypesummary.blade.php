@@ -314,18 +314,43 @@
                         orderChart.destroy();
                     }
 
+                    // Create gradient fills for 3D effect
+                    const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4CAF50', '#9C27B0', '#FF9800', '#607D8B', '#795548'];
+                    const backgroundColors = [];
+                    const hoverColors = [];
+
+                    for (let i = 0; i < colors.length && i < data.length; i++) {
+                        // Create gradient for each slice
+                        const gradient = orderCtx.createLinearGradient(0, 0, 0, 400);
+                        gradient.addColorStop(0, colors[i]);
+                        gradient.addColorStop(1, shadeColor(colors[i], -30)); // Darker shade of the same color
+                        backgroundColors.push(gradient);
+
+                        // Create hover gradient
+                        const hoverGradient = orderCtx.createLinearGradient(0, 0, 0, 400);
+                        hoverGradient.addColorStop(0, colors[i]);
+                        hoverGradient.addColorStop(1, shadeColor(colors[i], -10)); // Slightly darker for hover
+                        hoverColors.push(hoverGradient);
+                    }
+
                     orderChart = new Chart(orderCtx, {
                         type: 'pie',
                         data: {
                             labels: orderLabels,  // Order Type Names
                             datasets: [{
                                 data: orderCounts, // Order Counts
-                                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4CAF50', '#9C27B0', '#FF9800', '#607D8B', '#795548'],
+                                backgroundColor: backgroundColors,
+                                hoverBackgroundColor: hoverColors,
+                                borderColor: '#ffffff',
+                                borderWidth: 2,
+                                hoverBorderWidth: 3,
+                                hoverBorderColor: '#ffffff'
                             }]
                         },
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
+                            cutout: '25%', // Creates a donut chart for better 3D appearance
                             plugins: {
                                 legend: {
                                     display: true,
@@ -349,11 +374,49 @@
                                     },
                                     formatter: function(value, context) {
                                         return value; // Display the count value
-                                    }
+                                    },
+                                    // Add shadow to the labels for 3D effect
+                                    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+                                    textShadowBlur: 3,
+                                    textShadowOffsetX: 1,
+                                    textShadowOffsetY: 1
                                 }
+                            },
+                            elements: {
+                                arc: {
+                                    borderRadius: 6,
+                                }
+                            },
+                            layout: {
+                                padding: {
+                                    top: 10,
+                                    bottom: 10,
+                                    left: 10,
+                                    right: 10
+                                }
+                            },
+                            animation: {
+                                animateRotate: true,
+                                animateScale: true
                             }
                         },
-                        plugins: [ChartDataLabels]
+                        plugins: [ChartDataLabels, {
+                            id: '3dEffect',
+                            beforeDraw: function(chart) {
+                                const ctx = chart.ctx;
+                                ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                                ctx.shadowBlur = 15;
+                                ctx.shadowOffsetX = 10;
+                                ctx.shadowOffsetY = 10;
+                            },
+                            afterDraw: function(chart) {
+                                const ctx = chart.ctx;
+                                ctx.shadowColor = 'transparent';
+                                ctx.shadowBlur = 0;
+                                ctx.shadowOffsetX = 0;
+                                ctx.shadowOffsetY = 0;
+                            }
+                        }]
                     });
 
                     // Update the summary table
@@ -385,18 +448,43 @@
                         earningsChart.destroy();
                     }
 
+                    // Create gradient fills for 3D effect
+                    const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4CAF50', '#9C27B0', '#FF9800', '#607D8B', '#795548'];
+                    const backgroundColors = [];
+                    const hoverColors = [];
+
+                    for (let i = 0; i < colors.length && i < data.length; i++) {
+                        // Create gradient for each slice
+                        const gradient = earningsCtx.createLinearGradient(0, 0, 0, 400);
+                        gradient.addColorStop(0, colors[i]);
+                        gradient.addColorStop(1, shadeColor(colors[i], -30)); // Darker shade of the same color
+                        backgroundColors.push(gradient);
+
+                        // Create hover gradient
+                        const hoverGradient = earningsCtx.createLinearGradient(0, 0, 0, 400);
+                        hoverGradient.addColorStop(0, colors[i]);
+                        hoverGradient.addColorStop(1, shadeColor(colors[i], -10)); // Slightly darker for hover
+                        hoverColors.push(hoverGradient);
+                    }
+
                     earningsChart = new Chart(earningsCtx, {
                         type: 'pie',
                         data: {
                             labels: earningLabels,  // Order Type Names
                             datasets: [{
                                 data: earningAmounts, // Earnings Amounts
-                                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4CAF50', '#9C27B0', '#FF9800', '#607D8B', '#795548'],
+                                backgroundColor: backgroundColors,
+                                hoverBackgroundColor: hoverColors,
+                                borderColor: '#ffffff',
+                                borderWidth: 2,
+                                hoverBorderWidth: 3,
+                                hoverBorderColor: '#ffffff'
                             }]
                         },
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
+                            cutout: '25%', // Creates a donut chart for better 3D appearance
                             plugins: {
                                 legend: {
                                     display: true,
@@ -420,16 +508,79 @@
                                     },
                                     formatter: function(value, context) {
                                         return 'Rs ' + value.toFixed(0); // Display the earnings value
-                                    }
+                                    },
+                                    // Add shadow to the labels for 3D effect
+                                    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+                                    textShadowBlur: 3,
+                                    textShadowOffsetX: 1,
+                                    textShadowOffsetY: 1
                                 }
+                            },
+                            elements: {
+                                arc: {
+                                    borderRadius: 6,
+                                }
+                            },
+                            layout: {
+                                padding: {
+                                    top: 10,
+                                    bottom: 10,
+                                    left: 10,
+                                    right: 10
+                                }
+                            },
+                            animation: {
+                                animateRotate: true,
+                                animateScale: true
                             }
                         },
-                        plugins: [ChartDataLabels]
+                        plugins: [ChartDataLabels, {
+                            id: '3dEffect',
+                            beforeDraw: function(chart) {
+                                const ctx = chart.ctx;
+                                ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                                ctx.shadowBlur = 15;
+                                ctx.shadowOffsetX = 10;
+                                ctx.shadowOffsetY = 10;
+                            },
+                            afterDraw: function(chart) {
+                                const ctx = chart.ctx;
+                                ctx.shadowColor = 'transparent';
+                                ctx.shadowBlur = 0;
+                                ctx.shadowOffsetX = 0;
+                                ctx.shadowOffsetY = 0;
+                            }
+                        }]
                     });
 
                     // Update the earnings summary table
                     updateEarningsSummaryTable(data);
                 });
+        }
+
+        // Helper function to adjust color brightness
+        function shadeColor(color, percent) {
+            let R = parseInt(color.substring(1, 3), 16);
+            let G = parseInt(color.substring(3, 5), 16);
+            let B = parseInt(color.substring(5, 7), 16);
+
+            R = parseInt(R * (100 + percent) / 100);
+            G = parseInt(G * (100 + percent) / 100);
+            B = parseInt(B * (100 + percent) / 100);
+
+            R = (R < 255) ? R : 255;
+            G = (G < 255) ? G : 255;
+            B = (B < 255) ? B : 255;
+
+            R = Math.max(0, R);
+            G = Math.max(0, G);
+            B = Math.max(0, B);
+
+            const RR = ((R.toString(16).length === 1) ? "0" + R.toString(16) : R.toString(16));
+            const GG = ((G.toString(16).length === 1) ? "0" + G.toString(16) : G.toString(16));
+            const BB = ((B.toString(16).length === 1) ? "0" + B.toString(16) : B.toString(16));
+
+            return "#" + RR + GG + BB;
         }
 
         // Function to update the order summary table
@@ -558,7 +709,7 @@
         // Ensure chart is completely rendered
         setTimeout(() => {
             window.print();
-        }, 1000); // Increased timeout to ensure charts are fully rendered
+        }, 1500); // Increased timeout to ensure charts are fully rendered
     }
 </script>
 

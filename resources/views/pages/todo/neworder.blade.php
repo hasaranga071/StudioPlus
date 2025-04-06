@@ -64,7 +64,7 @@
                         <input id="email" name="email" type="text" class="form-control input-md">
                         <span class="error-message text-danger" id="email-error"></span>
                     </div>
-                    <div class="col-md-4" style="padding-top: 30px;">
+                    <div class="col-md-4" style="padding-top: 24px;">
                         <button type="submit" class="btn btn-primary">Register</button>
                     </div>
                 </div>
@@ -85,7 +85,7 @@
                         <label class="col-md-4 control-label" for="search-phone">Phone</label>
                         <input id="search-phone" name="phonenumber" type="text" class="form-control input-md">
                     </div>
-                    <div class="col-md-4" style="padding-top: 30px;">
+                    <div class="col-md-4" style="padding-top: 24px;">
                         <button type="submit" class="btn btn-primary">Search</button>
                     </div>
                 </div>
@@ -240,11 +240,11 @@
                 </div>
                 <div class="form-group" style="display:flex;gap: 50px">
                     <div class="col-md-4" id="hcopymain">
-                        <label class="col-md-4 control-label">H-Copies</label>
+                        <label _class="col-md-4 control-label">H-Copies</label>
                         <input id="hcopy" name="hcopy" type="text" class="form-control input-md" required="">
                     </div>
                     <div class="col-md-4" id="scopymain">
-                        <label class="col-md-4 control-label">S-Copies</label>
+                        <label _class="col-md-4 control-label">S-Copies</label>
                         <input id="scopy" name="scopy" type="text" class="form-control input-md" required="">
                     </div>
 
@@ -252,11 +252,11 @@
 
                 <div class="form-group" style="display:flex;gap: 50px">
                     <div class="col-md-4">
-                        <label class="col-md-4 control-label">Paid Amount</label>
+                        <label _class="col-md-4 control-label">Paid Amount</label>
                         <input id="paidamount" name="paidamount" type="text" class="form-control input-md" required="">
                     </div>
-                    <div class="col-md-4">
-                        <label class="col-md-4 control-label">Discount</label>
+                    <div class="col-md-4" >
+                        <label _class="col-md-4 control-label">Discount</label>
                         <input id="discount" name="discount" type="text" class="form-control input-md" required="">
                     </div>
 
@@ -866,7 +866,7 @@
                                 <td>${item.order.deliverydate.split(' ')[0]}</td>
                                 <td>${item.order.isurgent == 1 ? 'Yes' : 'No'}</td>
                                 <td>Rs ${item.totalcost}</td>
-                                <td>${item.order.remarks}</td>
+                                <td>${item.order.remarks || ''}</td>
                                 <td class="order-actions">
                                     <button class="btn btn-edit edit-order"><i class="fas fa-edit"></i></button>
                                     <button class="btn btn-delete remove-order" data-orderid="${item.orderkey}" data-id="${item.ssorderitemmapkey}"><i class="fas fa-trash"></i></button>
@@ -955,7 +955,7 @@
                                 <td>${item.order.deliverydate.split(' ')[0]}</td>
                                 <td>${item.order.isurgent == 1 ? 'Yes' : 'No'}</td>
                                 <td>Rs ${item.totalcost}</td>
-                                <td>${item.order.remarks}</td>
+                                <td>${item.order.remarks || ''}</td>
                                 <td class="order-actions">
                                     <button class="btn btn-edit edit-order"><i class="fas fa-edit"></i></button>
                                     <button class="btn btn-delete remove-order" data-orderid="${item.orderkey}" data-id="${item.ecorderitemmapkey}"><i class="fas fa-trash"></i></button>
@@ -1046,7 +1046,7 @@
                                 <td>${item.order.deliverydate.split(' ')[0]}</td>
                                 <td>${item.order.isurgent == 1 ? 'Yes' : 'No'}</td>
                                 <td>Rs ${item.totalcost}</td>
-                                <td>${item.order.remarks}</td>
+                                <td>${item.order.remarks || ''}</td>
                                 <td class="order-actions">
                                     <button class="btn btn-edit edit-order"><i class="fas fa-edit"></i></button>
                                     <button class="btn btn-delete remove-order" data-orderid="${item.orderkey}" data-id="${item.meorderitemmapkey}"><i class="fas fa-trash"></i></button>
@@ -1137,7 +1137,7 @@
                                 <td>${item.order.deliverydate.split(' ')[0]}</td>
                                 <td>${item.order.isurgent == 1 ? 'Yes' : 'No'}</td>
                                 <td>Rs ${item.totalcost}</td>
-                                <td>${item.order.remarks}</td>
+                                <td>${item.order.remarks || ''}</td>
                                 <td class="order-actions">
                                     <button class="btn btn-edit edit-order"><i class="fas fa-edit"></i></button>
                                     <button class="btn btn-delete remove-order" data-orderid="${item.orderkey}" data-id="${item.frorderitemmapkey}"><i class="fas fa-trash"></i></button>

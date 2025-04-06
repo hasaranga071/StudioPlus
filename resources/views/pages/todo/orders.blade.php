@@ -298,7 +298,13 @@
                 <tbody>
         `;
 
+        console.log('Order Item',orderitems)
+
         orderitems.orderItems.forEach(function(orderitem) {
+
+            const isCompleted = orderitem.iscompleted === 1;
+            const doneBtnClass = isCompleted ? 'btn-done' : 'btn-secondary';
+            const doneBtnStyle = isCompleted ? '' : 'style="background-color: gray;"';
 
             html += `
                 <tr id="row_${orderitem.ssorderitemmapkey}">
@@ -311,16 +317,27 @@
 
 
                     <td id="tdeditBtn_${orderitem.ssorderitemmapkey}">
+                        <div class="d-flex justify-content-start gap-1">
+                            <button id="doneBtn_${orderitem.ssorderitemmapkey}"
+                                type="button"
+                                class="btn done-item ${doneBtnClass} text-white mark-done-btn"
+                                data-id="${orderitem.ssorderitemmapkey}"
+                                data-orderid="${orderitem.orderkey}"
+                                title="Mark as Done"
+                                ${doneBtnStyle}>
+                                <i class="fas fa-check"></i>
+                            </button>
 
-                        <button id="editBtn_${orderitem.ssorderitemmapkey}" type="button" class="btn btn-primary" onClick="edititem(${orderitem.ssorderitemmapkey},${orderitem.hardcopyquantity},${orderitem.softcopyquantity},'${orderitem.edit_type.edittype}')">
-                            Edit
-                        </button>
-                        <button style="display:none" id="saveBtn_${orderitem.ssorderitemmapkey}"
-                            type="button" class="btn btn-primary"
-                            onClick="saveitem(${orderitem.ssorderitemmapkey},'${orderitem.order.order_type.ordertype}',${orderitem.order.order_type.ordertypekey},${orderitem.order_type_item.ordertypeitemkey},'${orderitem.lam_type?.lamtypekey || ''}',${orderitem.order.customerkey},${orderitem.order.isurgent},'${orderitem.order.discount}','${orderitem.order.paidcost}',${orderitem.order.studiokey},'${orderitem.order.orderid}','${orderitem.order.deliverydate}','${orderitem.order.remarks}')">
-                            Save
-                        </button>
-                        <button class="btn btn-delete remove-order" data-orderid="${orderitem.orderkey}" data-id="${orderitem.ssorderitemmapkey}" data-type="${orderitem.order.order_type.ordertype}"><i class="fas fa-trash"></i></button>
+                            <button id="editBtn_${orderitem.ssorderitemmapkey}" type="button" title="Edit" class="btn btn-edit edit-order" onClick="edititem(${orderitem.ssorderitemmapkey},${orderitem.hardcopyquantity},${orderitem.softcopyquantity},'${orderitem.edit_type.edittype}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button style="display:none" id="saveBtn_${orderitem.ssorderitemmapkey}"
+                                type="button" class="btn btn-save save-order"title="Save"
+                                onClick="saveitem(${orderitem.ssorderitemmapkey},'${orderitem.order.order_type.ordertype}',${orderitem.order.order_type.ordertypekey},${orderitem.order_type_item.ordertypeitemkey},'${orderitem.lam_type?.lamtypekey || ''}',${orderitem.order.customerkey},${orderitem.order.isurgent},'${orderitem.order.discount}','${orderitem.order.paidcost}',${orderitem.order.studiokey},'${orderitem.order.orderid}','${orderitem.order.deliverydate}','${orderitem.order.remarks}')">
+                                <i class="fas fa-save"></i>
+                            </button>
+                            <button id="dltBtn_${orderitem.ssorderitemmapkey}" class="btn btn-delete remove-order" data-orderid="${orderitem.orderkey}" data-id="${orderitem.ssorderitemmapkey}" data-type="${orderitem.order.order_type.ordertype}"><i class="fas fa-trash"></i></button>
+                        </dev>
                     </td>
 
                 </tr>
@@ -349,6 +366,8 @@
 
         // Hide Edit Button, Show Save Button
         document.getElementById(`editBtn_${ssorderitemmapkey}`).style.display = "none";
+        document.getElementById(`dltBtn_${ssorderitemmapkey}`).style.display = "none";
+        document.getElementById(`doneBtn_${ssorderitemmapkey}`).style.display = "none";
         document.getElementById(`saveBtn_${ssorderitemmapkey}`).style.display = "inline-block";
 
         // Convert Hard Copy to Input Field
@@ -440,6 +459,8 @@
 
                         // Show Edit Button Again
                         document.getElementById(`editBtn_${ssorderitemmapkey}`).style.display = "inline-block";
+                        document.getElementById(`dltBtn_${ssorderitemmapkey}`).style.display = "inline-block";
+                        document.getElementById(`doneBtn_${ssorderitemmapkey}`).style.display = "inline-block";
                         document.getElementById(`saveBtn_${ssorderitemmapkey}`).style.display = "none";
                         // render table
                         let flashbody = '<div id="flash-message" class="alert alert-success" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);z-index: 9999; padding: 15px 20px; font-size: 16px; text-align: center;background-color: #434844; color: white; border-radius: 5px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);">'
@@ -771,7 +792,10 @@
         `;
 
         orderitems.orderItems.forEach(function(orderitem) {
-        
+            const isCompleted = orderitem.iscompleted === 1;
+            const doneBtnClass = isCompleted ? 'btn-done' : 'btn-secondary';
+            const doneBtnStyle = isCompleted ? '' : 'style="background-color: gray;"';
+
             html += `
                 <tr id="row_me_${orderitem.meorderitemmapkey}">
                     <td id="name_me_${orderitem.meorderitemmapkey}">${orderitem.order_type_item.itemname}</td>
@@ -783,16 +807,26 @@
                 
 
                     <td>
-                
-                    <button id="editBtn_me_${orderitem.meorderitemmapkey}" type="button" class="btn btn-primary" onClick="edititem_me(${orderitem.ssorderitemmapkey},${orderitem.hardcopyquantity},${orderitem.softcopyquantity},'${orderitem.edit_type.edittype}')">
-                        Edit 
-                    </button>
-                    <button style="display:none" id="saveBtn_me_${orderitem.meorderitemmapkey}" 
-                        type="button" class="btn btn-primary" 
-                        onClick="saveitem_me(${orderitem.meorderitemmapkey},'${orderitem.order.order_type.ordertype}',${orderitem.order.order_type.ordertypekey},${orderitem.order_type_item.ordertypeitemkey},'${orderitem.lam_type?.lamtypekey || ''}',${orderitem.order.customerkey},${orderitem.order.isurgent},'${orderitem.order.discount}','${orderitem.order.paidcost}',${orderitem.order.studiokey},'${orderitem.order.orderid}','${orderitem.order.deliverydate}','${orderitem.order.remarks}')">
-                        Save 
-                    </button>
-                    <button class="btn btn-delete remove-order" data-orderid="${orderitem.orderkey}" data-id="${orderitem.meorderitemmapkey}" data-type="${orderitem.order.order_type.ordertype}"><i class="fas fa-trash"></i></button>
+                        <div class="d-flex justify-content-start gap-1">
+                            <button id="doneBtn_me${orderitem.meorderitemmapkey}"
+                                type="button"
+                                class="btn done-item ${doneBtnClass} text-white mark-done-btn"
+                                data-id="${orderitem.meorderitemmapkey}"
+                                data-orderid="${orderitem.orderkey}"
+                                title="Mark as Done"
+                                ${doneBtnStyle}>
+                                <i class="fas fa-check"></i>
+                            </button>                
+                            <button id="editBtn_me${orderitem.meorderitemmapkey}" type="button" title="Edit" class="btn btn-edit edit-order" onClick="edititem_me(${orderitem.meorderitemmapkey})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button style="display:none" id="saveBtn_me${orderitem.meorderitemmapkey}" 
+                                type="button" class="btn btn-save save-order"title="Save" 
+                                onClick="saveitem_me(${orderitem.meorderitemmapkey},'${orderitem.order.order_type.ordertype}',${orderitem.order.order_type.ordertypekey},${orderitem.order_type_item.ordertypeitemkey},'${orderitem.lam_type?.lamtypekey || ''}',${orderitem.order.customerkey},${orderitem.order.isurgent},'${orderitem.order.discount}','${orderitem.order.paidcost}',${orderitem.order.studiokey},'${orderitem.order.orderid}','${orderitem.order.deliverydate}','${orderitem.order.remarks}')">
+                                <i class="fas fa-save"></i>
+                            </button>
+                            <button id="dltBtn_me${orderitem.meorderitemmapkey}" class="btn btn-delete remove-order" data-orderid="${orderitem.orderkey}" data-id="${orderitem.meorderitemmapkey}" data-type="${orderitem.order.order_type.ordertype}"><i class="fas fa-trash"></i></button>
+                        </dev>
                     </td>
 
                 </tr>
@@ -810,7 +844,7 @@
         let edittypeElement = document.getElementById(`edittype_me_${meorderitemmapkey}`);
 
         // Ensure elements exist before accessing properties
-        if (!hcopyElement || !scopyElement || !edittypeElement || !lamtypeElement) {
+        if (!hcopyElement || !edittypeElement || !lamtypeElement) {
             console.error(`Error: One or more elements missing for item ${meorderitemmapkey}`);
             return;
         }
@@ -820,8 +854,10 @@
         let edittype = edittypeElement.textContent.trim(); // Get displayed edit type text
 
         // Hide Edit Button, Show Save Button
-        document.getElementById(`editBtn_me_${meorderitemmapkey}`).style.display = "none";
-        document.getElementById(`saveBtn_me_${meorderitemmapkey}`).style.display = "inline-block";
+        document.getElementById(`editBtn_me${meorderitemmapkey}`).style.display = "none";
+        document.getElementById(`dltBtn_me${meorderitemmapkey}`).style.display = "none";
+        document.getElementById(`doneBtn_me${meorderitemmapkey}`).style.display = "none";
+        document.getElementById(`saveBtn_me${meorderitemmapkey}`).style.display = "inline-block";
 
         // Convert Laminate Type to Input Field
         lamtypeElement.innerHTML =
@@ -926,8 +962,10 @@
                         document.getElementById(`lamtype_me_${meorderitemmapkey}`).innerHTML = lamtypeText;
 
                         // Show Edit Button Again
-                        document.getElementById(`editBtn_me_${meorderitemmapkey}`).style.display = "inline-block";
-                        document.getElementById(`saveBtn_me_${meorderitemmapkey}`).style.display = "none";
+                        document.getElementById(`editBtn_me${meorderitemmapkey}`).style.display = "inline-block";
+                        document.getElementById(`dltBtn_me${meorderitemmapkey}`).style.display = "inline-block";
+                        document.getElementById(`doneBtn_me${meorderitemmapkey}`).style.display = "inline-block";
+                        document.getElementById(`saveBtn_me${meorderitemmapkey}`).style.display = "none";
                         // render table
                         let flashbody = '<div id="flash-message" class="alert alert-success" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);z-index: 9999; padding: 15px 20px; font-size: 16px; text-align: center;background-color: #434844; color: white; border-radius: 5px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);">'
                         + response.message +'!</div>';
@@ -1265,7 +1303,10 @@
         console.log('Order detailsaaa',orderitems);
 
         orderitems.orderItems.forEach(function(orderitem) {
-        
+            const isCompleted = orderitem.iscompleted === 1;
+            const doneBtnClass = isCompleted ? 'btn-done' : 'btn-secondary';
+            const doneBtnStyle = isCompleted ? '' : 'style="background-color: gray;"';
+
             html += `
                 <tr id="row_fr_${orderitem.frorderitemmapkey}">
                     <td id="frametype_fr_${orderitem.frorderitemmapkey}">${orderitem.frame_type.frametype}</td>
@@ -1275,16 +1316,27 @@
                     <td id="quantity_fr_${orderitem.frorderitemmapkey}">${orderitem.quantity}</td>
                     <td>${orderitem.totalcost}</td>
                     <td>Inprogress</td>
-                    <td>                
-                        <button id="editBtn_fr_${orderitem.frorderitemmapkey}" type="button" class="btn btn-primary" onClick="edititem_fr(${orderitem.frorderitemmapkey},'${orderitem.frame_type.frametype}','${orderitem.frame_size.size}','${orderitem.subframe_size?.framesize || ''}','${orderitem.subframe_type?.subframetype || ''}','${orderitem.quantity}')">
-                            Edit 
-                        </button>
-                        <button style="display:none" id="saveBtn_fr_${orderitem.frorderitemmapkey}" 
-                            type="button" class="btn btn-primary" 
-                            onClick="saveitem_fr(${orderitem.frorderitemmapkey},'${orderitem.order.order_type?.ordertype || ''}',${orderitem.order.order_type?.ordertypekey || ''},'${orderitem.order_type_item?.ordertypeitemkey || ''}','${orderitem.lam_type?.lamtypekey || ''}','${orderitem.order?.customerkey || ''}',${orderitem.order?.isurgent},'${orderitem.order?.discount || ''}','${orderitem.order?.paidcost || ''}',${orderitem.order?.studiokey || ''},'${orderitem.order?.orderid || ''}','${orderitem.order?.deliverydate || ''}','${orderitem.order?.remarks || ''}','${orderitem.frame_type.frametype}','${orderitem.frame_type.frametypekey}','${orderitem.quantity}')">
-                            Save 
-                        </button>
-                        <button class="btn btn-delete remove-order" data-orderid="${orderitem.orderkey}" data-id="${orderitem.frorderitemmapkey}" data-type="${orderitem.order.order_type.ordertype}"><i class="fas fa-trash"></i></button>
+                    <td> 
+                        <div class="d-flex justify-content-start gap-1">
+                            <button id="doneBtn_fr_${orderitem.frorderitemmapkey}"
+                                type="button"
+                                class="btn done-item ${doneBtnClass} text-white mark-done-btn"
+                                data-id="${orderitem.frorderitemmapkey}"
+                                data-orderid="${orderitem.orderkey}"
+                                title="Mark as Done"
+                                ${doneBtnStyle}>
+                                <i class="fas fa-check"></i>
+                            </button>               
+                            <button id="editBtn_fr_${orderitem.frorderitemmapkey}" type="button" class="btn btn-edit edit-order" onClick="edititem_fr(${orderitem.frorderitemmapkey},'${orderitem.frame_type.frametype}','${orderitem.frame_size.size}','${orderitem.subframe_size?.framesize || ''}','${orderitem.subframe_type?.subframetype || ''}','${orderitem.quantity}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button style="display:none" id="saveBtn_fr_${orderitem.frorderitemmapkey}" 
+                                type="button" class="btn btn-save save-order"title="Save" 
+                                onClick="saveitem_fr(${orderitem.frorderitemmapkey},'${orderitem.order.order_type?.ordertype || ''}',${orderitem.order.order_type?.ordertypekey || ''},'${orderitem.order_type_item?.ordertypeitemkey || ''}','${orderitem.lam_type?.lamtypekey || ''}','${orderitem.order?.customerkey || ''}',${orderitem.order?.isurgent},'${orderitem.order?.discount || ''}','${orderitem.order?.paidcost || ''}',${orderitem.order?.studiokey || ''},'${orderitem.order?.orderid || ''}','${orderitem.order?.deliverydate || ''}','${orderitem.order?.remarks || ''}','${orderitem.frame_type.frametype}','${orderitem.frame_type.frametypekey}','${orderitem.quantity}')">
+                                <i class="fas fa-save"></i>
+                            </button>
+                            <button id="dltBtn_fr_${orderitem.frorderitemmapkey}" class="btn btn-delete remove-order" data-orderid="${orderitem.orderkey}" data-id="${orderitem.frorderitemmapkey}" data-type="${orderitem.order.order_type.ordertype}"><i class="fas fa-trash"></i></button>
+                        </div>
                     </td>
                 </tr>
             `;
@@ -1383,6 +1435,8 @@
 
         // Hide Edit Button, Show Save Button
         document.getElementById(`editBtn_fr_${frorderitemmapkey}`).style.display = "none";
+        document.getElementById(`dltBtn_fr_${frorderitemmapkey}`).style.display = "none";
+        document.getElementById(`doneBtn_fr_${frorderitemmapkey}`).style.display = "none";
         document.getElementById(`saveBtn_fr_${frorderitemmapkey}`).style.display = "inline-block";
 
         
@@ -1525,6 +1579,8 @@
                     document.getElementById(`quantity_fr_${frorderitemmapkey}`).innerHTML = quantity;
 
                     document.getElementById(`editBtn_fr_${frorderitemmapkey}`).style.display = "inline-block";
+                    document.getElementById(`dltBtn_fr_${frorderitemmapkey}`).style.display = "inline-block";
+                    document.getElementById(`doneBtn_fr_${frorderitemmapkey}`).style.display = "inline-block";
                     document.getElementById(`saveBtn_fr_${frorderitemmapkey}`).style.display = "none";
 
                     // Flash message
@@ -1848,6 +1904,10 @@
         `;
         
         orderitems.orderItems.forEach(function(orderitem) {
+            const isCompleted = orderitem.iscompleted === 1;
+            const doneBtnClass = isCompleted ? 'btn-done' : 'btn-secondary';
+            const doneBtnStyle = isCompleted ? '' : 'style="background-color: gray;"';
+
             html += `
                 <tr id="row_ec_${orderitem.ecorderitemmapkey}" data-id="${orderitem.ecorderitemmapkey}">
                     <td id="name_ec_${orderitem.ecorderitemmapkey}">${orderitem.order_type_item.itemname}</td>
@@ -1859,16 +1919,27 @@
 
 
                     <td>
+                        <div class="d-flex justify-content-start gap-1">
+                            <button id="doneBtn_ec_${orderitem.ecorderitemmapkey}"
+                                type="button"
+                                class="btn done-item ${doneBtnClass} text-white mark-done-btn"
+                                data-id="${orderitem.ecorderitemmapkey}"
+                                data-orderid="${orderitem.orderkey}"
+                                title="Mark as Done"
+                                ${doneBtnStyle}>
+                                <i class="fas fa-check"></i>
+                            </button>
 
-                    <button id="editBtn_ec_${orderitem.ecorderitemmapkey}" type="button" class="btn btn-primary" onClick="edititem_ec(${orderitem.ecorderitemmapkey},${orderitem.hardcopyquantity},0,'${orderitem.edit_type.edittype}','${orderitem.original_order.orderid}','${orderitem.original_order.orderkey}')">
-                        Edit
-                    </button>
-                    <button style="display:none" id="saveBtn_ec_${orderitem.ecorderitemmapkey}" 
-                        type="button" class="btn btn-primary" 
-                        onClick="saveitem_ec(${orderitem.ecorderitemmapkey},'${orderitem.order.order_type.ordertype}',${orderitem.order.order_type.ordertypekey},${orderitem.order_type_item.ordertypeitemkey},'${orderitem.lam_type?.lamtypekey || ''}',${orderitem.order.customerkey},${orderitem.order.isurgent},'${orderitem.order.discount}','${orderitem.order.paidcost}',${orderitem.order.studiokey},'${orderitem.order.orderid}','${orderitem.order.deliverydate}','${orderitem.order.remarks}',${orderitem.hardcopyquantity},'${orderitem.edit_type.edittype}','${orderitem.original_order.orderid}','${orderitem.original_order.orderkey}')">
-                        Save 
-                    </button>
-                    <button class="btn btn-delete remove-order" data-orderid="${orderitem.orderkey}" data-id="${orderitem.ecorderitemmapkey}" data-type="${orderitem.order.order_type.ordertype}"><i class="fas fa-trash"></i></button>
+                            <button id="editBtn_ec_${orderitem.ecorderitemmapkey}" type="button" title="Edit" class="btn btn-edit edit-order" onClick="edititem_ec(${orderitem.ecorderitemmapkey})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button style="display:none" id="saveBtn_ec_${orderitem.ecorderitemmapkey}" 
+                                type="button" class="btn btn-save save-order"title="Save" 
+                                onClick="saveitem_ec(${orderitem.ecorderitemmapkey},'${orderitem.order.order_type.ordertype}',${orderitem.order.order_type.ordertypekey},${orderitem.order_type_item.ordertypeitemkey},'${orderitem.lam_type?.lamtypekey || ''}',${orderitem.order.customerkey},${orderitem.order.isurgent},'${orderitem.order.discount}','${orderitem.order.paidcost}',${orderitem.order.studiokey},'${orderitem.order.orderid}','${orderitem.order.deliverydate}','${orderitem.order.remarks}',${orderitem.hardcopyquantity},'${orderitem.edit_type.edittype}','${orderitem.original_order.orderid}','${orderitem.original_order.orderkey}')">
+                                <i class="fas fa-save"></i>
+                            </button>
+                            <button id="dltBtn_ec_${orderitem.ecorderitemmapkey}" class="btn btn-delete remove-order" data-orderid="${orderitem.orderkey}" data-id="${orderitem.ecorderitemmapkey}" data-type="${orderitem.order.order_type.ordertype}"><i class="fas fa-trash"></i></button>
+                        </div>
                     </td>
 
                 </tr>
@@ -1944,6 +2015,8 @@
 
         // Hide Edit Button, Show Save Button
         document.getElementById(`editBtn_ec_${ecorderitemmapkey}`).style.display = "none";
+        document.getElementById(`dltBtn_ec_${ecorderitemmapkey}`).style.display = "none";
+        document.getElementById(`doneBtn_ec_${ecorderitemmapkey}`).style.display = "none";
         document.getElementById(`saveBtn_ec_${ecorderitemmapkey}`).style.display = "inline-block";
 
         // Convert Hard Copy to Input Field
@@ -2026,6 +2099,8 @@
 
                         // Show Edit Button Again
                         document.getElementById(`editBtn_ec_${ecorderitemmapkey}`).style.display = "inline-block";
+                        document.getElementById(`dltBtn_ec_${ecorderitemmapkey}`).style.display = "inline-block";
+                        document.getElementById(`doneBtn_ec_${ecorderitemmapkey}`).style.display = "inline-block";
                         document.getElementById(`saveBtn_ec_${ecorderitemmapkey}`).style.display = "none";
                         // render table
                         let flashbody = '<div id="flash-message" class="alert alert-success" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);z-index: 9999; padding: 15px 20px; font-size: 16px; text-align: center;background-color: #434844; color: white; border-radius: 5px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);">'
@@ -2069,6 +2144,47 @@
 
     // ******************* End Extra Copy Retated ************************
 
+    // Mark as completed
+    $(document).on('click', '.mark-done-btn', function() {
+        const itemId = $(this).data('id');
+        const orderkey = $(this).data('orderid');
+        const $button = $(this);
+
+        // Optional: Confirm before marking as done
+        Swal.fire({
+            title: "Mark as Complete?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#0cc584",
+            confirmButtonText: "Yes",
+            cancelButtonText: "Cancel"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Example AJAX call (update iscompleted in DB)
+                $.ajax({
+                    url: `/update-complete-status/${itemId}`,
+                    type: "POST",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'), // CSRF token
+                        orderkey: orderkey
+                    },
+                    success: function(response) {
+                        // Change color if update is successful
+                        $button
+                            .removeClass('btn-secondary')
+                            .addClass('btn-done')
+                            .attr('style', '') // Remove gray style if any
+
+                        Swal.fire("Marked as complete!", "", "success");
+                    },
+                    error: function(xhr) {
+                        Swal.fire("Error!", "Could not update item.", "error");
+                    }
+                });
+            }
+        });
+    });
+
     // Remove order from summary table
     $(document).on('click', '.remove-order', function(event) {
         event.preventDefault();
@@ -2076,10 +2192,6 @@
         let orderItemId = $(this).data('id');
         let orderkey = $(this).data('orderid');
         let ordertype = $(this).data('type');
-
-        console.log('orderItemId:', orderItemId);
-        console.log('orderkey:', orderkey);
-        console.log('ordertype:', ordertype);
 
         Swal.fire({
             title: "Are you sure?",

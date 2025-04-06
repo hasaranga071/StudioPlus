@@ -38,6 +38,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/order-itemsummary/{orderkey}', [NewOrderController::class, 'getOrderItemSummary'])->name('orderitemsummary_ss');
     Route::get('/order-item-details/{ssorderitemmapkey}', [NewOrderController::class, 'getOrderItemDetails'])->name('orderitemdetail_ss');
     Route::delete('/delete-order-item/{ssorderitemmapkey}', [StudioOrderController::class, 'deleteOrderItem']);
+    Route::post('/update-complete-status/{id}', [StudioOrderController::class, 'markAsCompleted']);
 
     // order type summary
     Route::get('/index', [OrderSummaryController::class, 'index'])->name('index');

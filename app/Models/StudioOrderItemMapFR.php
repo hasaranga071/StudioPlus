@@ -27,6 +27,7 @@ class StudioOrderItemMapFR extends Model
         'subframetypekey',
         'totalcost',
         'quantity',
+        'iscompleted',
     ];
 
     public function order()

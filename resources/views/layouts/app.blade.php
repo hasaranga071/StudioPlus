@@ -29,7 +29,7 @@
      <!-- @vite(['resources/css/app.css', 'resources/js/app.js']) -->
 
      <style>
-        .edit-order, .remove-order {
+        .edit-order, .remove-order, .save-order ,.done-item{
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -41,7 +41,18 @@
         }
 
         .edit-order {
-            background-color: #28a745;
+            background-color:rgb(167, 114, 40);
+            border: none;
+            color: white;
+        }
+        .done-item{
+            background-color:rgb(12, 197, 132);
+            border: none;
+            color: white;
+        }
+
+        .save-order {
+            background-color:rgb(40, 65, 205);
             border: none;
             color: white;
         }
@@ -56,7 +67,7 @@
             text-align: center;
         }
 
-        .edit-order i, .remove-order i {
+        .edit-order i, .remove-order i , .save-order i, .done-item{
             font-size: 12px;
         }
         .action-buttons {
@@ -125,7 +136,17 @@
             }
 
             .btn-edit {
-                background-color: #136426;
+                background-color:rgb(209, 131, 22);
+                color: white;
+            }
+
+            .btn-save {
+                background-color:rgb(22, 74, 153);
+                color: white;
+            }
+
+            .btn-done{
+                background-color:rgb(12, 197, 132);
                 color: white;
             }
 
@@ -134,6 +155,9 @@
                 color: white;
             }
 
+            .btn-secondary {
+                background-color: gray !important;
+            }
 
 
         </style>

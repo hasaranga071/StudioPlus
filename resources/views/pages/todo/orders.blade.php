@@ -313,7 +313,7 @@
                     <td id="scopy_${orderitem.ssorderitemmapkey}">${orderitem.softcopyquantity}</td>
                     <td id="edittype_${orderitem.ssorderitemmapkey}">${orderitem.edit_type.edittype}</td>
                     <td>${orderitem.totalcost}</td>
-                    <td>Inprogress</td>
+                    <td>${orderitem.iscompleted === 1 ? 'Completed' : 'In Progress'}</td>
 
 
                     <td id="tdeditBtn_${orderitem.ssorderitemmapkey}">
@@ -323,7 +323,7 @@
                                 class="btn done-item ${doneBtnClass} text-white mark-done-btn"
                                 data-id="${orderitem.ssorderitemmapkey}"
                                 data-orderid="${orderitem.orderkey}"
-                                title="Mark as Done"
+                                title="Mark as Complete"
                                 ${doneBtnStyle}>
                                 <i class="fas fa-check"></i>
                             </button>
@@ -803,7 +803,7 @@
                     <td id="hcopy_me_${orderitem.meorderitemmapkey}">${orderitem.hardcopyquantity}</td>
                     <td id="edittype_me_${orderitem.meorderitemmapkey}">${orderitem.edit_type.edittype}</td>
                     <td>${orderitem.totalcost}</td>
-                    <td>Inprogress</td>
+                    <td>${orderitem.iscompleted === 1 ? 'Completed' : 'In Progress'}</td>
                 
 
                     <td>
@@ -813,7 +813,7 @@
                                 class="btn done-item ${doneBtnClass} text-white mark-done-btn"
                                 data-id="${orderitem.meorderitemmapkey}"
                                 data-orderid="${orderitem.orderkey}"
-                                title="Mark as Done"
+                                title="Mark as Complete"
                                 ${doneBtnStyle}>
                                 <i class="fas fa-check"></i>
                             </button>                
@@ -1315,7 +1315,7 @@
                     <td id="sframetype_fr_${orderitem.frorderitemmapkey}">${orderitem.subframe_type?.subframetype || ''}</td>
                     <td id="quantity_fr_${orderitem.frorderitemmapkey}">${orderitem.quantity}</td>
                     <td>${orderitem.totalcost}</td>
-                    <td>Inprogress</td>
+                    <td>${orderitem.iscompleted === 1 ? 'Completed' : 'In Progress'}</td>
                     <td> 
                         <div class="d-flex justify-content-start gap-1">
                             <button id="doneBtn_fr_${orderitem.frorderitemmapkey}"
@@ -1323,7 +1323,7 @@
                                 class="btn done-item ${doneBtnClass} text-white mark-done-btn"
                                 data-id="${orderitem.frorderitemmapkey}"
                                 data-orderid="${orderitem.orderkey}"
-                                title="Mark as Done"
+                                title="Mark as Complete"
                                 ${doneBtnStyle}>
                                 <i class="fas fa-check"></i>
                             </button>               
@@ -1915,7 +1915,7 @@
                     <td id="hcopy_ec_${orderitem.ecorderitemmapkey}">${orderitem.hardcopyquantity}</td>
                     <td id="edittype_ec_${orderitem.ecorderitemmapkey}">${orderitem.edit_type.edittype}</td>
                     <td>${orderitem.totalcost}</td>
-                    <td>Inprogress</td>
+                    <td>${orderitem.iscompleted === 1 ? 'Completed' : 'In Progress'}</td>
 
 
                     <td>
@@ -1925,7 +1925,7 @@
                                 class="btn done-item ${doneBtnClass} text-white mark-done-btn"
                                 data-id="${orderitem.ecorderitemmapkey}"
                                 data-orderid="${orderitem.orderkey}"
-                                title="Mark as Done"
+                                title="Mark as Complete"
                                 ${doneBtnStyle}>
                                 <i class="fas fa-check"></i>
                             </button>
@@ -2176,6 +2176,7 @@
                             .attr('style', '') // Remove gray style if any
 
                         Swal.fire("Marked as complete!", "", "success");
+                        checkAllItemsCompleted(orderkey);
                     },
                     error: function(xhr) {
                         Swal.fire("Error!", "Could not update item.", "error");
@@ -2184,6 +2185,42 @@
             }
         });
     });
+
+    //  Check all order item complete
+    function checkAllItemsCompleted(orderkey) {
+        $.ajax({
+            url: `/check-all-items-completed/${orderkey}`,
+            type: "GET",
+            success: function(response) {
+                if (response.allCompleted) {
+                    updateOrderAsCompleted(orderkey);
+                }
+            },
+            error: function() {
+                console.error("Error checking item completion status.");
+            }
+        });
+    }
+    // Update Order status
+    function updateOrderAsCompleted(orderkey) {
+        $.ajax({
+            url: `/update-order-complete`,
+            type: "POST",
+            data: {
+                _token: "{{ csrf_token() }}",
+                orderkey: orderkey
+            },
+            success: function(response) {
+                if (response.status === "success") {
+                    Swal.fire("Order Completed!", "All items are done.", "success");
+                    // You can update the main table view here if needed
+                }
+            },
+            error: function() {
+                Swal.fire("Error", "Could not update order status.", "error");
+            }
+        });
+    }
 
     // Remove order from summary table
     $(document).on('click', '.remove-order', function(event) {

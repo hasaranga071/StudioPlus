@@ -597,6 +597,76 @@ class StudioOrderController extends Controller
 
         }
 
+        public function checkAllItemsCompleted($orderkey)
+        {
+            //$orderkey = $request->input('orderkey');
+
+            $ordertypekey = StudioOrder::where('orderkey',  $orderkey)->value('ordertypekey');
+            $ordertype = StudioOrderType::where('ordertypekey',  $ordertypekey)->value('ordertype');
+
+            $orderItem = false;
+
+            if ($ordertype == 'Studio Sittings') {
+                $incomplete = DB::table('studioorderitemmapss')
+                    ->where('orderkey', $orderkey)
+                    ->where(function($query) {
+                        $query->where('iscompleted', '!=', 1)
+                            ->orWhereNull('iscompleted');
+                    })
+                    ->count();
+
+                return response()->json(['allCompleted' => $incomplete === 0]);
+            }
+            if ($ordertype == 'Extra Copy') {
+                $incomplete = DB::table('studioorderitemmapec')
+                    ->where('orderkey', $orderkey)
+                    ->where(function($query) {
+                        $query->where('iscompleted', '!=', 1)
+                            ->orWhereNull('iscompleted');
+                    })
+                    ->count();
+
+                return response()->json(['allCompleted' => $incomplete === 0]);
+            }
+            if ($ordertype == 'Media') {
+                $incomplete = DB::table('studioorderitemmapme')
+                    ->where('orderkey', $orderkey)
+                    ->where(function($query) {
+                        $query->where('iscompleted', '!=', 1)
+                            ->orWhereNull('iscompleted');
+                    })
+                    ->count();
+
+                return response()->json(['allCompleted' => $incomplete === 0]);
+            }
+            if ($ordertype == 'Frames') {
+                $incomplete = DB::table('studioorderitemmapfr')
+                    ->where('orderkey', $orderkey)
+                    ->where(function($query) {
+                        $query->where('iscompleted', '!=', 1)
+                            ->orWhereNull('iscompleted');
+                    })
+                    ->count();
+
+                return response()->json(['allCompleted' => $incomplete === 0]);
+            }
+            
+            
+        }
+
+        public function updateOrderStatus(Request $request)
+        {
+            $order = StudioOrder::where('orderkey', $request->orderkey)->first();
+            if ($order) {
+                $order->salestatus = 'Completed'; // or any logic you use
+                $order->updatedtime=now();
+                $order->updateduserkey=auth()->id();
+                $order->save();
+                return response()->json(['status' => 'success']);
+            }
+            return response()->json(['status' => 'error']);
+        }
+
         public function markAsCompleted($id, Request $request) {
 
             $orderkey = $request->input('orderkey');

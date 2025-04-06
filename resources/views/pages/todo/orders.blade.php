@@ -8,7 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 @section('content')
 <!-- <div class='s-page-title'>Orders</div> -->
-<div style='background-color: lightgrey; width: 90%; border: 2px solid green;padding-left:1%; margin-top: 1%; margin-right: 5%;margin-left: 5%;'>
+<div style='background-color: lightgrey; width: 90%; border: 2px solid green;padding-left:1%; margin-top: 1%; margin-right: 5%;margin-left: 5%;border-radius:1%;'>
     <!-- Multiple Radios -->
     <div class="customer-section">
     </div>
@@ -182,7 +182,7 @@
                         <button onClick="vieworder(${order.orderkey},'${order.orderid}','${order.createdtime}','${order.username}','${order.totalcost}','${order.discount}','${order.paidcost}','${order.urgent_flag === 1 ? 'Yes' : 'No'}','${order.salestatus}',${order.ordertypekey},'${order.ordertype}')" id="vieword" _data-orderkey="${order.orderkey}" type="button" class="btn btn-primary view-order"  >
                         View
                         </button>
-                       
+
                     </td>
                 </tr>
             `;
@@ -254,7 +254,7 @@
                     let balanceDue = (orderTotalCost - discountAmount) - paidAmount;
 
                     orderSummaryTotalHtml = `
-                    </br><table>    
+                    </br><table>
                         <tr>
                             <th style="width: 50%;">Total Cost</th>
                             <td><span id="total-cost">Rs ${orderTotalCost.toFixed(2)}</span></td>
@@ -272,7 +272,7 @@
                             <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
                         </tr>
                     </table> `;
-                    
+
                     $("#ordersummary").html(orderSummaryTotalHtml);
                 }
             },
@@ -501,7 +501,7 @@
             });
         }, 300);
     }
-    
+
     function addnew_ss(orderkey){
         if (!orderkey) {
             alert("Order key is missing!");
@@ -712,8 +712,8 @@
                 }
             }
         });
-                        
-    }  
+
+    }
 
     function displayOrderitemSearchResults_ME(orderitems,okey) {
         if (!orderitems.orderItems.length) {
@@ -747,7 +747,7 @@
                     let balanceDue = (orderTotalCost - discountAmount) - paidAmount;
 
                     orderSummaryTotalHtml = `
-                    </br><table>    
+                    </br><table>
                         <tr>
                             <th style="width: 50%;">Total Cost</th>
                             <td><span id="total-cost">Rs ${orderTotalCost.toFixed(2)}</span></td>
@@ -765,7 +765,7 @@
                             <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
                         </tr>
                     </table> `;
-                    
+
                     $("#ordersummary_me").html(orderSummaryTotalHtml);
                 }
             },
@@ -804,7 +804,7 @@
                     <td id="edittype_me_${orderitem.meorderitemmapkey}">${orderitem.edit_type.edittype}</td>
                     <td>${orderitem.totalcost}</td>
                     <td>Inprogress</td>
-                
+
 
                     <td>
                         <div class="d-flex justify-content-start gap-1">
@@ -816,12 +816,12 @@
                                 title="Mark as Done"
                                 ${doneBtnStyle}>
                                 <i class="fas fa-check"></i>
-                            </button>                
+                            </button>
                             <button id="editBtn_me${orderitem.meorderitemmapkey}" type="button" title="Edit" class="btn btn-edit edit-order" onClick="edititem_me(${orderitem.meorderitemmapkey})">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button style="display:none" id="saveBtn_me${orderitem.meorderitemmapkey}" 
-                                type="button" class="btn btn-save save-order"title="Save" 
+                            <button style="display:none" id="saveBtn_me${orderitem.meorderitemmapkey}"
+                                type="button" class="btn btn-save save-order"title="Save"
                                 onClick="saveitem_me(${orderitem.meorderitemmapkey},'${orderitem.order.order_type.ordertype}',${orderitem.order.order_type.ordertypekey},${orderitem.order_type_item.ordertypeitemkey},'${orderitem.lam_type?.lamtypekey || ''}',${orderitem.order.customerkey},${orderitem.order.isurgent},'${orderitem.order.discount}','${orderitem.order.paidcost}',${orderitem.order.studiokey},'${orderitem.order.orderid}','${orderitem.order.deliverydate}','${orderitem.order.remarks}')">
                                 <i class="fas fa-save"></i>
                             </button>
@@ -835,7 +835,7 @@
 
         html += '</tbody></table>';
         $('#orderitemResults_me').html(html);
-    }  
+    }
 
     function edititem_me(meorderitemmapkey) {
         // Get latest values from the table before editing
@@ -864,7 +864,7 @@
             `<div class="col-md-4">
                 <select style="width:150px;border-color: orange;" id="input_lamtype_me_${meorderitemmapkey}" name="lamtype" class="form-control">
                     <option value="">Select Laminate Type</option>
-                    @foreach ($lamTypes as $lamType) 
+                    @foreach ($lamTypes as $lamType)
                         <option value="{{ $lamType->lamtypekey }}" ${lamtype === '{{ $lamType->laminatetype }}' ? 'selected' : ''}>{{ $lamType->laminatetype }}</option>
                     @endforeach
                 </select>
@@ -881,7 +881,7 @@
             `<div class="col-md-4">
                 <select style="width:150px;border-color: orange;" id="input_edittype_me_${meorderitemmapkey}" name="edittype" class="form-control">
                     <option value="">Select Edit Type</option>
-                    @foreach ($editTypes as $editType) 
+                    @foreach ($editTypes as $editType)
                         <option value="{{ $editType->edittypekey }}" ${edittype === '{{ $editType->edittype }}' ? 'selected' : ''}>{{ $editType->edittype }}</option>
                     @endforeach
                 </select>
@@ -889,7 +889,7 @@
     }
 
     function saveitem_me(meorderitemmapkey, ordertype, ordertypekey, ordertypeitemkey, lamtypekey, customerkey, isurgent, discount, paidcost, studiokey, orderid, deliverydate, remarks) {
-        dataarray=[]       
+        dataarray=[]
 
         setTimeout(() => {
             let hcopy = document.querySelector(`#input_hcopy_me_${meorderitemmapkey}`)?.value || "";
@@ -940,10 +940,10 @@
                 _token: "{{ csrf_token() }}" // Required for Laravel AJAX requests
             };
             console.log('Data Sent:', dataarray);
-            
+
             let cells = document.querySelectorAll(`#row_me_${meorderitemmapkey} td`);
             cells.forEach(cell => {
-                if (cell.cellIndex !== 0) { 
+                if (cell.cellIndex !== 0) {
                     cell.contentEditable = "false";
                     cell.classList.remove("edit-mode");
                 }
@@ -1003,7 +1003,7 @@
                     }
                 }
             });
-        }, 300);        
+        }, 300);
     }
 
     function addnew_me(orderkey){
@@ -1038,7 +1038,7 @@
                 </select>
             </div>
         `;
-        
+
         setTimeout(() => loadOrderTypeItems(otk), 300);
 
         lamtypecell.innerHTML = `
@@ -1057,7 +1057,7 @@
                 <input id="hcopy_me" name="hcopy" type="text" class="form-control input-md" required="">
             </div>
         `;
-        
+
         edittypecell.innerHTML = `
             <div class="col-md-4">
                 <select style="width:150px;" id="edittype_me" name="edittype" class="form-control">
@@ -1081,7 +1081,7 @@
     }
 
     function additem_me(btn) {
-        let orderkey = btn.getAttribute("data-orderkey"); 
+        let orderkey = btn.getAttribute("data-orderkey");
         // Get the row (parent of the button)
         let row = btn.closest("tr");
 
@@ -1123,8 +1123,8 @@
 
         let orderdetail=orderdata.orderItems[0];
 
-        //dataarray=[]       
-        
+        //dataarray=[]
+
         let dataarray = {
             studiokey: orderdetail.order.studiokey,
             orderid: orderdetail.order.orderid,
@@ -1195,7 +1195,7 @@
                 }
             }
         });
-               
+
     }
 
     // ******************* End Media Related *************************
@@ -1221,8 +1221,8 @@
                 }
             }
         });
-                        
-    }  
+
+    }
 
     function displayOrderitemSearchResults_FR(orderitems,okey) {
         if (!orderitems.orderItems.length) {
@@ -1255,7 +1255,7 @@
                     let balanceDue = (orderTotalCost - discountAmount) - paidAmount;
 
                     orderSummaryTotalHtml = `
-                    </br><table>    
+                    </br><table>
                         <tr>
                             <th style="width: 50%;">Total Cost</th>
                             <td><span id="total-cost">Rs ${orderTotalCost.toFixed(2)}</span></td>
@@ -1273,7 +1273,7 @@
                             <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
                         </tr>
                     </table> `;
-                    
+
                     $("#ordersummary_FR").html(orderSummaryTotalHtml);
                 }
             },
@@ -1316,7 +1316,7 @@
                     <td id="quantity_fr_${orderitem.frorderitemmapkey}">${orderitem.quantity}</td>
                     <td>${orderitem.totalcost}</td>
                     <td>Inprogress</td>
-                    <td> 
+                    <td>
                         <div class="d-flex justify-content-start gap-1">
                             <button id="doneBtn_fr_${orderitem.frorderitemmapkey}"
                                 type="button"
@@ -1326,12 +1326,12 @@
                                 title="Mark as Done"
                                 ${doneBtnStyle}>
                                 <i class="fas fa-check"></i>
-                            </button>               
+                            </button>
                             <button id="editBtn_fr_${orderitem.frorderitemmapkey}" type="button" class="btn btn-edit edit-order" onClick="edititem_fr(${orderitem.frorderitemmapkey},'${orderitem.frame_type.frametype}','${orderitem.frame_size.size}','${orderitem.subframe_size?.framesize || ''}','${orderitem.subframe_type?.subframetype || ''}','${orderitem.quantity}')">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button style="display:none" id="saveBtn_fr_${orderitem.frorderitemmapkey}" 
-                                type="button" class="btn btn-save save-order"title="Save" 
+                            <button style="display:none" id="saveBtn_fr_${orderitem.frorderitemmapkey}"
+                                type="button" class="btn btn-save save-order"title="Save"
                                 onClick="saveitem_fr(${orderitem.frorderitemmapkey},'${orderitem.order.order_type?.ordertype || ''}',${orderitem.order.order_type?.ordertypekey || ''},'${orderitem.order_type_item?.ordertypeitemkey || ''}','${orderitem.lam_type?.lamtypekey || ''}','${orderitem.order?.customerkey || ''}',${orderitem.order?.isurgent},'${orderitem.order?.discount || ''}','${orderitem.order?.paidcost || ''}',${orderitem.order?.studiokey || ''},'${orderitem.order?.orderid || ''}','${orderitem.order?.deliverydate || ''}','${orderitem.order?.remarks || ''}','${orderitem.frame_type.frametype}','${orderitem.frame_type.frametypekey}','${orderitem.quantity}')">
                                 <i class="fas fa-save"></i>
                             </button>
@@ -1344,7 +1344,7 @@
 
         html += '</tbody></table>';
         $('#orderitemResults_fr').html(html);
-    }  
+    }
 
     function edititem_fr(frorderitemmapkey) {
         // Get latest values from the table before editing
@@ -1371,29 +1371,29 @@
                 `<div class="col-md-4">
                     <select style="width:150px;border-color: orange;" id="input_frsize_fr_${frorderitemmapkey}" name="frsize" class="form-control">
                         <option value="">Select Frame Size</option>
-                        @foreach ($frameSizes as $frameSize) 
+                        @foreach ($frameSizes as $frameSize)
                             <option value="{{ $frameSize->framesizekey }}" ${frsize === '{{ $frameSize->size }}' ? 'selected' : ''}>{{ $frameSize->size }}</option>
                         @endforeach
                     </select>
-                </div>`;           
+                </div>`;
 
             // Convert Sub Frame Size to Dropdown
             sfrsizeElement.innerHTML =
                 `<div class="col-md-4">
                     <select style="width:150px;border-color: orange;" id="input_sfrsize_fr_${frorderitemmapkey}" name="sfrsize" class="form-control">
                         <option value="">Select F# Size</option>
-                        @foreach ($frameSubSizes as $frameSubSize) 
+                        @foreach ($frameSubSizes as $frameSubSize)
                             <option value="{{ $frameSubSize->subframesizekey }}" ${sfrsize === '{{ $frameSubSize->framesize }}' ? 'selected' : ''}>{{ $frameSubSize->framesize }}</option>
                         @endforeach
                     </select>
                 </div>`;
-            
+
              // Convert Sub Frame Type to Dropdown
              sfrtypeElement.innerHTML =
                 `<div class="col-md-4">
                     <select style="width:150px;border-color: orange;" id="input_sfrtype_fr_${frorderitemmapkey}" name="sfrtype" class="form-control">
                         <option value="">Select Frame Type</option>
-                        @foreach ($frameSubTypes as $frameSubType) 
+                        @foreach ($frameSubTypes as $frameSubType)
                             <option value="{{ $frameSubType->subframetypekey }}" ${sfrtype === '{{ $frameSubType->subframetype }}' ? 'selected' : ''}>{{ $frameSubType->subframetype }}</option>
                         @endforeach
                     </select>
@@ -1419,19 +1419,19 @@
                 `<div class="col-md-4">
                     <select style="width:150px;border-color: orange;" id="input_frsize_fr_${frorderitemmapkey}" name="frsize" class="form-control">
                         <option value="">Select Frame Size</option>
-                        @foreach ($frameSizes as $frameSize) 
+                        @foreach ($frameSizes as $frameSize)
                             <option value="{{ $frameSize->framesizekey }}" ${frsize === '{{ $frameSize->size }}' ? 'selected' : ''}>{{ $frameSize->size }}</option>
                         @endforeach
                     </select>
-                </div>`; 
-            
+                </div>`;
+
             quantityElement.innerHTML =
                 `<div class="col-md-4">
                     <input style="border-color: orange;" id="input_quantity_fr_${frorderitemmapkey}" value="${quantity}" name="quantity" type="text" class="form-control input-md" required="">
                 </div>`;
         }
 
-        
+
 
         // Hide Edit Button, Show Save Button
         document.getElementById(`editBtn_fr_${frorderitemmapkey}`).style.display = "none";
@@ -1439,7 +1439,7 @@
         document.getElementById(`doneBtn_fr_${frorderitemmapkey}`).style.display = "none";
         document.getElementById(`saveBtn_fr_${frorderitemmapkey}`).style.display = "inline-block";
 
-        
+
     }
 
     function saveitem_fr(frorderitemmapkey, ordertype, ordertypekey, ordertypeitemkey, lamtypekey, customerkey, isurgent, discount, paidcost, studiokey, orderid, deliverydate, remarks, frametype, frametypekey, quantity) {
@@ -1734,7 +1734,7 @@
     }
 
     function additem_fr(btn) {
-        let orderkey = btn.getAttribute("data-orderkey"); 
+        let orderkey = btn.getAttribute("data-orderkey");
         // Get the row (parent of the button)
         let row = btn.closest("tr");
 
@@ -1790,7 +1790,7 @@
             subframesizekey : formData.sframesize,
             subframetypekey : formData.sframetype,
             quantity:formData.quantity,
-            _token: "{{ csrf_token() }}"  
+            _token: "{{ csrf_token() }}"
         };
 
         $.ajax({
@@ -1846,7 +1846,7 @@
                 }
             }
         });
-               
+
     }
 
 
@@ -1876,7 +1876,7 @@
     let globalOrderItems_EC = [];
 
     function displayOrderitemSearchResults_EC(orderitems,okey) {
-        
+
 
         if (!orderitems.orderItems.length) {
             $('#orderitemResults_EC').html(
@@ -1902,7 +1902,7 @@
             </thead>
             <tbody>
         `;
-        
+
         orderitems.orderItems.forEach(function(orderitem) {
             const isCompleted = orderitem.iscompleted === 1;
             const doneBtnClass = isCompleted ? 'btn-done' : 'btn-secondary';
@@ -1933,8 +1933,8 @@
                             <button id="editBtn_ec_${orderitem.ecorderitemmapkey}" type="button" title="Edit" class="btn btn-edit edit-order" onClick="edititem_ec(${orderitem.ecorderitemmapkey})">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button style="display:none" id="saveBtn_ec_${orderitem.ecorderitemmapkey}" 
-                                type="button" class="btn btn-save save-order"title="Save" 
+                            <button style="display:none" id="saveBtn_ec_${orderitem.ecorderitemmapkey}"
+                                type="button" class="btn btn-save save-order"title="Save"
                                 onClick="saveitem_ec(${orderitem.ecorderitemmapkey},'${orderitem.order.order_type.ordertype}',${orderitem.order.order_type.ordertypekey},${orderitem.order_type_item.ordertypeitemkey},'${orderitem.lam_type?.lamtypekey || ''}',${orderitem.order.customerkey},${orderitem.order.isurgent},'${orderitem.order.discount}','${orderitem.order.paidcost}',${orderitem.order.studiokey},'${orderitem.order.orderid}','${orderitem.order.deliverydate}','${orderitem.order.remarks}',${orderitem.hardcopyquantity},'${orderitem.edit_type.edittype}','${orderitem.original_order.orderid}','${orderitem.original_order.orderkey}')">
                                 <i class="fas fa-save"></i>
                             </button>
@@ -1970,7 +1970,7 @@
                     let balanceDue = (orderTotalCost - discountAmount) - paidAmount;
 
                     orderSummaryTotalHtml = `
-                    </br><table>    
+                    </br><table>
                         <tr>
                             <th style="width: 50%;">Total Cost</th>
                             <td><span id="total-cost">Rs ${orderTotalCost.toFixed(2)}</span></td>
@@ -1988,7 +1988,7 @@
                             <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
                         </tr>
                     </table> `;
-                 
+
                     $("#ordersummary_EC").html(orderSummaryTotalHtml);
                 }
             },
@@ -2030,17 +2030,17 @@
             `<div class="col-md-4">
                 <select style="width:150px;border-color: orange;" id="input_edittype_ec_${ecorderitemmapkey}" name="edittype" class="form-control">
                     <option value="">Select Edit Type</option>
-                    @foreach ($editTypes as $editType) 
+                    @foreach ($editTypes as $editType)
                         <option value="{{ $editType->edittypekey }}" ${edittype === '{{ $editType->edittype }}' ? 'selected' : ''}>{{ $editType->edittype }}</option>
                     @endforeach
                 </select>
             </div>`;
     }
-    
+
     function saveitem_ec(ecorderitemmapkey, ordertype, ordertypekey, ordertypeitemkey, lamtypekey, customerkey, isurgent, discount, paidcost, studiokey, orderid, deliverydate, remarks, hcopy, edittype, originalorderid, originalorderkey) {
-        dataarray=[]    
+        dataarray=[]
         setTimeout(() => {
-            let hcopy = document.querySelector(`#input_hcopy_ec_${ecorderitemmapkey}`)?.value || "";            
+            let hcopy = document.querySelector(`#input_hcopy_ec_${ecorderitemmapkey}`)?.value || "";
 
             let edittypeElement = document.querySelector(`#input_edittype_ec_${ecorderitemmapkey}`);
             if (!edittypeElement) {
@@ -2077,10 +2077,10 @@
                 _token: "{{ csrf_token() }}" // Required for Laravel AJAX requests
             };
             console.log('Data Sent:', dataarray);
-            
+
             let cells = document.querySelectorAll(`#row_ec_${ecorderitemmapkey} td`);
             cells.forEach(cell => {
-                if (cell.cellIndex !== 0) { 
+                if (cell.cellIndex !== 0) {
                     cell.contentEditable = "false";
                     cell.classList.remove("edit-mode");
                 }
@@ -2139,7 +2139,7 @@
                     }
                 }
             });
-        }, 300);        
+        }, 300);
     }
 
     // ******************* End Extra Copy Retated ************************
@@ -2310,8 +2310,8 @@
             loaditemdata_SS(key)
         }
 
-        if (ot=='Media') 
-        {        
+        if (ot=='Media')
+        {
             $("#orderModal_ME").modal("show");
             $("#onum_me").text(no);
             $("#okey_me").text(key);
@@ -2325,8 +2325,8 @@
             loaditemdata_ME(key)
         }
 
-        if (ot=='Frames') 
-        {        
+        if (ot=='Frames')
+        {
             $("#orderModal_FR").modal("show");
             $("#onum_fr").text(no);
             $("#okey_fr").text(key);
@@ -2339,8 +2339,8 @@
             $("#status_fr").text(status);
             loaditemdata_FR(key)
         }
-            
-        if (ot=='Extra Copy') 
+
+        if (ot=='Extra Copy')
         {
             $("#orderModal_EC").modal("show");
             $("#onum_EC").text(no);
@@ -2360,7 +2360,7 @@
 
     }
 function printDiv(type,divId,onum,odate,dateDiv) {
-    
+
     let basicDetailsElement = document.getElementById(divId);
     let printWindow = window.open('', '', 'width=800,height=600');
 
@@ -2378,7 +2378,7 @@ function printDiv(type,divId,onum,odate,dateDiv) {
         else{row.deleteCell(6);}
        //}
     });
-  
+
     printWindow.document.write(`
     <html>
     <head>
@@ -2425,7 +2425,7 @@ function printDiv(type,divId,onum,odate,dateDiv) {
             width: 100%;
             border-collapse: collapse;
         }
-   
+
         .total {
             text-align: right;
         }
@@ -2475,7 +2475,7 @@ function printDiv(type,divId,onum,odate,dateDiv) {
             <p>Date: `+odate+`</p>
         </div>
     </div>
-    ${clonedContent.innerHTML}  
+    ${clonedContent.innerHTML}
     <div class="invoice-summary">
         <!-- <h3 class="total">Grand Total: $180.00</h3> -->
     </div>
@@ -2491,10 +2491,10 @@ function printDiv(type,divId,onum,odate,dateDiv) {
 
     printWindow.document.close();
     printWindow.focus();
-    
+
     // Wait for the new window to load before printing
     printWindow.onload = function () {
-        
+
         //$('#slogo').attr('src','/logo/s_'+skey+'.png')
         printWindow.print();
         printWindow.onafterprint = function () {
@@ -2502,7 +2502,7 @@ function printDiv(type,divId,onum,odate,dateDiv) {
         };
     };
 }
-       
+
 </script>
 @endpush
 @endsection

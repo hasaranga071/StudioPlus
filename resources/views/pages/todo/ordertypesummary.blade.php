@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div style='background-color: lightgrey; width: 90%; border: 2px solid green;padding-left:1%; margin-top: 1%; margin-right: 5%;margin-left: 5%;'>
+<div style='background-color: lightgrey; width: 90%; border: 2px solid green;padding-left:1%; margin-top: 1%; margin-right: 5%;margin-left: 5%;border-radius:1%;'>
 <div class="container mt-5">
     <!-- Title Row with Print Button -->
     <!-- Title Row with Print Button -->

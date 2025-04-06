@@ -4,24 +4,29 @@
 <div style='background-color: lightgrey; width: 90%; border: 2px solid green;padding-left:1%; margin-top: 1%; margin-right: 5%;margin-left: 5%;'>
 <div class="container mt-5">
     <!-- Title Row with Print Button -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-center mb-0 w-100">Operation Summary</h2>
-        <button id="print-btn" class="btn" onclick="printReport()">
-            <i class="fa fa-print"></i> Print
-        </button>
-    </div>
+    <!-- Title Row with Print Button -->
+    <div style="display:flex">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="text-center mb-0 w-100">Operations Summary</h3>
+        </div>
 
-    <!-- Filter Options -->
-    <div class="d-flex justify-content-center mb-4">
-        <button class="btn mx-1 filter-btn active" data-filter="day">Day</button>
-        <button class="btn mx-1 filter-btn" data-filter="week">Week</button>
-        <button class="btn mx-1 filter-btn" data-filter="month">Month</button>
-        <button class="btn mx-1 filter-btn" data-filter="year">Year</button>
-        <button class="btn mx-1" id="custom-filter-btn">Custom</button>
-        {{-- <label class="flex items-center space-x-2">
-            <input type="checkbox" style="zoom: 250%;" name="completed" value="1" {{ request('completed') ? 'checked' : '' }}>
-            <span class="text-sm text-gray-700">Show Only Completed Orders</span>
-        </label> --}}
+        <!-- Filter Options -->
+        <div style="padding-left:30%" class="d-flex justify-content-center mb-4">
+            <button class="btn mx-1 filter-btn active" data-filter="day">Day</button>
+            <button class="btn mx-1 filter-btn" data-filter="week">Week</button>
+            <button class="btn mx-1 filter-btn" data-filter="month">Month</button>
+            <button class="btn mx-1 filter-btn" data-filter="year">Year</button>
+            <button class="btn mx-1" id="custom-filter-btn">Custom</button>
+            {{-- <label class="flex items-center space-x-2">
+                <input type="checkbox" style="zoom: 250%;" name="completed" value="1" {{ request('completed') ? 'checked' : '' }}>
+                <span class="text-sm text-gray-700">Show Only Completed Orders</span>
+            </label> --}}
+        </div>
+        <div style="padding-left: 55px;">
+            <button style="background-color: #431041;" id="print-btn" class="btn" onclick="printReport()">
+                    <i class="fa fa-print"></i> Print
+            </button>
+        </div>
     </div>
 
     <!-- Custom Date Range Selection -->
@@ -31,7 +36,7 @@
         <button class="btn" id="apply-custom-filter">Apply</button>
     </div>
 
-    <div id="printable-area">
+    <div id="printable-area" style="padding-left: 4%;">
         <!-- Chart and Table Layout - First Row -->
         <div class="row">
             <!-- Left Side - Order Chart -->
@@ -67,8 +72,8 @@
                                 </tbody>
                                 <tfoot>
                                     <tr class="bg-blue-200 font-bold text-black">
-                                        <td style="text-align: left;font-weight:600;background: #e8e8e5;">TOTAL</td>
-                                        <td style="text-align: left;font-weight:600;background: #e8e8e5;" id="totalOrders">0</td>
+                                        <td style="text-align: left;">TOTAL</td>
+                                        <td style="text-align: left;" id="totalOrders">0</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -113,8 +118,8 @@
                                 </tbody>
                                 <tfoot>
                                     <tr class="font-weight-bold">
-                                        <td style="text-align: left;font-weight:600;background: #e8e8e5;">TOTAL</td>
-                                        <td style="text-align: left;font-weight:600;background: #e8e8e5;" id="totalEarnings">0</td>
+                                        <td style="text-align: left;">TOTAL</td>
+                                        <td style="text-align: left;" id="totalEarnings">0</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -332,12 +337,6 @@
                                         return value; // Display the count value
                                     }
                                 }
-                            },
-                            animation: {
-                                onComplete: function() {
-                                    // Store chart as image data for printing
-                                    window.chartImage = orderChart.toBase64Image();
-                                }
                             }
                         },
                         plugins: [ChartDataLabels]
@@ -408,12 +407,6 @@
                                     formatter: function(value, context) {
                                         return 'Rs ' + value.toFixed(0); // Display the earnings value
                                     }
-                                }
-                            },
-                            animation: {
-                                onComplete: function() {
-                                    // Store chart as image data for printing
-                                    window.earningsChartImage = earningsChart.toBase64Image();
                                 }
                             }
                         },
@@ -551,10 +544,10 @@
         // Ensure chart is completely rendered
         setTimeout(() => {
             window.print();
-        }, 500);
+        }, 1000); // Increased timeout to ensure charts are fully rendered
     }
 </script>
 
-
-
+<!-- Include Chart.js Data Labels plugin -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 @endsection

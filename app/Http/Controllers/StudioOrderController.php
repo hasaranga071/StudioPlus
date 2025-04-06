@@ -597,6 +597,44 @@ class StudioOrderController extends Controller
 
         }
 
+        public function markAsCompleted($id, Request $request) {
+
+            $orderkey = $request->input('orderkey');
+
+            $ordertypekey = StudioOrder::where('orderkey',  $orderkey)->value('ordertypekey');
+            $ordertype = StudioOrderType::where('ordertypekey',  $ordertypekey)->value('ordertype');
+
+            $orderItem = false;
+
+            if ($ordertype == 'Studio Sittings') {
+                $orderItem = DB::table('studioorderitemmapss')->where('ssorderitemmapkey', $id)->update([
+                    'iscompleted' => 1
+                ]);
+            }
+            if ($ordertype == 'Extra Copy') {
+                $orderItem = DB::table('studioorderitemmapec')->where('ecorderitemmapkey', $id)->update([
+                    'iscompleted' => 1
+                ]);
+            }
+            if ($ordertype == 'Media') {
+                $orderItem = DB::table('studioorderitemmapme')->where('meorderitemmapkey', $id)->update([
+                    'iscompleted' => 1
+                ]);
+            }
+            if ($ordertype == 'Frames') {
+                $orderItem = DB::table('studioorderitemmapfr')->where('frorderitemmapkey', $id)->update([
+                    'iscompleted' => 1
+                ]);
+            }
+
+            if ($orderItem) {
+                session()->flash('success', 'The order item has been updated successfully.');
+                return response()->json(['success' => true]);
+            }
+
+            return response()->json(['error' => 'Failed to delete order item'], 500);
+        }
+
 
     /**
      * Display the specified order.

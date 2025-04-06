@@ -52,8 +52,27 @@
                 </div>
             </div>
 
-            <!-- Right Side - Order Summary Table -->
-            <div class="col-md-6 mb-4">
+               <!-- Left Side - Earnings Chart -->
+               <div class="col-md-6 mb-4">
+                <div class="card rounded shadow h-100">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Studio Earnings Distribution <span id="earnings-chart-date-range"></span></h5>
+                    </div>
+                    <div class="card-body d-flex justify-content-center align-items-center" style="min-height: 400px;" >
+                        <canvas id="earningsChart" height="350" width="350"></canvas>
+                        <div id="earningsbox" style="position: absolute;"></div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <!-- Chart and Table Layout - Second Row for Earnings -->
+        <div class="row">
+
+             <!-- Right Side - Order Summary Table -->
+             <div class="col-md-6 mb-4">
                 <div class="card rounded shadow h-100">
                     <div class="card-header">
                         <h5 class="card-title mb-0">Order Summary <span id="table-date-range"></span></h5>
@@ -81,23 +100,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Chart and Table Layout - Second Row for Earnings -->
-        <div class="row">
-            <!-- Left Side - Earnings Chart -->
-            <div class="col-md-6 mb-4">
-                <div class="card rounded shadow h-100">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">Studio Earnings Distribution <span id="earnings-chart-date-range"></span></h5>
-                    </div>
-                    <div class="card-body d-flex justify-content-center align-items-center" style="min-height: 400px;" >
-                        <canvas id="earningsChart" height="350" width="350"></canvas>
-                        <div id="earningsbox" style="position: absolute;"></div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Right Side - Earnings Summary Table -->
             <div class="col-md-6 mb-4">
                 <div class="card rounded shadow h-100">

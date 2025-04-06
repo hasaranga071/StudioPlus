@@ -1,37 +1,52 @@
 @extends('layouts.app')
 
 @section('content')
-<div style='background-color: lightgrey; width: 90%; border: 2px solid green;padding-left:1%; margin-top: 1%; margin-right: 5%;margin-left: 5%;'>
+<div style='background-color: lightgrey; width: 90%; border: 2px solid green;padding-left:1%; margin-top: 1%; margin-right: 5%;margin-left: 5%;border-radius:1%;'>
 <div class="container mt-5">
     <!-- Title Row with Print Button -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-center mb-0 w-100">Operation Summary</h2>
-        <button id="print-btn" class="btn" onclick="printReport()">
-            <i class="fa fa-print"></i> Print
-        </button>
-    </div>
+    <!-- Title Row with Print Button -->
+    <div style="display:flex">
+        <div style="padding-left:4%;font-size: 24px;font-weight: 500;">
+            Operations Summary
+        </div>
 
-    <!-- Filter Options -->
-    <div class="d-flex justify-content-center mb-4">
-        <button class="btn mx-1 filter-btn active" data-filter="day">Day</button>
-        <button class="btn mx-1 filter-btn" data-filter="week">Week</button>
-        <button class="btn mx-1 filter-btn" data-filter="month">Month</button>
-        <button class="btn mx-1 filter-btn" data-filter="year">Year</button>
-        <button class="btn mx-1" id="custom-filter-btn">Custom</button>
-        {{-- <label class="flex items-center space-x-2">
-            <input type="checkbox" style="zoom: 250%;" name="completed" value="1" {{ request('completed') ? 'checked' : '' }}>
-            <span class="text-sm text-gray-700">Show Only Completed Orders</span>
-        </label> --}}
+        <!-- Filter Options -->
+        <div style="padding-left:30%" class="d-flex justify-content-center mb-4">
+            <button class="btn mx-1 filter-btn active" data-filter="day">Day</button>
+            <button class="btn mx-1 filter-btn" data-filter="week">Week</button>
+            <button class="btn mx-1 filter-btn" data-filter="month">Month</button>
+            <button class="btn mx-1 filter-btn" data-filter="year">Year</button>
+            <button class="btn mx-1" id="custom-filter-btn">Custom</button>
+            {{-- <label class="flex items-center space-x-2">
+                <input type="checkbox" style="zoom: 250%;" name="completed" value="1" {{ request('completed') ? 'checked' : '' }}>
+                <span class="text-sm text-gray-700">Show Only Completed Orders</span>
+            </label> --}}
+        </div>
+        <div style="padding-left: 55px;">
+            <button style="background-color: #431041;" id="print-btn" class="btn" onclick="printReport()">
+                    <i class="fa fa-print"></i> Print
+            </button>
+        </div>
     </div>
 
     <!-- Custom Date Range Selection -->
-    <div class="row justify-content-center mb-3" id="custom-date-range" style="display: none;">
-        <input type="date" id="start-date" class="form-control mx-1" style="width: 150px;">
-        <input type="date" id="end-date" class="form-control mx-1" style="width: 150px;">
-        <button class="btn" id="apply-custom-filter">Apply</button>
-    </div>
+    <div class="row" id="custom-date-range" style="display: none; padding-left:30% !important;">
+        <div class="col-12 d-flex align-items-center mb-3">
+            <div class="me-3">
+                <label for="start-date" class="me-2">Start Date:</label>
+                <input type="date" id="start-date" title="Start Date" class="form-control" style="width: 180px;" placeholder="mm/dd/yyyy">
+            </div>
 
-    <div id="printable-area">
+            <div class="me-3">
+                <label for="end-date" class="me-2">End Date:</label>
+                <input type="date" id="end-date" title="End Date" class="form-control" style="width: 180px;" placeholder="mm/dd/yyyy">
+            </div>
+            <div style="padding-top: 3%;">
+                <button class="btn" id="apply-custom-filter" style="background-color: #3D6553; color: white; width: 180px; height: 38px;">Apply</button>
+            </div>
+        </div>
+    </div>
+    <div id="printable-area" style="padding-left: 4%;">
         <!-- Chart and Table Layout - First Row -->
         <div class="row">
             <!-- Left Side - Order Chart -->
@@ -47,8 +62,27 @@
                 </div>
             </div>
 
-            <!-- Right Side - Order Summary Table -->
-            <div class="col-md-6 mb-4">
+               <!-- Left Side - Earnings Chart -->
+               <div class="col-md-6 mb-4">
+                <div class="card rounded shadow h-100">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Studio Earnings Distribution <span id="earnings-chart-date-range"></span></h5>
+                    </div>
+                    <div class="card-body d-flex justify-content-center align-items-center" style="min-height: 400px;" >
+                        <canvas id="earningsChart" height="350" width="350"></canvas>
+                        <div id="earningsbox" style="position: absolute;"></div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <!-- Chart and Table Layout - Second Row for Earnings -->
+        <div class="row">
+
+             <!-- Right Side - Order Summary Table -->
+             <div class="col-md-6 mb-4">
                 <div class="card rounded shadow h-100">
                     <div class="card-header">
                         <h5 class="card-title mb-0">Order Summary <span id="table-date-range"></span></h5>
@@ -67,8 +101,8 @@
                                 </tbody>
                                 <tfoot>
                                     <tr class="bg-blue-200 font-bold text-black">
-                                        <td style="text-align: left;font-weight:600;background: #e8e8e5;">TOTAL</td>
-                                        <td style="text-align: left;font-weight:600;background: #e8e8e5;" id="totalOrders">0</td>
+                                        <td style="text-align: left;">TOTAL</td>
+                                        <td style="text-align: left;" id="totalOrders">0</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -76,23 +110,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Chart and Table Layout - Second Row for Earnings -->
-        <div class="row">
-            <!-- Left Side - Earnings Chart -->
-            <div class="col-md-6 mb-4">
-                <div class="card rounded shadow h-100">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">Studio Earnings Distribution <span id="earnings-chart-date-range"></span></h5>
-                    </div>
-                    <div class="card-body d-flex justify-content-center align-items-center" style="min-height: 400px;" >
-                        <canvas id="earningsChart" height="350" width="350"></canvas>
-                        <div id="earningsbox" style="position: absolute;"></div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Right Side - Earnings Summary Table -->
             <div class="col-md-6 mb-4">
                 <div class="card rounded shadow h-100">
@@ -113,8 +130,8 @@
                                 </tbody>
                                 <tfoot>
                                     <tr class="font-weight-bold">
-                                        <td style="text-align: left;font-weight:600;background: #e8e8e5;">TOTAL</td>
-                                        <td style="text-align: left;font-weight:600;background: #e8e8e5;" id="totalEarnings">0</td>
+                                        <td style="text-align: left;">TOTAL</td>
+                                        <td style="text-align: left;" id="totalEarnings">0</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -144,6 +161,7 @@
                 border-radius: 20px;
                 padding: 8px 20px;
                 border: none;
+                width:20%
             }
             .filter-btn.active, #custom-filter-btn.active {
                 background-color: #535350 !important;
@@ -210,6 +228,7 @@
                 }
                 #custom-date-range, .filter-btn, #custom-filter-btn, #print-btn, .no-print {
                     display: none !important;
+
                 }
             }
         `;
@@ -332,12 +351,6 @@
                                         return value; // Display the count value
                                     }
                                 }
-                            },
-                            animation: {
-                                onComplete: function() {
-                                    // Store chart as image data for printing
-                                    window.chartImage = orderChart.toBase64Image();
-                                }
                             }
                         },
                         plugins: [ChartDataLabels]
@@ -408,12 +421,6 @@
                                     formatter: function(value, context) {
                                         return 'Rs ' + value.toFixed(0); // Display the earnings value
                                     }
-                                }
-                            },
-                            animation: {
-                                onComplete: function() {
-                                    // Store chart as image data for printing
-                                    window.earningsChartImage = earningsChart.toBase64Image();
                                 }
                             }
                         },
@@ -541,7 +548,7 @@
     function printReport() {
         // Add title to print area
         const titleElement = document.createElement('h2');
-        titleElement.textContent = 'Operation Summary';
+        titleElement.textContent = 'Operations Summary';
         titleElement.className = 'text-center';
         titleElement.style.width = '100%';
         titleElement.style.marginBottom = '20px';
@@ -551,10 +558,10 @@
         // Ensure chart is completely rendered
         setTimeout(() => {
             window.print();
-        }, 500);
+        }, 1000); // Increased timeout to ensure charts are fully rendered
     }
 </script>
 
-
-
+<!-- Include Chart.js Data Labels plugin -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 @endsection

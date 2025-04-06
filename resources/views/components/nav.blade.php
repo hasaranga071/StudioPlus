@@ -1,4 +1,4 @@
-<nav style="background-image: url('/logo/banner.png') !important;background-repeat:repeat;background-size: cover;" class="custom-navbar navbar navbar navbar-expand-md navbar-dark bg-white" arial-label="Furni navigation bar">
+<nav style="background-image: url('/logo/banner.png') !important;background-repeat:repeat;background-size: cover;border-radius:14px;" class="custom-navbar navbar navbar navbar-expand-md navbar-dark bg-white" arial-label="Furni navigation bar">
 	<div class="container">
         <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5" >
             <div class="image-container">

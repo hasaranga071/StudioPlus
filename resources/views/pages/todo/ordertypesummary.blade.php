@@ -6,8 +6,8 @@
     <!-- Title Row with Print Button -->
     <!-- Title Row with Print Button -->
     <div style="display:flex">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="text-center mb-0 w-100">Operations Summary</h3>
+        <div style="padding-left:4%;font-size: 24px;font-weight: 500;">
+            Operations Summary
         </div>
 
         <!-- Filter Options -->
@@ -30,12 +30,22 @@
     </div>
 
     <!-- Custom Date Range Selection -->
-    <div class="row justify-content-center mb-3" id="custom-date-range" style="display: none;">
-        <input type="date" id="start-date" class="form-control mx-1" style="width: 150px;">
-        <input type="date" id="end-date" class="form-control mx-1" style="width: 150px;">
-        <button class="btn" id="apply-custom-filter">Apply</button>
-    </div>
+    <div class="row" id="custom-date-range" style="display: none; padding-left:30% !important;">
+        <div class="col-12 d-flex align-items-center mb-3">
+            <div class="me-3">
+                <label for="start-date" class="me-2">Start Date:</label>
+                <input type="date" id="start-date" title="Start Date" class="form-control" style="width: 180px;" placeholder="mm/dd/yyyy">
+            </div>
 
+            <div class="me-3">
+                <label for="end-date" class="me-2">End Date:</label>
+                <input type="date" id="end-date" title="End Date" class="form-control" style="width: 180px;" placeholder="mm/dd/yyyy">
+            </div>
+            <div style="padding-top: 3%;">
+                <button class="btn" id="apply-custom-filter" style="background-color: #3D6553; color: white; width: 180px; height: 38px;">Apply</button>
+            </div>
+        </div>
+    </div>
     <div id="printable-area" style="padding-left: 4%;">
         <!-- Chart and Table Layout - First Row -->
         <div class="row">
@@ -151,6 +161,7 @@
                 border-radius: 20px;
                 padding: 8px 20px;
                 border: none;
+                width:20%
             }
             .filter-btn.active, #custom-filter-btn.active {
                 background-color: #535350 !important;
@@ -217,6 +228,7 @@
                 }
                 #custom-date-range, .filter-btn, #custom-filter-btn, #print-btn, .no-print {
                     display: none !important;
+
                 }
             }
         `;
@@ -536,7 +548,7 @@
     function printReport() {
         // Add title to print area
         const titleElement = document.createElement('h2');
-        titleElement.textContent = 'Operation Summary';
+        titleElement.textContent = 'Operations Summary';
         titleElement.className = 'text-center';
         titleElement.style.width = '100%';
         titleElement.style.marginBottom = '20px';

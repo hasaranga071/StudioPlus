@@ -93,6 +93,7 @@
 
 @push('scripts')
 <script>
+    let orderUpdated = false;
     window.onload = function() {
         loaddata()
     };
@@ -2212,8 +2213,65 @@
             },
             success: function(response) {
                 if (response.status === "success") {
+                    orderUpdated = true; // 
                     Swal.fire("Order Completed!", "All items are done.", "success");
-                    // You can update the main table view here if needed
+                    // 🔄 Fetch latest order summary (status, total, paid, etc.)
+                    $.ajax({
+                        url: `/get-order-details/${orderkey}`,
+                        type: "GET",
+                        success: function(orderdetail) {
+                            // Now update modal fields with latest data      
+                            order=orderdetail[0]
+                            let ordertype=order.order_type
+                            if (ordertype === 'Studio Sittings') {
+                                setTimeout(() => {
+                                    $('#orderModal_SS').modal('show');                                      
+                                    $('#status').text(order.salestatus);
+                                    $('#total').text(order.totalcost);
+                                    $('#paid').text(order.paidcost);
+                                    $('#discount').text(order.discount);
+                                    $('#urgent').text(order.isurgent == 1 ? 'Yes' : 'No');
+                                    loaditemdata_SS(orderkey);
+                                }, 500);
+                            }
+                            if (ordertype === 'Extra Copy') {
+                                setTimeout(() => {
+                                    $("#orderModal_EC").modal("show");
+                                    $("#total_EC").text(order.totalcost);
+                                    $("#discount_EC").text(order.discount);
+                                    $("#paid_EC").text(order.paidcost);
+                                    $("#urgent_EC").text(order.isurgent == 1 ? 'Yes' : 'No');
+                                    $("#status_EC").text(order.salestatus);
+                                    loaditemdata_EC(orderkey)
+                                }, 500);
+                            }
+                            if (ordertype === 'Frames') {
+                                setTimeout(() => {
+                                    $("#orderModal_FR").modal("show");
+                                    $("#total_fr").text(order.totalcost);
+                                    $("#discount_fr").text(order.discount);
+                                    $("#paid_fr").text(order.paidcost);
+                                    $("#urgent_fr").text(order.isurgent == 1 ? 'Yes' : 'No');
+                                    $("#status_fr").text(order.salestatus);
+                                    loaditemdata_FR(orderkey)
+                                }, 500);
+                            }
+                            if (ordertype === 'Media') {
+                                setTimeout(() => {
+                                    $("#orderModal_ME").modal("show");
+                                    $("#total_me").text(order.totalcost);
+                                    $("#discount_me").text(order.discount);
+                                    $("#paid_me").text(order.paidcost);
+                                    $("#urgent_me").text(order.isurgent == 1 ? 'Yes' : 'No');
+                                    $("#status_me").text(order.salestatus);
+                                    loaditemdata_ME(orderkey)
+                                }, 500);
+                            }
+                        },
+                        error: function() {
+                            console.error("Failed to fetch updated order info.");
+                        }
+                    });
                 }
             },
             error: function() {
@@ -2305,7 +2363,6 @@
                 url: '/ordertypeitem/' + ordertypekey,
                 type: 'GET',
                 success: function (data) {
-                    console.log('aaaaaaa='+data)
                     $('#sittingitem').empty().append('<option value="">Select an Item</option>');
                     $.each(data, function (key, item) {
                         $('#sittingitem').append('<option value="' + item.ordertypeitemkey + '">' + item.itemname + '</option>');
@@ -2395,7 +2452,15 @@
 
         $(this).off("shown.bs.modal");
 
-    }
+    }  
+    
+    $('#orderModal_SS, #orderModal_EC, #orderModal_FR, #orderModal_ME').on('hidden.bs.modal', function () {
+        if (orderUpdated) {
+            loaddata(); // Reload only if order was updated
+            orderUpdated = false; // Reset flag
+        }
+    });
+
 function printDiv(type,divId,onum,odate,dateDiv) {
 
     let basicDetailsElement = document.getElementById(divId);

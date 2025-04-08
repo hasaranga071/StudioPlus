@@ -131,6 +131,22 @@ class NewOrderController extends Controller
         return response()->json($orders);
 
   }
+
+  public function getOrderDetails(Request $request,$orderkey)
+  {
+        // Search orders based on multiple criteria
+        $orders = StudioOrder::where('studioorders.orderkey',$orderkey)            
+        ->join('studioordertypes', 'studioorders.ordertypekey', '=', 'studioordertypes.ordertypekey') // Join order types
+        ->join('studiocustomers', 'studioorders.customerkey', '=', 'studiocustomers.customerkey')
+        ->select(
+            'studioorders.*',
+            'studioordertypes.ordertype as order_type',
+            'studiocustomers.username as customer_name'
+        )
+        ->get();
+        return response()->json($orders);
+  }
+
   public function itemsearch(Request $request)
   {
     $orderkey = $request->input('orderkey');

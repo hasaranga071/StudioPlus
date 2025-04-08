@@ -41,6 +41,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/update-complete-status/{id}', [StudioOrderController::class, 'markAsCompleted']);
     Route::get('/check-all-items-completed/{orderkey}', [StudioOrderController::class, 'checkAllItemsCompleted']);
     Route::post('/update-order-complete', [StudioOrderController::class, 'updateOrderStatus']);
+    Route::get('/get-order-details/{orderkey}', [NewOrderController::class, 'getOrderDetails'])->name('OrderDetails');
 
     // order type summary
     Route::get('/index', [OrderSummaryController::class, 'index'])->name('index');

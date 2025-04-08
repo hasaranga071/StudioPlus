@@ -20,6 +20,7 @@ class CreateStudiousersTable extends Migration
             $table->string('address')->nullable();
             $table->boolean('isactive')->nullable();
             $table->string('profileimage')->nullable();
+            $table->string('remember_token')->nullable();
             $table->timestamp('createdtime')->useCurrent();
             $table->timestamp('updatedtime')->useCurrent()->useCurrentOnUpdate();
         });

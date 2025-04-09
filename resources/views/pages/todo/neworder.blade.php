@@ -96,6 +96,7 @@
 </div>
 <input type="hidden" id="customerkey" name="customerkey">
 <input type="hidden" id="studiokeyex" name="studiokeyex">
+<input type="hidden" id="oimk" name="oimk">
 <!-- Order Details Form -->
 <form id="orderDetailsForm" class="form-horizontal" _style="height: 600px;">
     <fieldset>
@@ -138,7 +139,7 @@
                 <div class="form-group" style="display: flex; gap: 20px; align-items: center;" id="ecordersection">
                     <!-- Original Order No. Input Field -->
                     <div class="col-md-4" >
-                        <label class="control-label" for="ecordernum">Original Order No.</label>
+                        <label _class="control-label" for="ecordernum">Original Order No.</label>
                         <input id="ecorderid" name="ecorderid" type="text" class="form-control input-md" required="" readonly>
                     </div>
 
@@ -168,19 +169,19 @@
 
                 <div class="form-group" style="display:flex;gap: 50px">
                     <div class="col-md-4" id="Sittings">
-                        <label class="col-md-4 control-label" for="item">Item (*)</label>
+                        <label _class="col-md-4 control-label" for="item">Item (*)</label>
                         <select id="sittingitem" name="item" class="form-control" _style="width: 57%;">
                             <option value="">Select an Item</option> <!-- Placeholder -->
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <label class="col-md-4 control-label">Urgent</label><br>
-                        <input type="checkbox" id="urgent" name="urgent" style="zoom: 350%;">
+                        <label _class="col-md-4 control-label">Urgent</label><br>
+                        <input type="checkbox" id="urgent" name="urgent" style="zoom: 250%;">
                     </div>
                 </div>
                 <div class="form-group" style="display:flex;gap: 50px">
                     <div class="col-md-4" id="edittypemain">
-                        <label class="form-label" for="edittype">Edit Type</label>
+                        <label _class="form-label" for="edittype">Edit Type</label>
                         <select id="edittype" name="edittype" class="form-control">
                         <option value="">Select Edit Type</option>
                             @foreach ($editTypes as $editType)
@@ -189,7 +190,7 @@
                         </select>
                     </div>
                     <div class="col-md-4" id="lamtypemain">
-                        <label class="form-label" for="lamtype">Laminate Type (*)</label>
+                        <label _class="form-label" for="lamtype">Laminate Type (*)</label>
                         <select id="lamtype" name="lamtype" class="form-control">
                         <option value="">Select Laminating Type</option>
                             @foreach ($lamTypes as $lamType)
@@ -200,7 +201,7 @@
                 </div>
                 <div class="form-group" style="display:flex;gap: 50px">
                     <div class="col-md-4" id="frametypemain">
-                        <label class="form-label" for="frametype">Type (*)</label>
+                        <label _class="form-label" for="frametype">Type (*)</label>
                         <select id="frametype" name="frametype" class="form-control">
                         <option value="">Select Type</option>
                             @foreach ($frameTypes as $frametype)
@@ -209,7 +210,7 @@
                         </select>
                     </div>
                     <div class="col-md-4" id="framesizemain">
-                        <label class="form-label" for="framesize">Size (*)</label>
+                        <label _class="form-label" for="framesize">Size (*)</label>
                         <select id="framesize" name="framesize" class="form-control">
                         <option value="">Select Size</option>
                             @foreach ($frameSizes as $framesize)
@@ -220,7 +221,7 @@
                 </div>
                 <div class="form-group" style="display:flex;gap: 50px">
                     <div class="col-md-4" id="subframesizemain">
-                        <label class="form-label" for="subframesize">Frame Size (*)</label>
+                        <label _class="form-label" for="subframesize">Frame Size (*)</label>
                         <select id="subframesize" name="subframesize" class="form-control">
                         <option value="">Select Frame Size</option>
                             @foreach ($frameSubSizes as $subframesize)
@@ -229,7 +230,7 @@
                         </select>
                     </div>
                     <div class="col-md-4" id="subframetypemain">
-                        <label class="form-label" for="subframetype">Frame Type (*)</label>
+                        <label _class="form-label" for="subframetype">Frame Type (*)</label>
                         <select id="subframetype" name="subframetype" class="form-control">
                         <option value="">Select Frame Type</option>
                             @foreach ($frameSubTypes as $subframetype)
@@ -263,11 +264,11 @@
 
                 </div>
                 <div class="col-md-4" id="fquantitymain">
-                    <label class="col-md-4 control-label">Quantity</label>
+                    <label _class="col-md-4 control-label">Quantity</label>
                     <input id="fquantity" name="fquantity" type="text" class="form-control input-md" required="">
                 </div>
                 <div class="col-md-4">
-                    <label class="col-md-4 control-label">Comments</label><br>
+                    <label _class="col-md-4 control-label">Comments</label><br>
                     <textarea id="comments" name="comments" rows="2" cols="50"></textarea>
                 </div>
                 <div class="col-md-4" style="padding-top: 10px;">
@@ -334,6 +335,7 @@
             $("#framesize").val('').change();
             $("#subframetype").val('').change();
             $("#subframesize").val('').change();
+            $("#oimk").val("");
         });
 
         toggleField(); // Run function on page load
@@ -348,12 +350,14 @@
             $('#Sittings, #edittypemain, #hcopymain, #scopymain').toggle(selectedOrderType !== "Frames");
             $('#subframesizemain, #subframetypemain').toggle(selectedFrameType === "Fiber Frame");
 
-            if (selectedOrderType=="Extra Copy" || selectedOrderType=="Media" )
+            if (selectedOrderType!="Studio Sittings")
             {
                 $("#scopy").val(0).prop("readonly", true);
+                document.getElementById("scopymain").style.display = "none";
             }
             else{
                 $("#scopy").val(0).prop("readonly", false);
+                document.getElementById("scopymain").style.display = "flow";
             }
         }
 
@@ -639,7 +643,7 @@
                     }
 
                     // Store the ID for updating later
-                    $("#ssorderitemmapkey").val(ssorderitemmapkey);
+                    $("#oimk").val(ssorderitemmapkey);
                 }
             },
             error: function (xhr) {
@@ -703,6 +707,7 @@
             var framesubtypekey = $("#subframetype option:selected").val();
             var quantity = $("#fquantity").val() || 1;
             routename = "{{ route('storeOrder_fr') }}";
+            var frorderitemmapkey =  $("#oimk").val();
             if(!frametypekey)
                 {
                     flashpopup('Please select the Frame type !');
@@ -717,6 +722,7 @@
                 studiokey: studiokey,
                 orderid: $("#order-id").text(),
                 ordertypekey: ordertypekey,
+                frorderitemmapkey:frorderitemmapkey,
                 ordertype: ordertype,
                 customerkey: customerkey,
                 isurgent: isurgent,
@@ -732,6 +738,8 @@
                 quantity:quantity,
                 _token: "{{ csrf_token() }}" // Required for Laravel AJAX requests
             }
+
+
         }
         else
         {

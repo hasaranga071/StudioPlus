@@ -423,6 +423,7 @@ class StudioOrderController extends Controller
                             'subframetypekey' => $request->subframetypekey,
                             'totalcost' => $totalcost,
                             'quantity' => $request->quantity,
+                            'iscompleted' => $request->iscompleted,
                         ]
                     );
                     $totalitemCost = StudioOrderItemMapFR::where('orderkey', $sorderkey)->sum('totalcost');
@@ -443,6 +444,7 @@ class StudioOrderController extends Controller
                         'totalcost' => $totalitemCost,
                         'paidcost' => $request->paidcost,
                         'discount' => $request->discount,
+                        'iscompleted' => $request->iscompleted,
                     ]);
 
                     $message = 'Order Updated Successfully!';
@@ -465,6 +467,7 @@ class StudioOrderController extends Controller
                         'updatedtime' => now(),
                         'deliverydate' => $request->deliverydate,
                         'remarks' => $request->remarks,
+                        'iscompleted' => $request->iscompleted,
                     ]);
 
                     $sorderkey = $order->orderkey;
@@ -511,7 +514,9 @@ class StudioOrderController extends Controller
                             'subframesizekey' => $request->subframesizekey,
                             'subframetypekey' => $request->subframetypekey,
                             'quantity' => $request->quantity,
+                            'quantity' => $request->quantity,
                             'totalcost' => $totalcost,
+                            'iscompleted' => $request->iscompleted,
                         ]
                     );
                     $totalitemCost = StudioOrderItemMapFR::where('orderkey', $sorderkey)->sum('totalcost');

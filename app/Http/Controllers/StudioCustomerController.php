@@ -106,37 +106,50 @@ class StudioCustomerController extends Controller
             return response()->json(['status' => 'success', 'message' => 'Customer session updated']);
         }
 
-        public function setOrderSession(Request $request)
-        {
-            // Validate order type parameter
-            $request->validate([
-                'ordertype' => 'required|string'
-            ]);
+    public function setOrderSession(Request $request)
+            {
+                // Validate order type parameter
+                $request->validate([
+                    'ordertype' => 'required|string'
+                ]);
 
-            // Define order ID prefix based on order type
-            $prefixes = [
-                'Studio Sittings' => 'SS',
-                'Extra Copy' => 'EC',
-                'Media' => 'ME',
-                'Frames' => 'FR',
-                'Default' => 'ODR' // Default prefix
-            ];
+                // Define order ID prefix based on order type
+                $prefixes = [
+                    'Studio Sittings' => 'SS',
+                    'Extra Copy' => 'EC',
+                    'Media' => 'ME',
+                    'Frames' => 'FR',
+                    'Default' => 'ODR' // Default prefix
+                ];
 
-            // Get prefix based on order type or use default
-            $prefix = $prefixes[$request->ordertype] ?? $prefixes['Default'];
+                // Get prefix based on order type or use default
+                $typePrefix = $prefixes[$request->ordertype] ?? $prefixes['Default'];
 
-            // Generate unique order ID with timestamp
-            $orderId = $prefix . '-' . now()->format('YmdHis');
+                // Create MMYY part of the prefix (e.g., 0425 for April 2025)
+                $datePrefix = now()->format('my');
 
-            // Store in session
-            Session::put('order_id', $orderId);
+                // Get the current auto-increment number from session or initialize to 1
+                $lastNumber = Session::get('last_order_number', 0);
+                $newNumber = $lastNumber + 1;
 
-            return response()->json([
-                'status' => 'success',
-                'order_id' => $orderId,
-                'message' => 'Order session updated'
-            ]);
-        }
+                // Format the number with leading zeros (e.g., 0001, 0002, etc.)
+                $formattedNumber = str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+
+                // Generate the complete order ID
+                $orderId = $typePrefix . '-' . $datePrefix . $formattedNumber;
+
+                // Store the new number back in session for next use
+                Session::put('last_order_number', $newNumber);
+
+                // Store order ID in session
+                Session::put('order_id', $orderId);
+
+                return response()->json([
+                    'status' => 'success',
+                    'order_id' => $orderId,
+                    'message' => 'Order session updated'
+                ]);
+            }
 
 
 }

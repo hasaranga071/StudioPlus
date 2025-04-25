@@ -1258,10 +1258,27 @@
 
                     if (dateInput) {
                         let today = new Date();
-                        today.setDate(today.getDate() + 3); // Add 3 days
+                        today.setDate(today.getDate() + 7); // Add 7 days instead of 3
 
                         let formattedDate = today.toISOString().split("T")[0]; // Format as YYYY-MM-DD
                         dateInput.value = formattedDate;
+                    }
+                });
+
+                // Add event listener for the urgent checkbox
+                $("#urgent").change(function() {
+                    let dateInput = document.getElementById("deldate");
+                    let today = new Date();
+
+                    if ($(this).is(":checked")) {
+                        // If urgent is checked, set delivery date to today
+                        let todayFormatted = today.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+                        dateInput.value = todayFormatted;
+                    } else {
+                        // If urgent is unchecked, set delivery date to one week ahead
+                        today.setDate(today.getDate() + 7); // Add 7 days
+                        let oneWeekAheadFormatted = today.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+                        dateInput.value = oneWeekAheadFormatted;
                     }
                 });
 

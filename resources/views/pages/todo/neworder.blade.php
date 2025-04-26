@@ -380,6 +380,52 @@
             }
         }
 
+        $(document).ready(function() {
+
+            // Load items when the page loads
+            loadOrderTypeItems();
+
+            // Reload items when order type changes
+            $('#otype').on('change', function() {
+                loadOrderTypeItems();
+            });
+
+            // When an item is selected
+            $('#sittingitem').on('change', function() {
+                var itemId = $(this).val();
+                var ordertypekey = $('#otype').val(); // Get the current selected OrderType also
+
+                if (itemId && ordertypekey) {
+                    $.ajax({
+                        url: '/ordertypeitem/' + ordertypekey, // Fetch all items for the order type
+                        type: 'GET',
+                        success: function (data) {
+                            const selectedItem = data.find(item => item.ordertypeitemkey == itemId);
+
+                            if (selectedItem && selectedItem.isurgent == 1) {
+                                $('#urgent').prop('checked', true);
+                                const today = new Date().toISOString().split('T')[0];
+                                $('#deldate').val(today);
+                            } else {
+                                $('#urgent').prop('checked', false);
+                                const nextWeek = new Date();
+                                nextWeek.setDate(nextWeek.getDate() + 7); // Add 7 days
+                                const nextWeekFormatted = nextWeek.toISOString().split('T')[0];
+                                $('#deldate').val(nextWeekFormatted);
+                            }
+                        },
+                        error: function () {
+                            alert('Failed to fetch item details.');
+                        }
+                    });
+                } else {
+                    $('#urgent').prop('checked', false);
+                    $('#deldate').val('');
+                }
+            });
+
+        });
+
         // New Customer Registration
         $(document).on('submit', '#newCustomerForm', function (e) {
             e.preventDefault();

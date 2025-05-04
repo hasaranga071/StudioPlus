@@ -151,5 +151,40 @@ class StudioCustomerController extends Controller
                 ]);
             }
 
+            public function setBillNoSession(Request $request)
+            {
+                // Validate order type parameter
+                $request->validate([
+                    'ordertype' => 'required|string'
+                ]);
+
+
+
+                // Create MMYY part of the prefix (e.g., 0425 for April 2025)
+                $datePrefix = now()->format('ymd');
+
+                // Get the current auto-increment number from session or initialize to 1
+                $lastNumber = Session::get('last_billnumber', 0);
+                $newNumber = $lastNumber + 1;
+
+                // Format the number with leading zeros (e.g., 0001, 0002, etc.)
+                $formattedNumber = str_pad($newNumber, 2, '0', STR_PAD_LEFT);
+
+                // Generate the complete order ID
+                $orderId = $datePrefix . $formattedNumber;
+
+                // Store the new number back in session for next use
+                Session::put('last_billnumber', $newNumber);
+
+                // Store order ID in session
+                Session::put('bill_id', $orderId);
+
+                return response()->json([
+                    'status' => 'success',
+                    'bill_id' => $orderId,
+                    'message' => 'Order Bill session updated'
+                ]);
+            }
+
 
 }

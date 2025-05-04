@@ -11,6 +11,7 @@ class CreateStudioOrderItemMapFRTable extends Migration
         Schema::create('studioorderitemmapfr', function (Blueprint $table) {
             $table->increments('frorderitemmapkey'); // Primary key with auto-increment
             $table->integer('orderkey'); // Foreign key to orders
+            $table->string('jobid')->unique();
             $table->integer('framesizekey'); // Foreign key to frame sizes
             $table->integer('edittypekey'); // Foreign key to edit types
             $table->integer('quantity'); // Total quantity

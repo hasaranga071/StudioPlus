@@ -96,6 +96,7 @@
 </div>
 <input type="hidden" id="customerkey" name="customerkey">
 <input type="hidden" id="studiokeyex" name="studiokeyex">
+<input type="hidden" id="itemjobid" name="itemjobid">
 <input type="hidden" id="oimk" name="oimk">
 <!-- Order Details Form -->
 <form id="orderDetailsForm" class="form-horizontal" _style="height: 600px;">
@@ -125,9 +126,10 @@
                 <span id="customer-name"  class="label label-primary">  {{ Session::get('customer_name') ?? 'Not set' }}</span>
             </div>
          {{-- @endif --}}
+
             <div class="col-md-4">
-                <label _class="col-md-4 control-label" for="phone">Order No.</label><br>
-                <span id="order-id" class="label label-primary">{{ Session::get('order_id') ?? 'Not set' }}</span>
+                <label _class="col-md-4 control-label" for="phone">Bill No.</label><br>
+                <span id="order-id" class="label label-primary">{{ Session::get('bill_id') ?? 'Not set' }}</span>
             </div>
             <div class="col-md-4">
                 <label _class="col-md-4 control-label">Delivery date</label>
@@ -137,9 +139,9 @@
         <div class="row">
             <div class="column2" style="background-color:#c4c2c2;border-radius:12px;">
                 <div class="form-group" style="display: flex; gap: 20px; align-items: center;" id="ecordersection">
-                    <!-- Original Order No. Input Field -->
+                    <!-- Original Job No. Input Field -->
                     <div class="col-md-4" >
-                        <label _class="control-label" for="ecordernum">Original Order No.</label>
+                        <label _class="control-label" for="ecordernum">Original Job No.</label>
                         <input id="ecorderid" name="ecorderid" type="text" class="form-control input-md" required="" readonly>
                     </div>
 
@@ -422,6 +424,16 @@
                     $('#urgent').prop('checked', false);
                     $('#deldate').val('');
                 }
+                // set job id for item
+                $.ajax({
+                url: "{{ url('/set-order-session') }}",
+                type: "POST",
+                data: { _token: "{{ csrf_token() }}", ordertype: $("#otype option:selected").text() },
+                    success: function (response) {
+                        if (response.status === 'success')
+                        $("#itemjobid").text(response.order_id);
+                    }
+                });
             });
 
         });
@@ -594,6 +606,7 @@
                     $("#customerkey").text(response.customer_id);
                     $("#studiokey").text(response.studio_key);
                     generateOrderId();
+                    generateBillId();
                     let flashbody = '<div id="flash-message" class="alert alert-success" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);z-index: 9999; padding: 15px 20px; font-size: 16px; text-align: center;background-color: #434844; color: white; border-radius: 5px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);">'
                 + response.customer_name +' selected.</div>';
 
@@ -616,12 +629,24 @@
                 type: "POST",
                 data: { _token: "{{ csrf_token() }}", ordertype: $("#otype option:selected").text() },
                 success: function (response) {
-                    if (response.status === 'success') $("#order-id").text(response.order_id);
+                    if (response.status === 'success')
+                    $("#itemjobid").text(response.order_id);
                 }
             });
             toggleField();
             loadOrderTypeItems();
             clearOrderFields();
+        }
+        function generateBillId() {
+            $.ajax({
+                url: "{{ url('/set-billorder-session') }}",
+                type: "POST",
+                data: { _token: "{{ csrf_token() }}", ordertype: $("#otype option:selected").text() },
+                success: function (response) {
+                    if (response.status === 'success') $("#order-id").text(response.bill_id);
+                }
+            });
+
         }
 
         $(document).on('click', '.edit-order', function () {
@@ -718,6 +743,7 @@
         var paidcost = $("#paidamount").val() || 0;;
         var comments = $("#comments").val() || "";
         var customerkey = $("#customerkey").text();
+        var itemjobid = $("#itemjobid").text();
         var customername = $('#customer-name').text();
         var deliverydate = $("#deldate").val();
         var ecorderkey = $('#ecorignalorderkey').val();
@@ -771,6 +797,7 @@
                 frorderitemmapkey:frorderitemmapkey,
                 ordertype: ordertype,
                 customerkey: customerkey,
+                jobid: itemjobid,
                 isurgent: isurgent,
                 discount: discount,
                 paidcost: paidcost,
@@ -799,6 +826,7 @@
                 edittypekey:edittypekey,
                 lamtypekey:lamtypekey,
                 customerkey: customerkey,
+                jobid: itemjobid,
                 isurgent: isurgent,
                 discount: discount,
                 paidcost: paidcost,

@@ -21,6 +21,7 @@ class StudioOrderItemMapSS extends Model
     // Allow mass assignment for the following fields
     protected $fillable = [
         'orderkey',
+        'jobid',
         'ordertypeitemkey',
         'edittypekey',
         'lamtypekey',

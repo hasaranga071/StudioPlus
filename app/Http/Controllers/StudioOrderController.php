@@ -67,6 +67,7 @@ class StudioOrderController extends Controller
                     'orderid' => 'required|string',
                     'ordertypekey' => 'required|integer',
                     'customerkey' => 'required|integer',
+                    'jobid' => 'required|string',
                     'isurgent' => 'required|boolean',
                     'paidcost' => 'required|numeric',
                     'discount' => 'required|integer',
@@ -176,6 +177,7 @@ class StudioOrderController extends Controller
                             ],
                             [
                                 'edittypekey' => $request->edittypekey,
+                                'jobid' => $request->jobid,
                                 'lamtypekey' => $request->lamtypekey,
                                 'softcopyquantity' => $request->softcopycount,
                                 'hardcopyquantity' => $request->hardcopycount,
@@ -194,6 +196,7 @@ class StudioOrderController extends Controller
                             [
                                 'edittypekey' => $request->edittypekey,
                                 'lamtypekey' => $request->lamtypekey,
+                                'jobid' => $request->jobid,
                                 'softcopyquantity' => $request->softcopycount,
                                 'hardcopyquantity' => $request->hardcopycount,
                                 'totalcost' => $ssitemCost,
@@ -210,6 +213,7 @@ class StudioOrderController extends Controller
                             ],
                             [
                                 'edittypekey' => $request->edittypekey,
+                                'jobid' => $request->jobid,
                                 'hardcopyquantity' => $request->hardcopycount,
                                 'originalorderkey' => $request->originalorderkey,
                                 'totalcost' => $ssitemCost,
@@ -271,6 +275,7 @@ class StudioOrderController extends Controller
                             ],
                             [
                                 'edittypekey' => $request->edittypekey,
+                                'jobid' => $request->jobid,
                                 'lamtypekey' => $request->lamtypekey,
                                 'softcopyquantity' => $request->softcopycount,
                                 'hardcopyquantity' => $request->hardcopycount,
@@ -288,6 +293,7 @@ class StudioOrderController extends Controller
                             ],
                             [
                                 'edittypekey' => $request->edittypekey,
+                                'jobid' => $request->jobid,
                                 'hardcopyquantity' => $request->hardcopycount,
                                 'originalorderkey' => $request->originalorderkey,
                                 'totalcost' => $ssitemCost,
@@ -304,6 +310,7 @@ class StudioOrderController extends Controller
                             ],
                             [
                                 'edittypekey' => $request->edittypekey,
+                                'jobid' => $request->jobid,
                                 'lamtypekey' => $request->lamtypekey,
                                 'softcopyquantity' => $request->softcopycount,
                                 'hardcopyquantity' => $request->hardcopycount,
@@ -334,6 +341,7 @@ class StudioOrderController extends Controller
                 $request->validate([
                     'studiokey' => 'required|integer',
                     'orderid' => 'required|string',
+                    'jobid' => 'required|string',
                     'ordertypekey' => 'required|integer',
                     'customerkey' => 'required|integer',
                     'isurgent' => 'required|boolean',
@@ -418,6 +426,7 @@ class StudioOrderController extends Controller
                         ],
                         [
                             'framesizekey' => $request->framesizekey,
+                            'jobid' => $request->jobid,
                             'frametypekey' => $request->frametypekey,
                             'subframesizekey' => $request->subframesizekey,
                             'subframetypekey' => $request->subframetypekey,
@@ -510,6 +519,7 @@ class StudioOrderController extends Controller
                         ],
                         [
                             'framesizekey' => $request->framesizekey,
+                            'jobid' => $request->jobid,
                             'frametypekey' => $request->frametypekey,
                             'subframesizekey' => $request->subframesizekey,
                             'subframetypekey' => $request->subframetypekey,
@@ -655,8 +665,8 @@ class StudioOrderController extends Controller
 
                 return response()->json(['allCompleted' => $incomplete === 0]);
             }
-            
-            
+
+
         }
 
         public function updateOrderStatus(Request $request)

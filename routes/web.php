@@ -73,6 +73,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/get-customer-session', [StudioCustomerController::class, 'getCustomerSession']);
     Route::post('/set-customer-session', [StudioCustomerController::class, 'setCustomerSession']);
     Route::post('/set-order-session', [StudioCustomerController::class, 'setOrderSession']);
+    Route::post('/set-billorder-session', [StudioCustomerController::class, 'setBillNoSession']);
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

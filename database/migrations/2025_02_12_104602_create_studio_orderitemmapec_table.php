@@ -11,6 +11,7 @@ class CreateStudioOrderItemMapECTable extends Migration
         Schema::create('studioorderitemmapec', function (Blueprint $table) {
             $table->increments('ecorderitemmapkey'); // Primary key with auto-increment
             $table->integer('orderkey'); // Foreign key to orders
+            $table->string('jobid')->unique();
             $table->integer('originalorderkey'); // Foreign key to original orders
             $table->integer('ordertypeitemkey'); // Foreign key to order type items
             $table->integer('edittypekey'); // Foreign key to edit types

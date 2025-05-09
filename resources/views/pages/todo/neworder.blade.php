@@ -111,7 +111,7 @@
         <div class="form-group" style="display:inline-flex;padding-top: 15px;gap:10%">
             <div class="col-md-4">
                 <label class="form-label" for="otype">Order Type (*)</label>
-                <select id="otype" name="otype" class="form-control" value='1'>
+                <select id="otype" name="otype" class="form-control" >
 
                     @foreach ($orderTypes as $orderType)
                         <option value="{{ $orderType->ordertypekey }}">{{ $orderType->ordertype }}</option>
@@ -655,8 +655,14 @@
         $(document).on('click', '.edit-order', function () {
          event.preventDefault();
         let row = $(this).closest('tr'); // Get the clicked row
-        let ssorderitemmapkey = row.data('ssorderitemmapkey'); // Get the ID
-        var ordertype = $("#otype option:selected").text();
+        let ssorderitemmapkey = row.data('ssorderitemmapkey');
+        let ordertypekey = row.data('ordertypekey');
+        var ordertype = row.data('ordertype'); // Get the ID
+        if ($("#otype option[value='" + ordertypekey + "']").length === 0) {
+            $("#otype").append(`<option value="${ordertypekey}">${ordertype}</option>`);
+        }
+        $("#otype").val(ordertypekey).change();
+
         $("#add-order").text("Update");
         $(".highlighted-row").removeClass("highlighted-row");
 
@@ -679,6 +685,7 @@
                     $("#comments").val(item.order.remarks).change();
                     $("#discount").val(item.order.discount);
                     $("#paidamount").val(item.order.paidcost);
+                    $("#itemjobid").text(item.jobid);
                     let deliveryDate = item.order.deliverydate.split(" ")[0]; // Extracts "2025-02-26"
                     $("#deldate").val(deliveryDate).change();
                     if(ordertype!='Frames'){
@@ -907,7 +914,7 @@
             url: "/order-itemsummary/" + orderKey + "?ordertype=" + encodeURIComponent(orderType),
             type: "GET",
             success: function (response) {
-                if (response.status === "success") {
+                if (response.orderItems.length > 0) {
                     let orderMainTable = `
                         <table class="table table-bordered order-summary_ss-table">
                             <thead>
@@ -942,8 +949,8 @@
                         paidAmount = parseFloat(item.order.paidcost) || 0;
 
                         orderSummaryHtml += `
-                            <tr data-ssorderitemmapkey="${item.ssorderitemmapkey}">
-                                <td>${item.order.order_type.ordertype}</td>
+                            <tr data-ssorderitemmapkey="${item.ssorderitemmapkey}" data-ordertype="Studio Sittings" data-ordertypekey="${item.order_type_item.ordertypekey}">
+                                <td>Studio Sittings</td>
                                 <td>${item.order_type_item.itemname}</td>
                                 <td>${item.edit_type?.edittype || ''}</td>
                                 <td>${item.hardcopyquantity}</td>
@@ -996,7 +1003,7 @@
             url: "/order-itemsummary/" + orderKey + "?ordertype=" + encodeURIComponent(orderType),
             type: "GET",
             success: function (response) {
-                if (response.status === "success") {
+                if (response.orderItems.length > 0) {
                     let orderMainTable = `
                         <table class="table table-bordered order-summary_ec-table">
                             <thead>
@@ -1031,8 +1038,8 @@
                         paidAmount = parseFloat(item.order.paidcost) || 0;
 
                         orderSummaryHtml += `
-                            <tr data-ssorderitemmapkey="${item.ecorderitemmapkey}">
-                                <td>${item.order.order_type.ordertype}</td>
+                            <tr data-ssorderitemmapkey="${item.ecorderitemmapkey}" data-ordertype="Extra Copy" data-ordertypekey="${item.order_type_item.ordertypekey}">
+                                <td>Extra Copy</td>
                                 <td>${item.original_order.orderid}</td>
                                 <td>${item.order_type_item.itemname}</td>
                                 <td>${item.edit_type?.edittype || ''}</td>
@@ -1085,7 +1092,7 @@
             url: "/order-itemsummary/" + orderKey + "?ordertype=" + encodeURIComponent(orderType),
             type: "GET",
             success: function (response) {
-                if (response.status === "success") {
+                if (response.orderItems.length > 0) {
                     let orderMainTable = `
                         <table class="table table-bordered order-summary_me-table">
                             <thead>
@@ -1121,8 +1128,8 @@
                         paidAmount = parseFloat(item.order.paidcost) || 0;
 
                         orderSummaryHtml += `
-                            <tr data-ssorderitemmapkey="${item.meorderitemmapkey}">
-                                <td>${item.order.order_type.ordertype}</td>
+                            <tr data-ssorderitemmapkey="${item.meorderitemmapkey}" data-ordertype="Media" data-ordertypekey="${item.order_type_item.ordertypekey}">
+                                <td>Media</td>
                                 <td>${item.order_type_item.itemname}</td>
                                 <td>${item.edit_type?.edittype || ''}</td>
                                 <td>${item.lam_type?.laminatetype || ''}</td>
@@ -1176,7 +1183,7 @@
             url: "/order-itemsummary/" + orderKey + "?ordertype=" + encodeURIComponent(orderType),
             type: "GET",
             success: function (response) {
-                if (response.status === "success") {
+                if (response.orderItems.length > 0) {
                     let orderMainTable = `
                         <table class="table table-bordered order-summary_fr-table">
                             <thead>
@@ -1212,8 +1219,8 @@
                         paidAmount = parseFloat(item.order.paidcost) || 0;
 
                         orderSummaryHtml += `
-                            <tr data-ssorderitemmapkey="${item.frorderitemmapkey}">
-                                <td>${item.order.order_type.ordertype}</td>
+                            <tr data-ssorderitemmapkey="${item.frorderitemmapkey}" data-ordertype="Frames" data-ordertypekey="${item.order.order_type.ordertypekey}">
+                                <td>Frames</td>
                                 <td>${item.frame_type.frametype}</td>
                                 <td>${item.frame_size.size}</td>
                                 <td>${item.subframe_size?.framesize || ''}</td>

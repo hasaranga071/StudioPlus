@@ -135,7 +135,7 @@ class NewOrderController extends Controller
   public function getOrderDetails(Request $request,$orderkey)
   {
         // Search orders based on multiple criteria
-        $orders = StudioOrder::where('studioorders.orderkey',$orderkey)            
+        $orders = StudioOrder::where('studioorders.orderkey',$orderkey)
         ->join('studioordertypes', 'studioorders.ordertypekey', '=', 'studioordertypes.ordertypekey') // Join order types
         ->join('studiocustomers', 'studioorders.customerkey', '=', 'studiocustomers.customerkey')
         ->select(
@@ -173,11 +173,12 @@ class NewOrderController extends Controller
 
     return response()->json($orderitems);
   }
-  public function getOrderItemSummary($orderkey)
+  public function getOrderItemSummary($orderkey,Request $request)
   {
 
     $ordertypekey = StudioOrder::where('orderkey',  $orderkey)->value('ordertypekey');
-    $ordertype = StudioOrderType::where('ordertypekey',  $ordertypekey)->value('ordertype');
+    $ordertype = $request->query('ordertype');
+    //$ordertype = StudioOrderType::where('ordertypekey',  $ordertypekey)->value('ordertype');
 
     if ($ordertype=='Studio Sittings')
     {
@@ -194,7 +195,7 @@ class NewOrderController extends Controller
     }
 
     else if ($ordertype=='Extra Copy')
-    
+
     {
         // Search order items based on orderkey
         $orderitems = StudioOrderItemMapEC::with('editType','lamType','orderTypeItem','order.orderType','originalOrder') // Assuming 'itemType' is the relationship method

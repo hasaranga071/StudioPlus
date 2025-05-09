@@ -281,7 +281,10 @@
             </div>
             <div class="column1" style="background-color:#aaa;border-radius:12px;" id="order-summary-tb">
                 <h2>Order Summary</h2>
-                <div id="ordermaintable"></div>
+                <div id="ordermaintable_ss"></div>
+                <div id="ordermaintable_ec"></div>
+                <div id="ordermaintable_fr"></div>
+                <div id="ordermaintable_me"></div>
 
                 <div class="order-summary-totals" style="margin-top: 20px; margin-left: auto; margin-right: auto;">
                     <table class="table table-bordered" style="background: #9c9c9c; border-radius: 8px; overflow: hidden;">
@@ -899,14 +902,14 @@
                 });
     }
 
-    function orderSummaryTableSS(orderKey){
+    function orderSummaryTableSS(orderKey,orderType){
         $.ajax({
-            url: "/order-itemsummary/" + orderKey,
+            url: "/order-itemsummary/" + orderKey + "?ordertype=" + encodeURIComponent(orderType),
             type: "GET",
             success: function (response) {
                 if (response.status === "success") {
                     let orderMainTable = `
-                        <table class="table table-bordered order-summary-table">
+                        <table class="table table-bordered order-summary_ss-table">
                             <thead>
                                 <tr>
                                     <th>Order Type</th>
@@ -921,7 +924,7 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="order-summary">
+                            <tbody id="order-summary_ss">
                                 <!-- Orders will be dynamically added here -->
                             </tbody>
                         </table>`;
@@ -977,8 +980,8 @@
                             <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
                         </tr>`;
 
-                    $("#ordermaintable").html(orderMainTable);
-                    $("#order-summary").html(orderSummaryHtml);
+                    $("#ordermaintable_ss").html(orderMainTable);
+                    $("#order-summary_ss").html(orderSummaryHtml);
                     $("#order-summary-total").html(orderSummaryTotalHtml);
                 }
             },
@@ -988,14 +991,14 @@
         });
     }
 
-    function orderSummaryTableEC(orderKey){
+    function orderSummaryTableEC(orderKey,orderType){
         $.ajax({
-            url: "/order-itemsummary/" + orderKey,
+            url: "/order-itemsummary/" + orderKey + "?ordertype=" + encodeURIComponent(orderType),
             type: "GET",
             success: function (response) {
                 if (response.status === "success") {
                     let orderMainTable = `
-                        <table class="table table-bordered order-summary-table">
+                        <table class="table table-bordered order-summary_ec-table">
                             <thead>
                                 <tr>
                                     <th>Order Type</th>
@@ -1010,7 +1013,7 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="order-summary">
+                            <tbody id="order-summary_ec">
                                 <!-- Orders will be dynamically added here -->
                             </tbody>
                         </table>`;
@@ -1066,8 +1069,8 @@
                             <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
                         </tr>`;
 
-                    $("#ordermaintable").html(orderMainTable);
-                    $("#order-summary").html(orderSummaryHtml);
+                    $("#ordermaintable_ec").html(orderMainTable);
+                    $("#order-summary_ec").html(orderSummaryHtml);
                     $("#order-summary-total").html(orderSummaryTotalHtml);
                 }
             },
@@ -1077,14 +1080,14 @@
         });
     }
 
-    function orderSummaryTableME(orderKey){
+    function orderSummaryTableME(orderKey,orderType){
         $.ajax({
-            url: "/order-itemsummary/" + orderKey,
+            url: "/order-itemsummary/" + orderKey + "?ordertype=" + encodeURIComponent(orderType),
             type: "GET",
             success: function (response) {
                 if (response.status === "success") {
                     let orderMainTable = `
-                        <table class="table table-bordered order-summary-table">
+                        <table class="table table-bordered order-summary_me-table">
                             <thead>
                                 <tr>
                                     <th>Order Type</th>
@@ -1100,7 +1103,7 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="order-summary">
+                            <tbody id="order-summary_me">
                                 <!-- Orders will be dynamically added here -->
                             </tbody>
                         </table>`;
@@ -1157,8 +1160,8 @@
                             <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
                         </tr>`;
 
-                    $("#ordermaintable").html(orderMainTable);
-                    $("#order-summary").html(orderSummaryHtml);
+                    $("#ordermaintable_me").html(orderMainTable);
+                    $("#order-summary_me").html(orderSummaryHtml);
                     $("#order-summary-total").html(orderSummaryTotalHtml);
                 }
             },
@@ -1168,14 +1171,14 @@
         });
     }
 
-    function orderSummaryTableFR(orderKey){
+    function orderSummaryTableFR(orderKey,orderType){
         $.ajax({
-            url: "/order-itemsummary/" + orderKey,
+            url: "/order-itemsummary/" + orderKey + "?ordertype=" + encodeURIComponent(orderType),
             type: "GET",
             success: function (response) {
                 if (response.status === "success") {
                     let orderMainTable = `
-                        <table class="table table-bordered order-summary-table">
+                        <table class="table table-bordered order-summary_fr-table">
                             <thead>
                                 <tr>
                                     <th>Order Type</th>
@@ -1191,7 +1194,7 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="order-summary">
+                            <tbody id="order-summary_fr">
                                 <!-- Orders will be dynamically added here -->
                             </tbody>
                         </table>`;
@@ -1248,8 +1251,8 @@
                             <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
                         </tr>`;
 
-                    $("#ordermaintable").html(orderMainTable);
-                    $("#order-summary").html(orderSummaryHtml);
+                    $("#ordermaintable_fr").html(orderMainTable);
+                    $("#order-summary_fr").html(orderSummaryHtml);
                     $("#order-summary-total").html(orderSummaryTotalHtml);
                 }
             },
@@ -1260,19 +1263,19 @@
     }
 
     function ordersummarytable(orderKey) {
-        let orderType = $("#otype option:selected").text();
-        if (orderType == 'Frames'){
-            orderSummaryTableFR(orderKey)
-        }
-        else if(orderType == 'Media'){
-            orderSummaryTableME(orderKey)
-        }
-        else if(orderType == 'Extra Copy'){
-            orderSummaryTableEC(orderKey)
-        }
-        else{
-            orderSummaryTableSS(orderKey)
-        }
+        // let orderType = $("#otype option:selected").text();
+        // if (orderType == 'Frames'){
+             orderSummaryTableFR(orderKey,'Frames')
+        // }
+        // else if(orderType == 'Media'){
+             orderSummaryTableME(orderKey,'Media')
+        // }
+        // else if(orderType == 'Extra Copy'){
+            orderSummaryTableEC(orderKey,'Extra Copy')
+        // }
+        // else{
+             orderSummaryTableSS(orderKey,'Studio Sittings')
+        // }
     }
 
 

@@ -399,7 +399,7 @@
             $('#sittingitem').on('change', function() {
                 var itemId = $(this).val();
                 var ordertypekey = $('#otype').val(); // Get the current selected OrderType also
-
+                if (skipsittingitemChange) return;
                 if (itemId && ordertypekey) {
                     $.ajax({
                         url: '/ordertypeitem/' + ordertypekey, // Fetch all items for the order type
@@ -637,7 +637,7 @@
                 }
             });
             toggleField();
-            loadOrderTypeItems();
+           // loadOrderTypeItems();
             clearOrderFields();
         }
         function generateBillId() {
@@ -658,6 +658,8 @@
         let ssorderitemmapkey = row.data('ssorderitemmapkey');
         let ordertypekey = row.data('ordertypekey');
         var ordertype = row.data('ordertype'); // Get the ID
+
+
         if ($("#otype option[value='" + ordertypekey + "']").length === 0) {
             $("#otype").append(`<option value="${ordertypekey}">${ordertype}</option>`);
         }
@@ -680,8 +682,9 @@
                     console.log('orderitem',item);
                     // Populate the input fields
 
-
+                    skipUrgentChange = true;
                     $("#urgent").prop('checked', item.order.isurgent == 1);
+                    skipUrgentChange = false;
                     $("#comments").val(item.order.remarks).change();
                     $("#discount").val(item.order.discount);
                     $("#paidamount").val(item.order.paidcost);
@@ -691,10 +694,12 @@
                     if(ordertype!='Frames'){
                         $("#hcopy").val(item.hardcopyquantity);
                         $("#scopy").val(item.softcopyquantity);
+                        skipsittingitemChange = true;
                         if ($("#sittingitem option[value='" + item.ordertypeitemkey + "']").length === 0) {
                             $("#sittingitem").append(`<option value="${item.ordertypeitemkey}">${item.order_type_item.itemname}</option>`);
                         }
                         $("#sittingitem").val(item.ordertypeitemkey).change();
+                        skipsittingitemChange = false;
                         if ($("#edittype option[value='" + item.edittypekey + "']").length === 0) {
                             $("#edittype").append(`<option value="${item.edittypekey}">${item.edit_type?.edittype || ''}</option>`);
                         }
@@ -720,7 +725,16 @@
                         $("#subframesize").append(`<option value="${item.subframesizekey}">${item.subframe_size?.framesize || ''}</option>`);
                         }
                          $("#subframesize").val(item.subframesizekey).change();
+
+
                          $("#fquantity").val(item.quantity);
+                    }
+                    if (ordertype=='Media')
+                    {
+                        if ($("#lamtype option[value='" + item.lamtypekey + "']").length === 0) {
+                        $("#lamtype").append(`<option value="${item.lamtypekey}">${item.lam_type?.laminatetype || ''}</option>`);
+                        }
+                         $("#lamtype").val(item.lamtypekey).change();
                     }
 
                     // Store the ID for updating later
@@ -1348,9 +1362,11 @@
                         dateInput.value = formattedDate;
                     }
                 });
-
+                let skipUrgentChange = false;
+                let skipsittingitemChange = false;
                 // Add event listener for the urgent checkbox
                 $("#urgent").change(function() {
+                    if (skipUrgentChange) return;
                     let dateInput = document.getElementById("deldate");
                     let today = new Date();
 

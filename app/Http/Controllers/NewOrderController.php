@@ -240,6 +240,31 @@ class NewOrderController extends Controller
 
   }
 
+  public function getOrderTotalSummary($orderkey)
+{
+    $discountamount = StudioOrder::where('orderkey',  $orderkey)->value('discount');
+    $paidamount = StudioOrder::where('orderkey',  $orderkey)->value('paidcost');
+    $totalSS = \App\Models\StudioOrderItemMapSS::where('orderkey', $orderkey)->sum('totalcost');
+    $totalEC = \App\Models\StudioOrderItemMapEC::where('orderkey', $orderkey)->sum('totalcost');
+    $totalME = \App\Models\StudioOrderItemMapME::where('orderkey', $orderkey)->sum('totalcost');
+    $totalFR = \App\Models\StudioOrderItemMapFR::where('orderkey', $orderkey)->sum('totalcost');
+
+    $grandTotal = $totalSS + $totalEC + $totalME + $totalFR;
+
+    return response()->json([
+        'status' => 'success',
+        'orderkey' => $orderkey,
+        'total_SS' => $totalSS,
+        'total_EC' => $totalEC,
+        'total_ME' => $totalME,
+        'total_FR' => $totalFR,
+        'dicount' => $discountamount,
+        'paidamount' => $paidamount,
+        'grandtotal' => $grandTotal
+    ]);
+}
+
+
   public function getOrderItemDetails($orderitemmapkey,Request $request)
   {
 

@@ -980,30 +980,10 @@
                             </tr>`;
                     });
 
-                    discountAmount = (orderTotalCost * orderDiscount) / 100;
-                    let balanceDue = (orderTotalCost - discountAmount) - paidAmount;
 
-                    orderSummaryTotalHtml = `
-                        <tr>
-                            <th style="width: 50%;">Total Cost</th>
-                            <td><span id="total-cost">Rs ${orderTotalCost.toFixed(2)}</span></td>
-                        </tr>
-                        <tr>
-                            <th>Discount (${orderDiscount}%)</th>
-                            <td><span id="total-cost">Rs ${discountAmount.toFixed(2)}</span></td>
-                        </tr>
-                        <tr>
-                            <th>Paid Amount</th>
-                            <td><span id="total-cost">Rs ${paidAmount.toFixed(2)}</span></td>
-                        </tr>
-                        <tr>
-                            <th>Balance Due</th>
-                            <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
-                        </tr>`;
 
                     $("#ordermaintable_ss").html(orderMainTable);
                     $("#order-summary_ss").html(orderSummaryHtml);
-                    $("#order-summary-total").html(orderSummaryTotalHtml);
                 }
             },
             error: function (xhr) {
@@ -1069,30 +1049,9 @@
                             </tr>`;
                     });
 
-                    discountAmount = (orderTotalCost * orderDiscount) / 100;
-                    let balanceDue = (orderTotalCost - discountAmount) - paidAmount;
-
-                    orderSummaryTotalHtml = `
-                        <tr>
-                            <th style="width: 50%;">Total Cost</th>
-                            <td><span id="total-cost">Rs ${orderTotalCost.toFixed(2)}</span></td>
-                        </tr>
-                        <tr>
-                            <th>Discount (${orderDiscount}%)</th>
-                            <td><span id="total-cost">Rs ${discountAmount.toFixed(2)}</span></td>
-                        </tr>
-                        <tr>
-                            <th>Paid Amount</th>
-                            <td><span id="total-cost">Rs ${paidAmount.toFixed(2)}</span></td>
-                        </tr>
-                        <tr>
-                            <th>Balance Due</th>
-                            <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
-                        </tr>`;
 
                     $("#ordermaintable_ec").html(orderMainTable);
                     $("#order-summary_ec").html(orderSummaryHtml);
-                    $("#order-summary-total").html(orderSummaryTotalHtml);
                 }
             },
             error: function (xhr) {
@@ -1160,30 +1119,10 @@
                             </tr>`;
                     });
 
-                    discountAmount = (orderTotalCost * orderDiscount) / 100;
-                    let balanceDue = (orderTotalCost - discountAmount) - paidAmount;
 
-                    orderSummaryTotalHtml = `
-                        <tr>
-                            <th style="width: 50%;">Total Cost</th>
-                            <td><span id="total-cost">Rs ${orderTotalCost.toFixed(2)}</span></td>
-                        </tr>
-                        <tr>
-                            <th>Discount (${orderDiscount}%)</th>
-                            <td><span id="total-cost">Rs ${discountAmount.toFixed(2)}</span></td>
-                        </tr>
-                        <tr>
-                            <th>Paid Amount</th>
-                            <td><span id="total-cost">Rs ${paidAmount.toFixed(2)}</span></td>
-                        </tr>
-                        <tr>
-                            <th>Balance Due</th>
-                            <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
-                        </tr>`;
 
                     $("#ordermaintable_me").html(orderMainTable);
                     $("#order-summary_me").html(orderSummaryHtml);
-                    $("#order-summary-total").html(orderSummaryTotalHtml);
                 }
             },
             error: function (xhr) {
@@ -1251,6 +1190,37 @@
                             </tr>`;
                     });
 
+
+                    $("#ordermaintable_fr").html(orderMainTable);
+                    $("#order-summary_fr").html(orderSummaryHtml);
+                }
+            },
+            error: function (xhr) {
+                console.error("Error fetching order summary:", xhr);
+            }
+        });
+    }
+
+    function orderTotalSummary(orderKey){
+        $.ajax({
+            url: "/order-totalsummary/" + orderKey ,
+            type: "GET",
+            success: function (response) {
+                if (response.status==='success') {
+
+                    let orderSummaryTotalHtml = "";
+                    let orderTotalCost = 0;
+                    let orderDiscount = 0;
+                    let discountAmount = 0;
+                    let paidAmount = 0;
+
+
+                        orderTotalCost += parseFloat(response.grandtotal) || 0;
+                        orderDiscount = parseFloat(response.dicount) || 0;
+                        paidAmount = parseFloat(response.paidamount) || 0;
+
+
+
                     discountAmount = (orderTotalCost * orderDiscount) / 100;
                     let balanceDue = (orderTotalCost - discountAmount) - paidAmount;
 
@@ -1272,8 +1242,7 @@
                             <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
                         </tr>`;
 
-                    $("#ordermaintable_fr").html(orderMainTable);
-                    $("#order-summary_fr").html(orderSummaryHtml);
+
                     $("#order-summary-total").html(orderSummaryTotalHtml);
                 }
             },
@@ -1296,6 +1265,8 @@
         // }
         // else{
              orderSummaryTableSS(orderKey,'Studio Sittings')
+
+             orderTotalSummary(orderKey)
         // }
     }
 

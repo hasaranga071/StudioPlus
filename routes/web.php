@@ -36,6 +36,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/store-order-ss', [StudioOrderController::class, 'storeOrder_ss'])->name('storeOrder_ss');
     Route::post('/store-order-fr', [StudioOrderController::class, 'storeOrder_fr'])->name('storeOrder_fr');
     Route::get('/order-itemsummary/{orderkey}', [NewOrderController::class, 'getOrderItemSummary'])->name('orderitemsummary_ss');
+    Route::get('/order-totalsummary/{orderkey}', [NewOrderController::class, 'getOrderTotalSummary'])->name('order-totalsummary');
     Route::get('/order-item-details/{ssorderitemmapkey}', [NewOrderController::class, 'getOrderItemDetails'])->name('orderitemdetail_ss');
     Route::delete('/delete-order-item/{ssorderitemmapkey}', [StudioOrderController::class, 'deleteOrderItem']);
     Route::post('/update-complete-status/{id}', [StudioOrderController::class, 'markAsCompleted']);

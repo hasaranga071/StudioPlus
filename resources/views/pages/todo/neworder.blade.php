@@ -279,23 +279,25 @@
                     {{-- <button id="testStoreOrder" class="btn btn-primary">Test Order</button> --}}
                 </div>
             </div>
-            <div class="column1" style="background-color:#aaa;border-radius:12px;" id="order-summary-tb">
+           <div class="column1" style="background-color:#aaa; border-radius:12px; padding: 15px;" id="order-summary-tb">
                 <h2>Order Summary</h2>
-                <div id="ordermaintable_ss"></div>
-                <div id="ordermaintable_ec"></div>
-                <div id="ordermaintable_fr"></div>
-                <div id="ordermaintable_me"></div>
 
-                <div class="order-summary-totals" style="margin-top: 20px; margin-left: auto; margin-right: auto;">
-                    <table class="table table-bordered" style="background: #9c9c9c; border-radius: 8px; overflow: hidden;">
-                        <tbody id="order-summary-total">
+                <div class="scroll-wrapper">
+                    <div id="ordermaintable_ss"></div>
+                    <div id="ordermaintable_ec"></div>
+                    <div id="ordermaintable_fr"></div>
+                    <div id="ordermaintable_me"></div>
 
-                        </tbody>
-                    </table>
+                    <div class="order-summary-totals" style="margin-top: 20px; margin-left: auto; margin-right: auto;">
+                        <table class="table order-summary-table" style="background: #9c9c9c; border-radius: 8px; overflow: hidden;">
+                            <tbody id="order-summary-total">
+                                <!-- totals here -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-
-
             </div>
+
         </div>
     </fieldset>
 </form>
@@ -930,7 +932,7 @@
             success: function (response) {
                 if (response.orderItems.length > 0) {
                     let orderMainTable = `
-                        <table class="table table-bordered order-summary_ss-table">
+                        <table class="table order-summary-table">
                             <thead>
                                 <tr>
                                     <th>Order Type</th>
@@ -999,7 +1001,7 @@
             success: function (response) {
                 if (response.orderItems.length > 0) {
                     let orderMainTable = `
-                        <table class="table table-bordered order-summary_ec-table">
+                        <table class="table order-summary-table">
                             <thead>
                                 <tr>
                                     <th>Order Type</th>
@@ -1067,7 +1069,7 @@
             success: function (response) {
                 if (response.orderItems.length > 0) {
                     let orderMainTable = `
-                        <table class="table table-bordered order-summary_me-table">
+                        <table class="table order-summary-table">
                             <thead>
                                 <tr>
                                     <th>Order Type</th>
@@ -1138,7 +1140,7 @@
             success: function (response) {
                 if (response.orderItems.length > 0) {
                     let orderMainTable = `
-                        <table class="table table-bordered order-summary_fr-table">
+                        <table class="table order-summary-table">
                             <thead>
                                 <tr>
                                     <th>Order Type</th>

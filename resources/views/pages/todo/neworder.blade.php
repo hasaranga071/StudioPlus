@@ -338,11 +338,12 @@
 
         // Toggle frame type section based on Fiber Fream
         $("#frametype").change(function () {
-            toggleField();
+
             $("#framesize").val('').change();
             $("#subframetype").val('').change();
             $("#subframesize").val('').change();
             $("#oimk").val("");
+            generateOrderId();
         });
 
         toggleField(); // Run function on page load
@@ -350,12 +351,12 @@
         function toggleField() {
             var selectedOrderType = $("#otype option:selected").text();
             var selectedFrameType = $("#frametype option:selected").text();
-
+            $('#subframesizemain, #subframetypemain').toggle(selectedFrameType === "Fiber Frame");
             $('#frametypemain, #framesizemain, #subframesizemain, #subframetypemain, #fquantitymain').toggle(selectedOrderType === "Frames");
             $('#lamtypemain').toggle(selectedOrderType === "Media");
             $('#ecordersection').toggle(selectedOrderType === "Extra Copy");
             $('#Sittings, #edittypemain, #hcopymain, #scopymain').toggle(selectedOrderType !== "Frames");
-            $('#subframesizemain, #subframetypemain').toggle(selectedFrameType === "Fiber Frame");
+
 
             if (selectedOrderType!="Studio Sittings")
             {
@@ -363,9 +364,10 @@
                 document.getElementById("scopymain").style.display = "none";
             }
             else{
-                $("#scopy").val(0).prop("readonly", false);
+                $("#scopy").prop("readonly", false);
                 document.getElementById("scopymain").style.display = "flow";
             }
+
         }
 
         function loadOrderTypeItems() {
@@ -656,6 +658,7 @@
 
         $(document).on('click', '.edit-order', function () {
          event.preventDefault();
+
         let row = $(this).closest('tr'); // Get the clicked row
         let ssorderitemmapkey = row.data('ssorderitemmapkey');
         let ordertypekey = row.data('ordertypekey');
@@ -672,6 +675,7 @@
 
         // Highlight the row of the clicked edit button
         $(this).closest("tr").addClass("highlighted-row");
+
 
         // Fetch existing order details (example: using AJAX)
         $.ajax({
@@ -738,6 +742,9 @@
                         }
                          $("#lamtype").val(item.lamtypekey).change();
                     }
+
+                    toggleField(); // Run function on page load
+
 
                     // Store the ID for updating later
                     $("#oimk").val(ssorderitemmapkey);
@@ -965,7 +972,7 @@
                         paidAmount = parseFloat(item.order.paidcost) || 0;
 
                         orderSummaryHtml += `
-                            <tr data-ssorderitemmapkey="${item.ssorderitemmapkey}" data-ordertype="Studio Sittings" data-ordertypekey="${item.order_type_item.ordertypekey}">
+                            <tr data-ssorderitemmapkey="${item.ssorderitemmapkey}" data-ordertype="Studio Sittings" data-ordertypekey="1">
                                 <td>Studio Sittings</td>
                                 <td>${item.order_type_item.itemname}</td>
                                 <td>${item.edit_type?.edittype || ''}</td>
@@ -1034,7 +1041,7 @@
                         paidAmount = parseFloat(item.order.paidcost) || 0;
 
                         orderSummaryHtml += `
-                            <tr data-ssorderitemmapkey="${item.ecorderitemmapkey}" data-ordertype="Extra Copy" data-ordertypekey="${item.order_type_item.ordertypekey}">
+                            <tr data-ssorderitemmapkey="${item.ecorderitemmapkey}" data-ordertype="Extra Copy" data-ordertypekey="2">
                                 <td>Extra Copy</td>
                                 <td>${item.original_order.orderid}</td>
                                 <td>${item.order_type_item.itemname}</td>
@@ -1103,7 +1110,7 @@
                         paidAmount = parseFloat(item.order.paidcost) || 0;
 
                         orderSummaryHtml += `
-                            <tr data-ssorderitemmapkey="${item.meorderitemmapkey}" data-ordertype="Media" data-ordertypekey="${item.order_type_item.ordertypekey}">
+                            <tr data-ssorderitemmapkey="${item.meorderitemmapkey}" data-ordertype="Media" data-ordertypekey="3">
                                 <td>Media</td>
                                 <td>${item.order_type_item.itemname}</td>
                                 <td>${item.edit_type?.edittype || ''}</td>
@@ -1174,7 +1181,7 @@
                         paidAmount = parseFloat(item.order.paidcost) || 0;
 
                         orderSummaryHtml += `
-                            <tr data-ssorderitemmapkey="${item.frorderitemmapkey}" data-ordertype="Frames" data-ordertypekey="${item.order.order_type.ordertypekey}">
+                            <tr data-ssorderitemmapkey="${item.frorderitemmapkey}" data-ordertype="Frames" data-ordertypekey="4">
                                 <td>Frames</td>
                                 <td>${item.frame_type.frametype}</td>
                                 <td>${item.frame_size.size}</td>

@@ -1,5 +1,5 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<div class="modal fade" id="orderModal_SS" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+<div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
     <div class="modal-dialog  modal-xl">
     <input type="hidden" id="otk" name="otk" value="edititem">
     <span id="okey" style="display:none;"></span>
@@ -46,8 +46,7 @@
                         </div>
                     </div>
 
-                </div>
-                    </br>
+                </div>                    </br>
                     <button id="addnew" onClick="addnew_ss(document.getElementById('okey').textContent.trim())" type="button" style="float:left;font-size:15px" class="btn btn-info">+ Add Item</button></br></br>
                     
         

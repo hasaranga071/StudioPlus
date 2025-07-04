@@ -1,8 +1,5 @@
 @extends('layouts.app')
-@include('components.orderviewmodal_SS')
-@include('components.orderviewmodal_EC')
-@include('components.orderviewmodal_ME')
-@include('components.orderviewmodal_FR')
+@include('components.orderviewmodal_All')
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -199,63 +196,42 @@
         return date.toISOString().split('T')[0]; // Convert to YYYY-MM-DD
     }
 
+    // ******************* View Bill Related Orders **********************
 
-    // ******************* Studio sitting Retated ************************
-
-    function loaditemdata_SS(okey){
-        let orderkey = okey;
-        $.ajax({
-            url: "/order-itemsummary/" + orderkey,
-            type: "GET",
-            data: {
-                orderkey: orderkey,
-                _token: "{{ csrf_token() }}" // CSRF Token for security
-            },
-            success: function (response) {
-                console.log('Server response:', response); // Debugging
-
-                if (!response || response.length === 0) {
-                    console.log("No order items returned from server.");
-                } else {
-                    displayOrderitemSearchResults(response,orderkey);
-                }
-            }
-        });
-
+    function loaditemdata(okey){    
+        loaditemdata_FR(okey,'Frames')
+        loaditemdata_ME(okey,'Media')
+        loaditemdata_EC(okey,'Extra Copy')
+        loaditemdata_SS(okey,'Studio Sittings')
+        orderTotalSummary(okey)
     }
+    
+    //*********************Order Total Summary **********************
 
-    function displayOrderitemSearchResults(orderitems,okey) {
-        if (!orderitems.orderItems.length) {
-            $('#orderitemResults').html(
-                '<div class="alert alert-info">No Order Items found.</div>'
-            );
-            return;
-        }
-
-        //show order summary
+    function orderTotalSummary(orderKey){
         $.ajax({
-            url: "/order-itemsummary/" + okey,
+            url: "/order-totalsummary/" + orderKey ,
             type: "GET",
             success: function (response) {
-                if (response.status === "success") {
-                    let orderSummaryHtml = "";
+                if (response.status==='success') {
+
                     let orderSummaryTotalHtml = "";
                     let orderTotalCost = 0;
                     let orderDiscount = 0;
                     let discountAmount = 0;
                     let paidAmount = 0;
 
-                    response.orderItems.forEach(item => {
-                        orderTotalCost += parseFloat(item.totalcost) || 0;
-                        orderDiscount = parseFloat(item.order.discount) || 0;
-                        paidAmount = parseFloat(item.order.paidcost) || 0;
-                    });
+
+                        orderTotalCost += parseFloat(response.grandtotal) || 0;
+                        orderDiscount = parseFloat(response.dicount) || 0;
+                        paidAmount = parseFloat(response.paidamount) || 0;
+
+
 
                     discountAmount = (orderTotalCost * orderDiscount) / 100;
                     let balanceDue = (orderTotalCost - discountAmount) - paidAmount;
 
                     orderSummaryTotalHtml = `
-                    </br><table>
                         <tr>
                             <th style="width: 50%;">Total Cost</th>
                             <td><span id="total-cost">Rs ${orderTotalCost.toFixed(2)}</span></td>
@@ -271,8 +247,8 @@
                         <tr>
                             <th>Balance Due</th>
                             <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
-                        </tr>
-                    </table> `;
+                        </tr>`;
+
 
                     $("#ordersummary").html(orderSummaryTotalHtml);
                 }
@@ -281,9 +257,97 @@
                 console.error("Error fetching order summary:", xhr);
             }
         });
+    }
+
+
+    // ******************* Studio sitting Retated ************************
+
+    function loaditemdata_SS(okey,orderType){
+        let orderkey = okey;
+        $.ajax({
+            url: "/order-itemsummary/" + orderkey + "?ordertype=" + encodeURIComponent(orderType),
+            type: "GET",
+            data: {
+                orderkey: orderkey,
+                _token: "{{ csrf_token() }}" // CSRF Token for security
+            },
+            success: function (response) {
+                console.log('Server response:', response); // Debugging
+
+                if (!response || response.length === 0) {
+                    console.log("No order items returned from server.");
+                } else {
+                    displayOrderitemSearchResults(response,orderkey,orderType);
+                }
+            }
+        });
+
+    }
+
+    function displayOrderitemSearchResults(orderitems,orderkey,orderType) {
+        if (!orderitems.orderItems.length) {
+            $('#orderitemResults').html(
+                // '<div class="alert alert-info">No Order Items found.</div>'
+            );
+            return;
+        }
+
+        //show order summary
+        // $.ajax({
+        //     url: "/order-itemsummary/" + orderkey + "?ordertype=" + encodeURIComponent(orderType),
+        //     type: "GET",
+        //     success: function (response) {
+        //         if (response.status === "success") {
+        //             let orderSummaryHtml = "";
+        //             let orderSummaryTotalHtml = "";
+        //             let orderTotalCost = 0;
+        //             let orderDiscount = 0;
+        //             let discountAmount = 0;
+        //             let paidAmount = 0;
+
+        //             response.orderItems.forEach(item => {
+        //                 orderTotalCost += parseFloat(item.totalcost) || 0;
+        //                 orderDiscount = parseFloat(item.order.discount) || 0;
+        //                 paidAmount = parseFloat(item.order.paidcost) || 0;
+        //             });
+
+        //             discountAmount = (orderTotalCost * orderDiscount) / 100;
+        //             let balanceDue = (orderTotalCost - discountAmount) - paidAmount;
+
+        //             orderSummaryTotalHtml = `
+        //             </br><table>
+        //                 <tr>
+        //                     <th style="width: 50%;">Total Cost</th>
+        //                     <td><span id="total-cost">Rs ${orderTotalCost.toFixed(2)}</span></td>
+        //                 </tr>
+        //                 <tr>
+        //                     <th>Discount (${orderDiscount}%)</th>
+        //                     <td><span id="total-cost">Rs ${discountAmount.toFixed(2)}</span></td>
+        //                 </tr>
+        //                 <tr>
+        //                     <th>Paid Amount</th>
+        //                     <td><span id="total-cost">Rs ${paidAmount.toFixed(2)}</span></td>
+        //                 </tr>
+        //                 <tr>
+        //                     <th>Balance Due</th>
+        //                     <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
+        //                 </tr>
+        //             </table> `;
+
+        //             $("#ordersummary").html(orderSummaryTotalHtml);
+        //         }
+        //     },
+        //     error: function (xhr) {
+        //         console.error("Error fetching order summary:", xhr);
+        //     }
+        // });
 
         // end order summary
         let html = `
+            <div style="margin-bottom: 10px;">
+                <h5 style="margin-bottom:10px;">Order Type: <strong>${orderType}</strong></h5>
+                <button id="addnew" onClick="addnew_ss('${orderkey}')" type="button" class="btn btn-info" style="font-size:15px;">+ Add New Item</button>
+            </div>
             <table id="itemtable" class="table table-bordered">
                 <thead>
                     <tr id="row_0">
@@ -584,7 +648,7 @@
         let item = row.querySelector("select[name='item']").value;
 
         $.ajax({
-            url: "/order-itemsummary/" + orderkey,
+            url: "/order-itemsummary/" + orderkey + "?ordertype=" + encodeURIComponent(orderType),
             type: "GET",
             data: {
                 orderkey: orderkey,
@@ -608,7 +672,7 @@
     function createitem_ss(orderdata,formData) {
         if (!orderdata.orderItems.length) {
             $('#orderitemResults').html(
-                '<div class="alert alert-info">No Order Items found.</div>'
+                // '<div class="alert alert-info">No Order Items found.</div>'
             );
             return;
         }
@@ -646,7 +710,7 @@
 
                     setTimeout(() => {
                         loaditemdata_SS(formData.orderkey);
-                        $('orderviewmodal_SS').modal('show');
+                        $('orderviewmodal_All').modal('show');
                     }, 500);
 
                     document.getElementById("addBtn").style.display = "none";
@@ -694,10 +758,10 @@
 
     // ******************* Media Related *****************************
 
-    function loaditemdata_ME(okey){
+    function loaditemdata_ME(okey,orderType){
         let orderkey = okey;
         $.ajax({
-            url: "/order-itemsummary/" + orderkey,
+            url: "/order-itemsummary/" + orderkey + "?ordertype=" + encodeURIComponent(orderType),
             type: "GET",
             data: {
                 orderkey: orderkey,
@@ -709,74 +773,78 @@
                 if (!response || response.length === 0) {
                     console.log("No order items returned from server.");
                 } else {
-                    displayOrderitemSearchResults_ME(response,orderkey);
+                    displayOrderitemSearchResults_ME(response,orderkey,orderType);
                 }
             }
         });
 
     }
 
-    function displayOrderitemSearchResults_ME(orderitems,okey) {
+    function displayOrderitemSearchResults_ME(orderitems,orderkey,orderType) {
         if (!orderitems.orderItems.length) {
             $('#orderitemResults_me').html(
-                '<div class="alert alert-info">No Order Items found.</div>'
+                // '<div class="alert alert-info">No Order Items found.</div>'
             );
             return;
         }
 
 
             //show order summary
-                $.ajax({
-            url: "/order-itemsummary/" + okey,
-            type: "GET",
-            success: function (response) {
-                if (response.status === "success") {
-                    let orderSummaryHtml = "";
-                    let orderSummaryTotalHtml = "";
-                    let orderTotalCost = 0;
-                    let orderDiscount = 0;
-                    let discountAmount = 0;
-                    let paidAmount = 0;
+        //         $.ajax({
+        //     url: "/order-itemsummary/" + orderkey + "?ordertype=" + encodeURIComponent(orderType),
+        //     type: "GET",
+        //     success: function (response) {
+        //         if (response.status === "success") {
+        //             let orderSummaryHtml = "";
+        //             let orderSummaryTotalHtml = "";
+        //             let orderTotalCost = 0;
+        //             let orderDiscount = 0;
+        //             let discountAmount = 0;
+        //             let paidAmount = 0;
 
-                    response.orderItems.forEach(item => {
-                        orderTotalCost += parseFloat(item.totalcost) || 0;
-                        orderDiscount = parseFloat(item.order.discount) || 0;
-                        paidAmount = parseFloat(item.order.paidcost) || 0;
-                    });
+        //             response.orderItems.forEach(item => {
+        //                 orderTotalCost += parseFloat(item.totalcost) || 0;
+        //                 orderDiscount = parseFloat(item.order.discount) || 0;
+        //                 paidAmount = parseFloat(item.order.paidcost) || 0;
+        //             });
 
-                    discountAmount = (orderTotalCost * orderDiscount) / 100;
-                    let balanceDue = (orderTotalCost - discountAmount) - paidAmount;
+        //             discountAmount = (orderTotalCost * orderDiscount) / 100;
+        //             let balanceDue = (orderTotalCost - discountAmount) - paidAmount;
 
-                    orderSummaryTotalHtml = `
-                    </br><table>
-                        <tr>
-                            <th style="width: 50%;">Total Cost</th>
-                            <td><span id="total-cost">Rs ${orderTotalCost.toFixed(2)}</span></td>
-                        </tr>
-                        <tr>
-                            <th>Discount (${orderDiscount}%)</th>
-                            <td><span id="total-cost">Rs ${discountAmount.toFixed(2)}</span></td>
-                        </tr>
-                        <tr>
-                            <th>Paid Amount</th>
-                            <td><span id="total-cost">Rs ${paidAmount.toFixed(2)}</span></td>
-                        </tr>
-                        <tr>
-                            <th>Balance Due</th>
-                            <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
-                        </tr>
-                    </table> `;
+        //             orderSummaryTotalHtml = `
+        //             </br><table>
+        //                 <tr>
+        //                     <th style="width: 50%;">Total Cost</th>
+        //                     <td><span id="total-cost">Rs ${orderTotalCost.toFixed(2)}</span></td>
+        //                 </tr>
+        //                 <tr>
+        //                     <th>Discount (${orderDiscount}%)</th>
+        //                     <td><span id="total-cost">Rs ${discountAmount.toFixed(2)}</span></td>
+        //                 </tr>
+        //                 <tr>
+        //                     <th>Paid Amount</th>
+        //                     <td><span id="total-cost">Rs ${paidAmount.toFixed(2)}</span></td>
+        //                 </tr>
+        //                 <tr>
+        //                     <th>Balance Due</th>
+        //                     <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
+        //                 </tr>
+        //             </table> `;
 
-                    $("#ordersummary_me").html(orderSummaryTotalHtml);
-                }
-            },
-            error: function (xhr) {
-                console.error("Error fetching order summary:", xhr);
-            }
-        });
+        //             $("#ordersummary_me").html(orderSummaryTotalHtml);
+        //         }
+        //     },
+        //     error: function (xhr) {
+        //         console.error("Error fetching order summary:", xhr);
+        //     }
+        // });
 
         // end order summary
         let html = `
+            <div style="margin-bottom: 10px;">
+                <h5 style="margin-bottom:10px;">Order Type: <strong>${orderType}</strong></h5>
+                <button id="addnew" onClick="addnew_me('${orderkey}')" type="button" class="btn btn-info" style="font-size:15px;">+ Add New Item</button>
+            </div>
             <table id="itemtable_me" class="table table-bordered">
                 <thead>
                     <tr id="row_0">
@@ -1093,7 +1161,7 @@
         let item = row.querySelector("select[name='item']").value;
 
         $.ajax({
-            url: "/order-itemsummary/" + orderkey,
+            url: "/order-itemsummary/" + orderkey + "?ordertype=" + encodeURIComponent(orderType),
             type: "GET",
             data: {
                 orderkey: orderkey,
@@ -1117,7 +1185,7 @@
     function createitem_me(orderdata,formData) {
         if (!orderdata.orderItems.length) {
             $('#orderitemResults').html(
-                '<div class="alert alert-info">No Order Items found.</div>'
+                // '<div class="alert alert-info">No Order Items found.</div>'
             );
             return;
         }
@@ -1203,88 +1271,92 @@
 
     // ******************* Frames Retated ****************************
 
-    function loaditemdata_FR(okey){
+    function loaditemdata_FR(okey,orderType){
         let orderkey = okey;
         $.ajax({
-            url: "/order-itemsummary/" + orderkey,
+            url: "/order-itemsummary/" + orderkey + "?ordertype=" + encodeURIComponent(orderType),
             type: "GET",
             data: {
                 orderkey: orderkey,
                 _token: "{{ csrf_token() }}" // CSRF Token for security
             },
             success: function (response) {
-                console.log('Server responsessss:', response); // Debugging
+                console.log('Server response_FR:', response); // Debugging
 
                 if (!response || response.length === 0) {
                     console.log("No order items returned from server.");
                 } else {
-                    displayOrderitemSearchResults_FR(response,orderkey);
+                    displayOrderitemSearchResults_FR(response,orderkey,orderType);
                 }
             }
         });
 
     }
 
-    function displayOrderitemSearchResults_FR(orderitems,okey) {
+    function displayOrderitemSearchResults_FR(orderitems,orderkey,orderType) {
         if (!orderitems.orderItems.length) {
             $('#orderitemResults_fr').html(
-                '<div class="alert alert-info">No Order Items found.</div>'
+                // '<div class="alert alert-info">No Order Items found.</div>'
             );
             return;
         }
 
     //show order summary
-        $.ajax({
-            url: "/order-itemsummary/" + okey,
-            type: "GET",
-            success: function (response) {
-                if (response.status === "success") {
-                    let orderSummaryHtml = "";
-                    let orderSummaryTotalHtml = "";
-                    let orderTotalCost = 0;
-                    let orderDiscount = 0;
-                    let discountAmount = 0;
-                    let paidAmount = 0;
+        // $.ajax({
+        //     url: "/order-itemsummary/" + orderkey + "?ordertype=" + encodeURIComponent(orderType),
+        //     type: "GET",
+        //     success: function (response) {
+        //         if (response.status === "success") {
+        //             let orderSummaryHtml = "";
+        //             let orderSummaryTotalHtml = "";
+        //             let orderTotalCost = 0;
+        //             let orderDiscount = 0;
+        //             let discountAmount = 0;
+        //             let paidAmount = 0;
 
-                    response.orderItems.forEach(item => {
-                        orderTotalCost += parseFloat(item.totalcost) || 0;
-                        orderDiscount = parseFloat(item.order.discount) || 0;
-                        paidAmount = parseFloat(item.order.paidcost) || 0;
-                    });
+        //             response.orderItems.forEach(item => {
+        //                 orderTotalCost += parseFloat(item.totalcost) || 0;
+        //                 orderDiscount = parseFloat(item.order.discount) || 0;
+        //                 paidAmount = parseFloat(item.order.paidcost) || 0;
+        //             });
 
-                    discountAmount = (orderTotalCost * orderDiscount) / 100;
-                    let balanceDue = (orderTotalCost - discountAmount) - paidAmount;
+        //             discountAmount = (orderTotalCost * orderDiscount) / 100;
+        //             let balanceDue = (orderTotalCost - discountAmount) - paidAmount;
 
-                    orderSummaryTotalHtml = `
-                    </br><table>
-                        <tr>
-                            <th style="width: 50%;">Total Cost</th>
-                            <td><span id="total-cost">Rs ${orderTotalCost.toFixed(2)}</span></td>
-                        </tr>
-                        <tr>
-                            <th>Discount (${orderDiscount}%)</th>
-                            <td><span id="total-cost">Rs ${discountAmount.toFixed(2)}</span></td>
-                        </tr>
-                        <tr>
-                            <th>Paid Amount</th>
-                            <td><span id="total-cost">Rs ${paidAmount.toFixed(2)}</span></td>
-                        </tr>
-                        <tr>
-                            <th>Balance Due</th>
-                            <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
-                        </tr>
-                    </table> `;
+        //             orderSummaryTotalHtml = `
+        //             </br><table>
+        //                 <tr>
+        //                     <th style="width: 50%;">Total Cost</th>
+        //                     <td><span id="total-cost">Rs ${orderTotalCost.toFixed(2)}</span></td>
+        //                 </tr>
+        //                 <tr>
+        //                     <th>Discount (${orderDiscount}%)</th>
+        //                     <td><span id="total-cost">Rs ${discountAmount.toFixed(2)}</span></td>
+        //                 </tr>
+        //                 <tr>
+        //                     <th>Paid Amount</th>
+        //                     <td><span id="total-cost">Rs ${paidAmount.toFixed(2)}</span></td>
+        //                 </tr>
+        //                 <tr>
+        //                     <th>Balance Due</th>
+        //                     <td><span id="balance-due" style="font-weight:700;">Rs ${balanceDue.toFixed(2)}</span></td>
+        //                 </tr>
+        //             </table> `;
 
-                    $("#ordersummary_FR").html(orderSummaryTotalHtml);
-                }
-            },
-            error: function (xhr) {
-                console.error("Error fetching order summary:", xhr);
-            }
-        });
+        //             $("#ordersummary_FR").html(orderSummaryTotalHtml);
+        //         }
+        //     },
+        //     error: function (xhr) {
+        //         console.error("Error fetching order summary:", xhr);
+        //     }
+        // });
 
         // end order summary
         let html = `
+            <div style="margin-bottom: 10px;">
+                <h5 style="margin-bottom:10px;">Order Type: <strong>${orderType}</strong></h5>
+                <button id="addnew" onClick="addnew_fr('${orderkey}')" type="button" class="btn btn-info" style="font-size:15px;">+ Add New Item</button>
+            </div>
             <table id="itemtable_fr" class="table table-bordered">
                 <thead>
                     <tr id="row_0">
@@ -1747,7 +1819,7 @@
         let quantity = row.querySelector("input[name='quantity']").value;
 
         $.ajax({
-            url: "/order-itemsummary/" + orderkey,
+            url: "/order-itemsummary/" + orderkey + "?ordertype=" + encodeURIComponent(orderType),
             type: "GET",
             data: {
                 orderkey: orderkey,
@@ -1767,7 +1839,7 @@
     function createitem_fr(orderdata,formData) {
         if (!orderdata.orderItems.length) {
             $('#orderitemResults').html(
-                '<div class="alert alert-info">No Order Items found.</div>'
+                // '<div class="alert alert-info">No Order Items found.</div>'
             );
             return;
         }
@@ -1856,10 +1928,10 @@
 
     // ******************* Extra Copy Retated ************************
 
-    function loaditemdata_EC(okey){
+    function loaditemdata_EC(okey,orderType){
         let orderkey = okey;
         $.ajax({
-            url: "/order-itemsummary/" + orderkey,
+            url: "/order-itemsummary/" + orderkey + "?ordertype=" + encodeURIComponent(orderType),
             type: "GET",
             data: {
                 orderkey: orderkey,
@@ -1867,7 +1939,7 @@
             },
             success: function (response) {
                     console.log('Itemsearch result EC',response)
-                    displayOrderitemSearchResults_EC(response,orderkey);
+                    displayOrderitemSearchResults_EC(response,orderkey,orderType);
 
             }
         });
@@ -1876,12 +1948,12 @@
 
     let globalOrderItems_EC = [];
 
-    function displayOrderitemSearchResults_EC(orderitems,okey) {
+    function displayOrderitemSearchResults_EC(orderitems,orderkey,orderType) {
 
 
         if (!orderitems.orderItems.length) {
             $('#orderitemResults_EC').html(
-                '<div class="alert alert-info">No Order Items found.</div>'
+                // '<div class="alert alert-info">No Order Items found.</div>'
             );
             return;
         }
@@ -1889,6 +1961,9 @@
         globalOrderItems_EC = orderitems.orderItems;
 
         let html = `
+            <div style="margin-bottom: 10px;">
+                <h5 style="margin-bottom:10px;">Order Type: <strong>${orderType}</strong></h5>
+            </div>
             <table id="itemtable_EC" class="table table-bordered">
             <thead>
                 <tr id="row_0">
@@ -1950,7 +2025,7 @@
         $('#orderitemResults_EC').html(html);
         //show order summary
         $.ajax({
-            url: "/order-itemsummary/" + okey,
+            url: "/order-itemsummary/" + orderkey + "?ordertype=" + encodeURIComponent(orderType),
             type: "GET",
             success: function (response) {
                 if (response.status === "success") {
@@ -2388,73 +2463,85 @@
 
         // Show the modal first
 
+        $("#orderModal_All").modal("show");
+        $("#onum").text(no);
+        $("#okey").text(key);
+        $("#odate").text(odate);
+        $("#customer").text(customer);
+        $("#total").text(total);
+        $("#discount").text(discount);
+        $("#paid").text(paid);
+        $("#urgent").text(urgent);
+        $("#status").text(status);
+        loaditemdata(key)
 
-        if (ot=='Studio Sittings')
-        {
-            $("#orderModal_SS").modal("show");
-            $("#onum").text(no);
-            $("#okey").text(key);
-            $("#odate").text(odate);
-            $("#customer").text(customer);
-            $("#total").text(total);
-            $("#discount").text(discount);
-            $("#paid").text(paid);
-            $("#urgent").text(urgent);
-            $("#status").text(status);
-            loaditemdata_SS(key)
-        }
 
-        if (ot=='Media')
-        {
-            $("#orderModal_ME").modal("show");
-            $("#onum_me").text(no);
-            $("#okey_me").text(key);
-            $("#odate_me").text(odate);
-            $("#customer_me").text(customer);
-            $("#total_me").text(total);
-            $("#discount_me").text(discount);
-            $("#paid_me").text(paid);
-            $("#urgent_me").text(urgent);
-            $("#status_me").text(status);
-            loaditemdata_ME(key)
-        }
+        // if (ot=='Studio Sittings')
+        // {
+        //     // $("#orderModal").modal("show");
+        //     // $("#onum").text(no);
+        //     // $("#okey").text(key);
+        //     // $("#odate").text(odate);
+        //     // $("#customer").text(customer);
+        //     // $("#total").text(total);
+        //     // $("#discount").text(discount);
+        //     // $("#paid").text(paid);
+        //     // $("#urgent").text(urgent);
+        //     // $("#status").text(status);
+        //     loaditemdata_SS(key)
+        // }
 
-        if (ot=='Frames')
-        {
-            $("#orderModal_FR").modal("show");
-            $("#onum_fr").text(no);
-            $("#okey_fr").text(key);
-            $("#odate_fr").text(odate);
-            $("#customer_fr").text(customer);
-            $("#total_fr").text(total);
-            $("#discount_fr").text(discount);
-            $("#paid_fr").text(paid);
-            $("#urgent_fr").text(urgent);
-            $("#status_fr").text(status);
-            loaditemdata_FR(key)
-        }
+        // if (ot=='Media')
+        // {
+        //     $("#orderModal_ME").modal("show");
+        //     $("#onum_me").text(no);
+        //     $("#okey_me").text(key);
+        //     $("#odate_me").text(odate);
+        //     $("#customer_me").text(customer);
+        //     $("#total_me").text(total);
+        //     $("#discount_me").text(discount);
+        //     $("#paid_me").text(paid);
+        //     $("#urgent_me").text(urgent);
+        //     $("#status_me").text(status);
+        //     loaditemdata_ME(key)
+        // }
 
-        if (ot=='Extra Copy')
-        {
-            $("#orderModal_EC").modal("show");
-            $("#onum_EC").text(no);
-            $("#okey_EC").text(key);
-            $("#odate_EC").text(odate);
-            $("#customer_EC").text(customer);
-            $("#total_EC").text(total);
-            $("#discount_EC").text(discount);
-            $("#paid_EC").text(paid);
-            $("#urgent_EC").text(urgent);
-            $("#status_EC").text(status);
-            loaditemdata_EC(key)
+        // if (ot=='Frames')
+        // {
+        //     $("#orderModal_FR").modal("show");
+        //     $("#onum_fr").text(no);
+        //     $("#okey_fr").text(key);
+        //     $("#odate_fr").text(odate);
+        //     $("#customer_fr").text(customer);
+        //     $("#total_fr").text(total);
+        //     $("#discount_fr").text(discount);
+        //     $("#paid_fr").text(paid);
+        //     $("#urgent_fr").text(urgent);
+        //     $("#status_fr").text(status);
+        //     loaditemdata_FR(key)
+        // }
 
-        }
+        // if (ot=='Extra Copy')
+        // {
+        //     $("#orderModal_EC").modal("show");
+        //     $("#onum_EC").text(no);
+        //     $("#okey_EC").text(key);
+        //     $("#odate_EC").text(odate);
+        //     $("#customer_EC").text(customer);
+        //     $("#total_EC").text(total);
+        //     $("#discount_EC").text(discount);
+        //     $("#paid_EC").text(paid);
+        //     $("#urgent_EC").text(urgent);
+        //     $("#status_EC").text(status);
+        //     loaditemdata_EC(key)
+
+        // }
 
         $(this).off("shown.bs.modal");
 
     }  
     
-    $('#orderModal_SS, #orderModal_EC, #orderModal_FR, #orderModal_ME').on('hidden.bs.modal', function () {
+    $('#orderModal_All').on('hidden.bs.modal', function () {
         if (orderUpdated) {
             loaddata(); // Reload only if order was updated
             orderUpdated = false; // Reset flag

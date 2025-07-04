@@ -106,15 +106,18 @@ class NewOrderController extends Controller
         $end_date   = $request->input('end_date');
 
         // Search orders based on multiple criteria
+        if ($otype=='1')
+        {
         $orders = StudioOrder::where(function ($q) use ($query, $otype, $start_date, $end_date) {
             if (!empty($otype)) {
-                $q->where('studioorders.ordertypekey', $otype);
+               // $q->where('studioorders.ordertypekey', $otype);
             }
 
             if (!empty($query)) {
                 $q->where(function ($subQuery) use ($query) {
                     $subQuery->where('studioorders.orderid', 'LIKE', '%' . $query . '%')
-                             ->orWhere('studiocustomers.username', 'LIKE', '%' . $query . '%');
+                             ->orWhere('studiocustomers.username', 'LIKE', '%' . $query . '%')
+                             ->orWhere('StudioOrderItemMapSS.jobid', 'LIKE', '%' . $query . '%');
                 });
             }
 
@@ -122,13 +125,102 @@ class NewOrderController extends Controller
             if (!empty($start_date) && !empty($end_date)) {
                 $q->whereBetween('studioorders.createdtime', [$start_date, $end_date]);
             }
-        })
-        ->join('studioordertypes', 'studioorders.ordertypekey', '=', 'studioordertypes.ordertypekey') // Join order types
-        ->join('studiocustomers', 'studioorders.customerkey', '=', 'studiocustomers.customerkey')
-        ->get();
+            })
+            //->join('studioordertypes', 'studioorders.ordertypekey', '=', 'studioordertypes.ordertypekey') // Join order types
+            ->join('studiocustomers', 'studioorders.customerkey', '=', 'studiocustomers.customerkey')
+            ->join('StudioOrderItemMapSS', 'studioorders.orderkey', '=', 'StudioOrderItemMapSS.orderkey')
+            ->get();
 
 
-        return response()->json($orders);
+            return response()->json($orders);
+        }
+
+        if ($otype=='2')
+        {
+        $orders = StudioOrder::where(function ($q) use ($query, $otype, $start_date, $end_date) {
+            if (!empty($otype)) {
+                //$q->where('studioorders.ordertypekey', $otype);
+            }
+
+            if (!empty($query)) {
+                $q->where(function ($subQuery) use ($query) {
+                    $subQuery->where('studioorders.orderid', 'LIKE', '%' . $query . '%')
+                             ->orWhere('studiocustomers.username', 'LIKE', '%' . $query . '%')
+                             ->orWhere('StudioOrderItemMapEC.jobid', 'LIKE', '%' . $query . '%');
+                            });
+            }
+
+            // Apply date filter inside the same function
+            if (!empty($start_date) && !empty($end_date)) {
+                $q->whereBetween('studioorders.createdtime', [$start_date, $end_date]);
+            }
+            })
+            ->join('studioordertypes', 'studioorders.ordertypekey', '=', 'studioordertypes.ordertypekey') // Join order types
+            ->join('studiocustomers', 'studioorders.customerkey', '=', 'studiocustomers.customerkey')
+            ->join('StudioOrderItemMapEC', 'studioorders.orderkey', '=', 'StudioOrderItemMapEC.orderkey')
+            ->get();
+
+
+            return response()->json($orders);
+        }
+
+        if ($otype=='3')
+        {
+        $orders = StudioOrder::where(function ($q) use ($query, $otype, $start_date, $end_date) {
+            if (!empty($otype)) {
+               // $q->where('studioorders.ordertypekey', $otype);
+            }
+
+            if (!empty($query)) {
+                $q->where(function ($subQuery) use ($query) {
+                    $subQuery->where('studioorders.orderid', 'LIKE', '%' . $query . '%')
+                             ->orWhere('studiocustomers.username', 'LIKE', '%' . $query . '%')
+                              ->orWhere('StudioOrderItemMapME.jobid', 'LIKE', '%' . $query . '%');
+                            });
+            }
+
+            // Apply date filter inside the same function
+            if (!empty($start_date) && !empty($end_date)) {
+                $q->whereBetween('studioorders.createdtime', [$start_date, $end_date]);
+            }
+            })
+            ->join('studioordertypes', 'studioorders.ordertypekey', '=', 'studioordertypes.ordertypekey') // Join order types
+            ->join('studiocustomers', 'studioorders.customerkey', '=', 'studiocustomers.customerkey')
+            ->join('StudioOrderItemMapME', 'studioorders.orderkey', '=', 'StudioOrderItemMapME.orderkey')
+            ->get();
+
+
+            return response()->json($orders);
+        }
+
+        if ($otype=='4')
+        {
+        $orders = StudioOrder::where(function ($q) use ($query, $otype, $start_date, $end_date) {
+            if (!empty($otype)) {
+                //$q->where('studioorders.ordertypekey', $otype);
+            }
+
+            if (!empty($query)) {
+                $q->where(function ($subQuery) use ($query) {
+                    $subQuery->where('studioorders.orderid', 'LIKE', '%' . $query . '%')
+                             ->orWhere('studiocustomers.username', 'LIKE', '%' . $query . '%')
+                             ->orWhere('StudioOrderItemMapFR.jobid', 'LIKE', '%' . $query . '%');
+                            });
+            }
+
+            // Apply date filter inside the same function
+            if (!empty($start_date) && !empty($end_date)) {
+                $q->whereBetween('studioorders.createdtime', [$start_date, $end_date]);
+            }
+            })
+            ->join('studioordertypes', 'studioorders.ordertypekey', '=', 'studioordertypes.ordertypekey') // Join order types
+            ->join('studiocustomers', 'studioorders.customerkey', '=', 'studiocustomers.customerkey')
+            ->join('StudioOrderItemMapFR', 'studioorders.orderkey', '=', 'StudioOrderItemMapFR.orderkey')
+            ->get();
+
+
+            return response()->json($orders);
+        }
 
   }
 

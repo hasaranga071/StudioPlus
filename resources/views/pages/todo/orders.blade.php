@@ -152,7 +152,7 @@
                 <thead>
                     <tr>
                         <th>Order No.</th>
-                        <th>Type</th>
+                        
                         <th>Date Time</th>
                         <th>Customer Name</th>
                         <th>Urgent</th>
@@ -171,7 +171,7 @@
             html += `
                 <tr>
                     <td>${order.orderid}</td>
-                    <td>${order.ordertype}</td>
+                    
                     <td>${order.createdtime}</td>
                     <td>${order.username}</td>
                     <td>${order.urgent_flag === 1 ? 'Yes' : 'No'}</td>

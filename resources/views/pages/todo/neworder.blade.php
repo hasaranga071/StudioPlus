@@ -1069,6 +1069,7 @@
         });
     }
 
+//test git commit
     function orderSummaryTableME(orderKey,orderType){
         $.ajax({
             url: "/order-itemsummary/" + orderKey + "?ordertype=" + encodeURIComponent(orderType),

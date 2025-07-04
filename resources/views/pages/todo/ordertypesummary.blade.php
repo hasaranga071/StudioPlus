@@ -507,7 +507,7 @@
                                         size: 12
                                     },
                                     formatter: function(value, context) {
-                                        return 'Rs ' + value.toFixed(0); // Display the earnings value
+                                        return 'Rs ' + value; // Display the earnings value
                                     },
                                     // Add shadow to the labels for 3D effect
                                     textShadowColor: 'rgba(0, 0, 0, 0.5)',

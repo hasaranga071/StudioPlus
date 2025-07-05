@@ -100,9 +100,9 @@
                                     <!-- Table content will be added dynamically -->
                                 </tbody>
                                 <tfoot>
-                                    <tr class="bg-blue-200 font-bold text-black">
-                                        <td style="text-align: left;">TOTAL</td>
-                                        <td style="text-align: left;" id="totalOrders">0</td>
+                                    <tr class="bg-blue-200 font-bold text-black" style="background-color:#cbd2d2;">
+                                        <td style="text-align: left;font-weight:700;">TOTAL</td>
+                                        <td style="text-align: left;font-weight:700;" id="totalOrders">0</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -129,9 +129,9 @@
                                     <!-- Table content will be added dynamically -->
                                 </tbody>
                                 <tfoot>
-                                    <tr class="font-weight-bold">
-                                        <td style="text-align: left;">TOTAL</td>
-                                        <td style="text-align: left;" id="totalEarnings">0</td>
+                                    <tr class="font-weight-bold" style="background-color:#cbd2d2;">
+                                        <td style="text-align: left;font-weight:700;">TOTAL</td>
+                                        <td style="text-align: left;font-weight:700;" id="totalEarnings">0</td>
                                     </tr>
                                 </tfoot>
                             </table>
